@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
 using System.Linq;
 using System.Text;
@@ -9,7 +10,10 @@ namespace MemSQL
 {
     public class Database
     {
-        public Database() { }
+        DataSet dataSet;
+        public Database() {
+            dataSet = new DataSet();
+        }
 
         public int ExecuteNonQuery(string command, Dictionary<string,object> parameters) { throw new NotImplementedException(); }
         public DbDataReader ExecuteReader(string command, Dictionary<string, object> parameters) { throw new NotImplementedException(); }
