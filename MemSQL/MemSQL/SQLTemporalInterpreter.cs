@@ -1236,15 +1236,13 @@ namespace MemSQL
         public override void Visit(ProcedureStatementBody node) { throw new NotImplementedException(); }
         public override void Visit(DropFullTextStopListStatement node) { throw new NotImplementedException(); }
         public override void Visit(MaxRolloverFilesAuditTargetOption node) { throw new NotImplementedException(); }
-        public override void Visit(SqlDataTypeReference node) { throw new NotImplementedException(); }
-        public override void Visit(LiteralAuditTargetOption node) { throw new NotImplementedException(); }
+         public override void Visit(LiteralAuditTargetOption node) { throw new NotImplementedException(); }
         public override void Visit(OnOffAuditTargetOption node) { throw new NotImplementedException(); }
         public override void Visit(FullTextStopListAction node) { throw new NotImplementedException(); }
         public override void Visit(DatabaseEncryptionKeyStatement node) { throw new NotImplementedException(); }
         public override void Visit(ProcedureStatementBodyBase node) { throw new NotImplementedException(); }
         public override void Visit(CreateDatabaseEncryptionKeyStatement node) { throw new NotImplementedException(); }
-        public override void Visit(DataTypeReference node) { throw new NotImplementedException(); }
-        public override void Visit(AlterDatabaseEncryptionKeyStatement node) { throw new NotImplementedException(); }
+         public override void Visit(AlterDatabaseEncryptionKeyStatement node) { throw new NotImplementedException(); }
         public override void Visit(AlterFullTextStopListStatement node) { throw new NotImplementedException(); }
         public override void Visit(DropDatabaseEncryptionKeyStatement node) { throw new NotImplementedException(); }
         public override void Visit(TableValuedFunctionReturnType node) { throw new NotImplementedException(); }
