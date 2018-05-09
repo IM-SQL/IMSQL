@@ -50,6 +50,7 @@ namespace MemSQL
 
         public override void Visit(CreateTableStatement node)
         {
+            //TODO: creation errors? what if the name is taken?
             int columnCount = pop<int>();
 
             DataColumn[] columns = new DataColumn[columnCount];
