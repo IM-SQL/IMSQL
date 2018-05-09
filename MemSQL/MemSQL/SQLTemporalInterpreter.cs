@@ -698,7 +698,6 @@ namespace MemSQL
         public override void ExplicitVisit(XmlForClause node) { throw new NotImplementedException(); }
         public override void ExplicitVisit(NullLiteral node) { throw new NotImplementedException(); }
         public override void ExplicitVisit(ReadOnlyForClause node) { throw new NotImplementedException(); }
-        public override void ExplicitVisit(IntegerLiteral node) { throw new NotImplementedException(); }
         public override void ExplicitVisit(ExecuteInsertSource node) { throw new NotImplementedException(); }
         public override void ExplicitVisit(LiteralTableHint node) { throw new NotImplementedException(); }
         public override void ExplicitVisit(SequenceOption node) { throw new NotImplementedException(); }
@@ -1808,7 +1807,7 @@ namespace MemSQL
         public override void Visit(NumericLiteral node) { throw new NotImplementedException(); }
         public override void Visit(AlterTableAlterColumnStatement node) { throw new NotImplementedException(); }
         
-        public override void Visit(IntegerLiteral node) { throw new NotImplementedException(); }
+        
         public override void Visit(ColumnEncryptionDefinition node) { throw new NotImplementedException(); }
         public override void Visit(ColumnEncryptionDefinitionParameter node) { throw new NotImplementedException(); }
         public override void Visit(Literal node) { throw new NotImplementedException(); }
