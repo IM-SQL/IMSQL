@@ -45,6 +45,8 @@
   <ItemGroup>
     <Compile Include="Database.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SQLInterpreter.cs" />
+    <Compile Include="SQLTemporalInterpreter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
