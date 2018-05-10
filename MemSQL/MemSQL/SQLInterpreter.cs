@@ -25,6 +25,7 @@ namespace MemSQL
         {
             var parser = new TSql140Parser(false);
             TSqlScript result = (TSqlScript)parser.Parse(new StringReader(script), out var errors);
+            //TODO: throw errors.
             foreach (var batch in result.Batches)
             {
                 ExplicitVisit(batch);
