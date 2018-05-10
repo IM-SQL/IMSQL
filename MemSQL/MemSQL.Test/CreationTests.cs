@@ -4,10 +4,10 @@ using MemSQL;
 using System.Collections.Generic;
 using System.Data;
 
-namespace MemSQL.Test
+namespace MemSQL.Test.Strcutural
 {
     [TestClass]
-    public class UnitTest1
+    public class CreationTests
     {
         [TestMethod]
         public void basicTableCreationTest()
