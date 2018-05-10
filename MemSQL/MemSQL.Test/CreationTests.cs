@@ -69,6 +69,24 @@ namespace MemSQL.Test.Strcutural
             Assert.AreEqual(typeof(int), table.Columns["col2"].DataType);
             Assert.IsTrue(table.Columns["col2"].AllowDBNull, "This column should allow nulls");
         }
+
+        [TestMethod]
+        public void inlinePKTableCreationTest()
+        {
+            string script = "Create table [TBL](ID int PRIMARY KEY)";
+            DataSet ds = new DataSet();
+            var visitor = new SQLInterpreter(ds);
+            int rows = visitor.Execute(script);
+            Assert.IsTrue(ds.Tables.Contains("TBL"), "The table must be created");
+            var table = ds.Tables["TBL"];
+            Assert.IsTrue(table.Columns.Contains("ID"));
+            Assert.AreEqual(typeof(int), table.Columns["ID"].DataType);
+            Assert.IsTrue(table.PrimaryKey.Length == 1, "The Primary Key is missing!");
+            Assert.AreEqual(table.Columns["ID"], table.PrimaryKey[0]);
+
+        }
+
+
         [TestMethod]
         public void FKCreationTest()
         {
