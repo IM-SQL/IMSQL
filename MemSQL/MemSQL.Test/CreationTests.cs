@@ -108,7 +108,7 @@ namespace MemSQL.Test.Strcutural
         [TestMethod]
         public void FKCreationTest()
         {
-            string script = "Create table [TBL](col1 int NOT NULL, Primary Key)";
+            string script = "Create table [TBL](col1 int NOT NULL,PRIMARY KEY (col1))";
             DataSet ds = new DataSet();
             var visitor = new SQLInterpreter(ds);
 
@@ -120,8 +120,8 @@ namespace MemSQL.Test.Strcutural
             Assert.IsTrue(table.PrimaryKey.Length == 1, "The Primary Key is missing!");
             Assert.AreEqual(table.Columns["col1"], table.PrimaryKey[0]);
 
-
-            string script2= "Create table [TBL2](col2 int NOT NULL Primary Key, " +
+            visitor = new SQLInterpreter(ds);
+            string script2= "Create table [TBL2](col2 int NOT NULL,PRIMARY KEY (col2), " +
                 "CONSTRAINT FK_tbl FOREIGN KEY (col2)     REFERENCES TBL(col1))";
 
             rows = visitor.Execute(script2);

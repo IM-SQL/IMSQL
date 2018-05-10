@@ -191,6 +191,20 @@ namespace MemSQL
         }
 
 
+        public override void Visit(ForeignKeyConstraintDefinition node)
+        {
+            string referencedTableName = pop<string>();
+            var refTable = ds.Tables[referencedTableName];
+            var currentTable = pop<DataTable>();
+
+            DataColumn[] parents=node.ReferencedTableColumns.Select(c=>refTable.Columns[c.Value]).ToArray();
+            DataColumn[] childs = node.Columns.Select(c => currentTable.Columns[c.Value]).ToArray();
+            //TODO:CANNOT CREATE A FK WITHOUT ADDING THE TABLE TO THE DATASET FIRST
+            ForeignKeyConstraint fk = new ForeignKeyConstraint(node.ConstraintIdentifier.Value, parents, childs);
+            currentTable.Constraints.Add(fk);
+
+            push(currentTable);
+        }
 
 
     }

@@ -134,9 +134,6 @@ namespace MemSQL
         public override void ExplicitVisit(BackupTransactionLogStatement node) { throw new NotImplementedException(); }
         public override void ExplicitVisit(BackupDatabaseStatement node) { throw new NotImplementedException(); }
         public override void ExplicitVisit(BackupStatement node) { throw new NotImplementedException(); }
-        public override void ExplicitVisit(UniqueConstraintDefinition node) { throw new NotImplementedException(); }
-        public override void ExplicitVisit(NullableConstraintDefinition node) { throw new NotImplementedException(); }
-        public override void ExplicitVisit(ForeignKeyConstraintDefinition node) { throw new NotImplementedException(); }
         public override void ExplicitVisit(RestoreOption node) { throw new NotImplementedException(); }
         public override void ExplicitVisit(DefaultConstraintDefinition node) { throw new NotImplementedException(); }
         public override void ExplicitVisit(CompressionPartitionRange node) { throw new NotImplementedException(); }

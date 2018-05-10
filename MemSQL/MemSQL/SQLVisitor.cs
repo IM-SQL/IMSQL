@@ -65,11 +65,17 @@ namespace MemSQL
         {
             Visit(node);
         }
+        public override void ExplicitVisit(ForeignKeyConstraintDefinition node)
+        {
+            node.ReferenceTableName.Accept(this);
+            Visit(node);
+        }
 
         public override void ExplicitVisit(SqlDataTypeReference node)
         {
             Visit(node);
         }
+
 
     }
 }
