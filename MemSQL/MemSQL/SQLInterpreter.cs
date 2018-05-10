@@ -38,13 +38,7 @@ namespace MemSQL
         public override void Visit(CreateTableStatement node)
         {
             //TODO: creation errors? what if the name is taken?
-            int columnCount = pop<int>();
-
-            DataColumn[] columns = new DataColumn[columnCount];
-            for (int i = columnCount - 1; i >= 0; i--)
-            {
-                columns[i] = new DataColumn(pop<string>(), pop<Type>());
-            }
+            var columns = pop<DataColumn[]>();
             DataTable t = new DataTable(pop<string>());
             t.Columns.AddRange(columns);
             ds.Tables.Add(t);
@@ -56,18 +50,21 @@ namespace MemSQL
 
             //TODO:server, schema, and database identifier may take an important role here.
             push(node.Identifiers[0].Value);
-            base.Visit(node);
         }
         public override void Visit(TableDefinition node)
         {
-            push(node.ColumnDefinitions.Count);
+            DataColumn[] columns = new DataColumn[node.ColumnDefinitions.Count];
+            for (int i = node.ColumnDefinitions.Count - 1; i >= 0; i--)
+            {
+                columns[i] =pop<DataColumn>();
+            }
+            push(columns);
         }
 
         public override void Visit(ColumnDefinition node)
         {
             //TODO: identity, collation,indexes, etc,calcultaed values?
-            //solution for now, tuple
-            push(node.ColumnIdentifier.Value);
+            push(new DataColumn(node.ColumnIdentifier.Value, pop<Type>()));
         }
 
 
