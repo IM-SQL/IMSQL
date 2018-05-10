@@ -105,6 +105,9 @@ namespace MemSQL
                     push(typeof(bool));
                     break;
 
+                case SqlDataTypeOption.DateTime:
+                    push(typeof(DateTime));
+                    break;
                 case SqlDataTypeOption.None:
 
                 case SqlDataTypeOption.BigInt:
@@ -124,8 +127,6 @@ namespace MemSQL
                 case SqlDataTypeOption.Float:
 
                 case SqlDataTypeOption.Real:
-
-                case SqlDataTypeOption.DateTime:
 
                 case SqlDataTypeOption.SmallDateTime:
 

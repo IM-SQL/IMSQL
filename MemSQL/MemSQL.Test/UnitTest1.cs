@@ -31,7 +31,7 @@ namespace MemSQL.Test
             string script = "CREATE TABLE CUSTOMERS("
                             + "ID   INT              NOT NULL,"
                             + "NAME VARCHAR (20)     NOT NULL,"
-                            + "AGE  INT              NOT NULL,"
+                            + "BIRTHDAY  DATETIME    NOT NULL,"
                             + "ADDRESS  CHAR (25) ,"
                             + "SALARY   DECIMAL (18, 2),"
                             + "PRIMARY KEY (ID));";
@@ -44,8 +44,8 @@ namespace MemSQL.Test
             Assert.AreEqual(typeof(int), table.Columns["ID"].DataType);
             Assert.IsTrue(table.Columns.Contains("NAME"));
             Assert.AreEqual(typeof(string), table.Columns["NAME"].DataType);
-            Assert.IsTrue(table.Columns.Contains("AGE"));
-            Assert.AreEqual(typeof(int), table.Columns["AGE"].DataType);
+            Assert.IsTrue(table.Columns.Contains("BIRTHDAY"));
+            Assert.AreEqual(typeof(DateTime), table.Columns["BIRTHDAY"].DataType);
             Assert.IsTrue(table.Columns.Contains("ADDRESS"));
             Assert.AreEqual(typeof(string), table.Columns["ADDRESS"].DataType);
             Assert.IsTrue(table.Columns.Contains("SALARY"));
