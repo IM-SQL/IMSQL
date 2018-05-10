@@ -99,11 +99,11 @@ namespace MemSQL.Test.Strcutural
 
             Assert.IsTrue(table.Columns.Contains("ID2"));
             Assert.AreEqual(typeof(int), table.Columns["ID2"].DataType);
+
             Assert.IsTrue(table.PrimaryKey.Length == 2, "The Primary Key is missing!");
             Assert.AreEqual(table.Columns["ID"], table.PrimaryKey[0]);
             Assert.AreEqual(table.Columns["ID2"], table.PrimaryKey[1]);
-            Assert.IsTrue(table.PrimaryKey.Length == 1, "The Primary Key is missing!");
-            Assert.AreEqual(table.Columns["ID"], table.PrimaryKey[0]);
+
         }
         [TestMethod]
         public void FKCreationTest()

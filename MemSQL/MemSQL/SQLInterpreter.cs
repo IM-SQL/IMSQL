@@ -14,8 +14,13 @@ namespace MemSQL
         private Stack<object> stack;
         private DataSet ds;
 
+        List<DataColumn> inlinedPKFound;
+
+        List<DataColumn> inlinedUniqueFound;
         public SQLInterpreter(DataSet ds)
         {
+            inlinedPKFound = new List<DataColumn>();
+            inlinedUniqueFound = new List<DataColumn>();
             this.ds = ds;
             stack = new Stack<object>();
 
@@ -42,6 +47,9 @@ namespace MemSQL
             DataTable t = pop<DataTable>();
             t.TableName = pop<string>();
             ds.Tables.Add(t);
+
+            createUniqueConstraint(t, inlinedPKFound.ToArray(), true);
+            createUniqueConstraint(t, inlinedUniqueFound.ToArray(), false);
             push(t);
         }
 
@@ -60,6 +68,7 @@ namespace MemSQL
             }
             var result = new DataTable();
             result.Columns.AddRange(columns);
+
             push(result);
         }
 
@@ -73,26 +82,39 @@ namespace MemSQL
         {
 
             //IF i reach this point and node.columns is empty, then it is not a table level constraint, but a field constraint.
-
-            if (node.Columns.Count == 0) {
-                throw new NotImplementedException();
+            if (node.Columns.Count == 0)
+            {
+                DataColumn created = pop<DataColumn>();
+                if (node.IsPrimaryKey)
+                    inlinedPKFound.Add(created);
+                else
+                    inlinedUniqueFound.Add(created);
+                push(created);
             }
             else
             {
 
                 //I CANNOT CREATE A CONSTRAINT WITH A COLUMN THAT IS NOT ON A TABLE.
                 //the table should be at the top of the stack 
-                //TODO: constraint name
-
                 DataTable table = pop<DataTable>();
-                var constraint = new UniqueConstraint(
-                    node.Columns.Select(c => table.Columns[c.Column.MultiPartIdentifier[0].Value]).ToArray()
-                    , node.IsPrimaryKey);
-                table.Constraints.Add(constraint);
+                createUniqueConstraint(table,
+                node.Columns.Select(c => table.Columns[c.Column.MultiPartIdentifier[0].Value]).ToArray()
+                , node.IsPrimaryKey, node.ConstraintIdentifier?.Value);
+
+
                 push(table);
             }
         }
-
+        private void createUniqueConstraint(DataTable table, DataColumn[] columns, bool isPK, string name = null)
+        {
+            if (columns.Length > 0)
+            {
+                var constraint = new UniqueConstraint(name != null ? name :
+                    (isPK ? "PrimaryKeyConstraint_" : "UniqueConstraint_")
+                    + table.TableName, columns, isPK);
+                table.Constraints.Add(constraint);
+            }
+        }
         public override void Visit(NullableConstraintDefinition node)
         {
             //the column should be at the top of the stack.
@@ -197,7 +219,7 @@ namespace MemSQL
             var refTable = ds.Tables[referencedTableName];
             var currentTable = pop<DataTable>();
 
-            DataColumn[] parents=node.ReferencedTableColumns.Select(c=>refTable.Columns[c.Value]).ToArray();
+            DataColumn[] parents = node.ReferencedTableColumns.Select(c => refTable.Columns[c.Value]).ToArray();
             DataColumn[] childs = node.Columns.Select(c => currentTable.Columns[c.Value]).ToArray();
             //TODO:CANNOT CREATE A FK WITHOUT ADDING THE TABLE TO THE DATASET FIRST
             ForeignKeyConstraint fk = new ForeignKeyConstraint(node.ConstraintIdentifier.Value, parents, childs);

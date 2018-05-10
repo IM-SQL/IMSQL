@@ -40,7 +40,9 @@ namespace MemSQL
             foreach (var definition in node.ColumnDefinitions)
             {
                 definition.Accept(this);
+                
             }
+
             Visit(node);
             
         }
