@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace MemSQL
 {
     public abstract class SQLVisitor : SQLTemporalInterpreter
-    { 
+    {
 
         public override void ExplicitVisit(CreateTableStatement node)
         {
@@ -18,7 +18,7 @@ namespace MemSQL
             //ExplicitVisit(node.SchemaObjectName);
             //the order of this bothers me
             node.AcceptChildren(this);
-             
+
             Visit(node);
 
         }
@@ -38,6 +38,7 @@ namespace MemSQL
                 definition.Accept(this);
             }
             Visit(node);
+             
             foreach (var constraint in node.TableConstraints)
             {
                 constraint.Accept(this);
@@ -46,7 +47,18 @@ namespace MemSQL
         public override void ExplicitVisit(ColumnDefinition node)
         {
             //if i dont override this it tries to call visit columndefinitionbase
+            //TODO: collation? other childs?
+            
             node.DataType.Accept(this);
+            Visit(node);
+            foreach (var constraint in node.Constraints)
+            {
+                constraint.Accept(this);
+
+            }
+        }
+        public override void ExplicitVisit(NullableConstraintDefinition node)
+        {
             Visit(node);
         }
         public override void ExplicitVisit(UniqueConstraintDefinition node)

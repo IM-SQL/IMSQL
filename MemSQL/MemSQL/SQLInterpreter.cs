@@ -66,21 +66,39 @@ namespace MemSQL
         {
             //TODO: identity, collation,indexes, etc,calcultaed values?
             push(new DataColumn(node.ColumnIdentifier.Value, pop<Type>()));
+
         }
         public override void Visit(UniqueConstraintDefinition node)
         {
-            //I CANNOT CREATE A CONSTRAINT WITH A COLUMN THAT IS NOT ON A TABLE.
-            //the table should be at the top of the stack 
-            //TODO: constraint name
-            DataTable table = pop<DataTable>();
-            var constraint = new UniqueConstraint(
-                node.Columns.Select(c => table.Columns[c.Column.MultiPartIdentifier[0].Value]).ToArray()
-                , node.IsPrimaryKey);
-            table.Constraints.Add(constraint);
-            push(table);
+
+            //IF i reach this point and node.columns is empty, then it is not a table level constraint, but a field constraint.
+
+            if (node.Columns.Count == 0) {
+                throw new NotImplementedException();
+            }
+            else
+            {
+
+                //I CANNOT CREATE A CONSTRAINT WITH A COLUMN THAT IS NOT ON A TABLE.
+                //the table should be at the top of the stack 
+                //TODO: constraint name
+
+                DataTable table = pop<DataTable>();
+                var constraint = new UniqueConstraint(
+                    node.Columns.Select(c => table.Columns[c.Column.MultiPartIdentifier[0].Value]).ToArray()
+                    , node.IsPrimaryKey);
+                table.Constraints.Add(constraint);
+                push(table);
+            }
         }
 
-
+        public override void Visit(NullableConstraintDefinition node)
+        {
+            //the column should be at the top of the stack.
+            DataColumn col = pop<DataColumn>();
+            col.AllowDBNull = node.Nullable;
+            push(col);
+        }
         public override void Visit(SqlDataTypeReference node)
         {
             switch (node.SqlDataTypeOption)
