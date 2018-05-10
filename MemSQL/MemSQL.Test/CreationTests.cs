@@ -141,7 +141,7 @@ namespace MemSQL.Test.Strcutural
             Assert.AreEqual(table2, fk.Table,"The child table is not the correct one");
 
             Assert.IsTrue(fk.RelatedColumns.Length == 1);
-            Assert.AreEqual("col1", fk.Columns[0].ColumnName);
+            Assert.AreEqual("col1", fk.RelatedColumns[0].ColumnName);
             Assert.AreEqual(table, fk.RelatedTable, "The parent table is not the correct one");
         }
 

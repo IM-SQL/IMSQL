@@ -20,7 +20,11 @@ namespace MemSQL
             node.AcceptChildren(this);
 
             Visit(node);
-
+            //i am checking the constraints after adding it to the dataset, because some of them cannot be applied otherwise
+            foreach (var constraint in node.Definition.TableConstraints)
+            {
+                constraint.Accept(this);
+            }
         }
 
         public override void ExplicitVisit(SchemaObjectName node)
@@ -38,11 +42,7 @@ namespace MemSQL
                 definition.Accept(this);
             }
             Visit(node);
-             
-            foreach (var constraint in node.TableConstraints)
-            {
-                constraint.Accept(this);
-            }
+            
         }
         public override void ExplicitVisit(ColumnDefinition node)
         {
