@@ -53,7 +53,7 @@ namespace MemSQL
 
             node.DataType.Accept(this);
             Visit(node);
-            node.DefaultConstraint.Accept(this);
+            node.DefaultConstraint?.Accept(this);
             foreach (var constraint in node.Constraints)
             {
                 constraint.Accept(this);
