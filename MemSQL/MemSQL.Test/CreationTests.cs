@@ -54,6 +54,30 @@ namespace MemSQL.Test.Strcutural
             Assert.AreEqual(table.Columns["ID"], table.PrimaryKey[0]);
         }
         [TestMethod]
+        public void DefaultValuesTableCreationTest()
+        {
+            string script = "Create table [TBL](" +
+                "col1 int DEFAULT 3," +
+                "col2 varchar(3) DEFAULT 'asd'," +
+                "col3 bit DEFAULT 1)";
+            DataSet ds = new DataSet();
+            var visitor = new SQLInterpreter(ds);
+            int rows = visitor.Execute(script);
+            Assert.IsTrue(ds.Tables.Contains("TBL"), "The table must be created");
+            var table = ds.Tables["TBL"];
+            Assert.IsTrue(table.Columns.Contains("col1"));
+            Assert.AreEqual(typeof(int), table.Columns["col1"].DataType);
+            Assert.IsTrue(table.Columns.Contains("col2"));
+            Assert.AreEqual(typeof(string), table.Columns["col2"].DataType);
+            Assert.IsTrue(table.Columns.Contains("col3"));
+            Assert.AreEqual(typeof(bool), table.Columns["col3"].DataType);
+
+            var dr = table.NewRow();
+            Assert.AreEqual(3, dr["col1"], "The default value was not present on the row");
+            Assert.AreEqual("asd", dr["col2"], "The default value was not present on the row");
+            Assert.AreEqual(true, dr["col3"], "The default value was not present on the row");
+        }
+        [TestMethod]
         public void NullableTableCreationTest()
         {
             string script = "Create table [TBL](col1 int NOT NULL,col2 int NULL)";

@@ -40,24 +40,30 @@ namespace MemSQL
             foreach (var definition in node.ColumnDefinitions)
             {
                 definition.Accept(this);
-                
+
             }
 
             Visit(node);
-            
+
         }
         public override void ExplicitVisit(ColumnDefinition node)
         {
             //if i dont override this it tries to call visit columndefinitionbase
             //TODO: collation? other childs?
-            
+
             node.DataType.Accept(this);
             Visit(node);
+            node.DefaultConstraint.Accept(this);
             foreach (var constraint in node.Constraints)
             {
                 constraint.Accept(this);
 
             }
+        }
+        public override void ExplicitVisit(DefaultConstraintDefinition node)
+        {//TODO: i think if the default value is a function this might have to be reviewed
+            ExplicitVisit(node.Expression);
+            Visit(node);
         }
         public override void ExplicitVisit(NullableConstraintDefinition node)
         {
@@ -77,7 +83,18 @@ namespace MemSQL
         {
             Visit(node);
         }
-
+        public override void ExplicitVisit(ScalarExpression node)
+        {
+            node.Accept(this);
+        }
+        public override void ExplicitVisit(IntegerLiteral node)
+        {
+            Visit(node);
+        }
+        public override void ExplicitVisit(StringLiteral node)
+        {
+            Visit(node);
+        }
 
     }
 }

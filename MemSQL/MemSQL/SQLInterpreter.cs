@@ -78,6 +78,13 @@ namespace MemSQL
             push(new DataColumn(node.ColumnIdentifier.Value, pop<Type>()));
 
         }
+        public override void Visit(DefaultConstraintDefinition node)
+        {
+            object value = pop<object>();
+            DataColumn col = pop<DataColumn>();
+            col.DefaultValue = value;
+            push(col);
+        }
         public override void Visit(UniqueConstraintDefinition node)
         {
 
@@ -228,6 +235,13 @@ namespace MemSQL
             push(currentTable);
         }
 
-
+        public override void Visit(IntegerLiteral node)
+        {
+            push(int.Parse(node.Value));
+        }
+        public override void Visit(StringLiteral node)
+        {
+            push(node.Value.ToString());
+        }
     }
 }
