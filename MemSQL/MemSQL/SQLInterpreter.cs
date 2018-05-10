@@ -38,11 +38,10 @@ namespace MemSQL
         public override void Visit(CreateTableStatement node)
         {
             //TODO: creation errors? what if the name is taken?
-            var columns = pop<DataColumn[]>();
-            DataTable t = new DataTable(pop<string>());
-            t.Columns.AddRange(columns);
+            DataTable t = pop<DataTable>();
+            t.TableName = pop<string>();
             ds.Tables.Add(t);
-
+            push(t);
         }
 
         public override void Visit(SchemaObjectName node)
@@ -56,15 +55,29 @@ namespace MemSQL
             DataColumn[] columns = new DataColumn[node.ColumnDefinitions.Count];
             for (int i = node.ColumnDefinitions.Count - 1; i >= 0; i--)
             {
-                columns[i] =pop<DataColumn>();
+                columns[i] = pop<DataColumn>();
             }
-            push(columns);
+            var result = new DataTable();
+            result.Columns.AddRange(columns);
+            push(result);
         }
 
         public override void Visit(ColumnDefinition node)
         {
             //TODO: identity, collation,indexes, etc,calcultaed values?
             push(new DataColumn(node.ColumnIdentifier.Value, pop<Type>()));
+        }
+        public override void Visit(UniqueConstraintDefinition node)
+        {
+            //I CANNOT CREATE A CONSTRAINT WITH A COLUMN THAT IS NOT ON A TABLE.
+            //the table should be at the top of the stack 
+            //TODO: constraint name
+            DataTable table = pop<DataTable>();
+            var constraint = new UniqueConstraint(
+                node.Columns.Select(c => table.Columns[c.Column.MultiPartIdentifier[0].Value]).ToArray()
+                , node.IsPrimaryKey);
+            table.Constraints.Add(constraint);
+            push(table);
         }
 
 
@@ -76,11 +89,18 @@ namespace MemSQL
                     push(typeof(int));
                     break;
 
+                case SqlDataTypeOption.Decimal:
+                    push(typeof(decimal));
+                    break;
                 case SqlDataTypeOption.VarChar:
                     //TODO: size limit? unicode limit?
                     push(typeof(string));
                     break;
 
+                case SqlDataTypeOption.Char:
+                    //TODO: if this has more than 1 space, it should be a string
+                    push(typeof(string));
+                    break;
                 case SqlDataTypeOption.Bit:
                     push(typeof(bool));
                     break;
@@ -94,7 +114,6 @@ namespace MemSQL
                 case SqlDataTypeOption.TinyInt:
 
 
-                case SqlDataTypeOption.Decimal:
 
                 case SqlDataTypeOption.Numeric:
 
@@ -109,8 +128,6 @@ namespace MemSQL
                 case SqlDataTypeOption.DateTime:
 
                 case SqlDataTypeOption.SmallDateTime:
-
-                case SqlDataTypeOption.Char:
 
                 case SqlDataTypeOption.Text:
 

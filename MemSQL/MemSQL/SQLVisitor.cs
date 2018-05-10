@@ -16,9 +16,9 @@ namespace MemSQL
             //i can define the visiting order here, or just use the one provided by the implementation of the other visitor
             //ExplicitVisit(node.Definition);
             //ExplicitVisit(node.SchemaObjectName);
-
+            //the order of this bothers me
             node.AcceptChildren(this);
-
+             
             Visit(node);
 
         }
@@ -31,12 +31,17 @@ namespace MemSQL
         }
         public override void ExplicitVisit(TableDefinition node)
         {
-            //TODO: indexes, constraints
-            foreach (var item in node.ColumnDefinitions)
+
+            //TODO: indexes
+            foreach (var definition in node.ColumnDefinitions)
             {
-                item.Accept(this);
+                definition.Accept(this);
             }
             Visit(node);
+            foreach (var constraint in node.TableConstraints)
+            {
+                constraint.Accept(this);
+            }
         }
         public override void ExplicitVisit(ColumnDefinition node)
         {
@@ -44,6 +49,11 @@ namespace MemSQL
             node.DataType.Accept(this);
             Visit(node);
         }
+        public override void ExplicitVisit(UniqueConstraintDefinition node)
+        {
+            Visit(node);
+        }
+
         public override void ExplicitVisit(SqlDataTypeReference node)
         {
             Visit(node);
