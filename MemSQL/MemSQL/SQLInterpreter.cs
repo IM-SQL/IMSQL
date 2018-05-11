@@ -35,6 +35,12 @@ namespace MemSQL
        
         }
 
+        public override void ExplicitVisit(InsertStatement node)
+        {
+            SQLInsertInterpreter interpreter = new SQLInsertInterpreter(ds);
+            node.Accept(interpreter);
+        }
+
 
     }
 }
