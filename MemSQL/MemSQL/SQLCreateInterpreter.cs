@@ -59,11 +59,17 @@ namespace MemSQL
             node.DataType.Accept(this);
             Visit(node);
             node.DefaultConstraint?.Accept(this);
+            node.IdentityOptions?.Accept(this);
             foreach (var constraint in node.Constraints)
             {
                 constraint.Accept(this);
 
             }
+        }
+        public override void ExplicitVisit(IdentityOptions node)
+        {
+            node.AcceptChildren(this);
+            Visit(node);
         }
         public override void ExplicitVisit(DefaultConstraintDefinition node)
         {//TODO: i think if the default value is a function this might have to be reviewed
@@ -85,7 +91,7 @@ namespace MemSQL
         }
 
 
-
+        
         public override void Visit(CreateTableStatement node)
         {
             //TODO: creation errors? what if the name is taken?
@@ -114,6 +120,16 @@ namespace MemSQL
             //TODO: identity, collation,indexes, etc,calcultaed values?
             push(new DataColumn(node.ColumnIdentifier.Value, pop<Type>()));
 
+        }
+        public override void Visit(IdentityOptions node)
+        {
+            int step = pop<int>();
+            int seed = pop<int>();
+            DataColumn column = pop<DataColumn>();
+            column.AutoIncrement = true;
+            column.AutoIncrementSeed = seed;
+            column.AutoIncrementStep = step;
+            push(column);
         }
         public override void Visit(DefaultConstraintDefinition node)
         {

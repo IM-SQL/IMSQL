@@ -88,12 +88,34 @@ namespace MemSQL.Test.Strcutural
             var table = ds.Tables["TBL"];
             Assert.IsTrue(table.Columns.Contains("col1"));
             Assert.AreEqual(typeof(int), table.Columns["col1"].DataType);
-            Assert.IsFalse(table.Columns["col1"].AllowDBNull,"This column should not allow nulls");
+            Assert.IsFalse(table.Columns["col1"].AllowDBNull, "This column should not allow nulls");
             Assert.IsTrue(table.Columns.Contains("col2"));
             Assert.AreEqual(typeof(int), table.Columns["col2"].DataType);
             Assert.IsTrue(table.Columns["col2"].AllowDBNull, "This column should allow nulls");
         }
+        [TestMethod]
+        public void AutoincrementPKTableCreationTest()
+        {
+            string script = "Create table [TBL](ID int IDENTITY(1,1) PRIMARY KEY, TWICE int IDENTITY(2,2))";
+            DataSet ds = new DataSet();
+            var visitor = new SQLInterpreter(ds);
+            int rows = visitor.Execute(script);
+            Assert.IsTrue(ds.Tables.Contains("TBL"), "The table must be created");
+            var table = ds.Tables["TBL"];
+            Assert.IsTrue(table.Columns.Contains("ID"));
+            Assert.AreEqual(typeof(int), table.Columns["ID"].DataType);
+            Assert.IsTrue(table.Columns.Contains("TWICE"));
+            Assert.AreEqual(typeof(int), table.Columns["TWICE"].DataType);
+            Assert.IsTrue(table.PrimaryKey.Length == 1, "The Primary Key is missing!");
+            Assert.AreEqual(table.Columns["ID"], table.PrimaryKey[0]);
 
+            for (int i = 1; i < 10; i++)
+            {
+                var dr = table.NewRow();
+                Assert.AreEqual(i, dr["ID"], "The first autonumeric field did not increment");
+                Assert.AreEqual(i*2, dr["TWICE"], "The second autonumeric field did not increment");
+            }
+        }
         [TestMethod]
         public void InlinePKTableCreationTest()
         {
@@ -145,7 +167,7 @@ namespace MemSQL.Test.Strcutural
             Assert.AreEqual(table.Columns["col1"], table.PrimaryKey[0]);
 
             visitor = new SQLInterpreter(ds);
-            string script2= "Create table [TBL2](col2 int NOT NULL,PRIMARY KEY (col2), " +
+            string script2 = "Create table [TBL2](col2 int NOT NULL,PRIMARY KEY (col2), " +
                 "CONSTRAINT FK_tbl FOREIGN KEY (col2)     REFERENCES TBL(col1))";
 
             rows = visitor.Execute(script2);
@@ -158,11 +180,11 @@ namespace MemSQL.Test.Strcutural
 
 
             Assert.IsTrue(table2.Constraints.Count == 2, "Either the PK or the FK are missing");
-            Assert.IsTrue(table2.Constraints.Contains("FK_tbl"),"The FK was not found by name");
+            Assert.IsTrue(table2.Constraints.Contains("FK_tbl"), "The FK was not found by name");
             var fk = table2.Constraints["FK_tbl"] as ForeignKeyConstraint;
             Assert.IsTrue(fk.Columns.Length == 1);
             Assert.AreEqual("col2", fk.Columns[0].ColumnName);
-            Assert.AreEqual(table2, fk.Table,"The child table is not the correct one");
+            Assert.AreEqual(table2, fk.Table, "The child table is not the correct one");
 
             Assert.IsTrue(fk.RelatedColumns.Length == 1);
             Assert.AreEqual("col1", fk.RelatedColumns[0].ColumnName);
