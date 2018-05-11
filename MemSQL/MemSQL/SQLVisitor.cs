@@ -151,5 +151,19 @@ namespace MemSQL
         {
             push(node.Value.ToString());
         }
+
+
+        public override void ExplicitVisit(NamedTableReference node)
+        {
+            //TODO: alias?
+            node.SchemaObject.Accept(this);
+            Visit(node);
+        }
+
+        public override void Visit(NamedTableReference node)
+        {
+            //TODO: error on table not present?
+            push(ds.Tables[pop<string>()]);
+        }
     }
 }
