@@ -31,29 +31,29 @@ namespace MemSQL
             //TODO: check the childs
             Visit(node);
         }
+
         public override void ExplicitVisit(SqlDataTypeReference node)
         {
             Visit(node);
         }
-        public override void ExplicitVisit(ScalarExpression node)
-        {
-            node.Accept(this);
-        }
+
         public override void ExplicitVisit(IntegerLiteral node)
         {
             Visit(node);
         }
+
         public override void ExplicitVisit(StringLiteral node)
         {
             Visit(node);
         }
 
+        
         public override void Visit(SchemaObjectName node)
         {
-
             //TODO:server, schema, and database identifier may take an important role here.
             push(node.Identifiers[0].Value);
         }
+
         public override void Visit(SqlDataTypeReference node)
         {
             switch (node.SqlDataTypeOption)
@@ -143,15 +143,16 @@ namespace MemSQL
             }
 
         }
+
         public override void Visit(IntegerLiteral node)
         {
             push(int.Parse(node.Value));
         }
+
         public override void Visit(StringLiteral node)
         {
             push(node.Value.ToString());
         }
-
 
         public override void ExplicitVisit(NamedTableReference node)
         {

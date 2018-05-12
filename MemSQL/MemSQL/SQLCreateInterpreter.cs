@@ -11,7 +11,7 @@ namespace MemSQL
     /// <summary>
     /// this class implements the methods necesary to execute a create table statement
     /// </summary>
-    internal class SQLCreateInterpreter:SQLVisitor
+    internal class SQLCreateInterpreter : SQLVisitor
     {
         public SQLCreateInterpreter(DataSet ds) : base(ds)
         {
@@ -38,6 +38,7 @@ namespace MemSQL
                 constraint.Accept(this);
             }
         }
+
         public override void ExplicitVisit(TableDefinition node)
         {
 
@@ -51,6 +52,7 @@ namespace MemSQL
             Visit(node);
 
         }
+
         public override void ExplicitVisit(ColumnDefinition node)
         {
             //if i dont override this it tries to call visit columndefinitionbase
@@ -66,24 +68,30 @@ namespace MemSQL
 
             }
         }
+
         public override void ExplicitVisit(IdentityOptions node)
         {
             node.AcceptChildren(this);
             Visit(node);
         }
+
         public override void ExplicitVisit(DefaultConstraintDefinition node)
-        {//TODO: i think if the default value is a function this might have to be reviewed
-            ExplicitVisit(node.Expression);
+        {
+            //TODO: i think if the default value is a function this might have to be reviewed
+            node.Expression.Accept(this);
             Visit(node);
         }
+
         public override void ExplicitVisit(NullableConstraintDefinition node)
         {
             Visit(node);
         }
+
         public override void ExplicitVisit(UniqueConstraintDefinition node)
         {
             Visit(node);
         }
+
         public override void ExplicitVisit(ForeignKeyConstraintDefinition node)
         {
             node.ReferenceTableName.Accept(this);

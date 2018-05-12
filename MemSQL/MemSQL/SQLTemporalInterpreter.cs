@@ -544,7 +544,7 @@ namespace MemSQL
         public override void ExplicitVisit(BooleanNotExpression node) { throw new NotImplementedException(); }
         public override void ExplicitVisit(FullTextCatalogStatement node) { throw new NotImplementedException(); }
         public override void ExplicitVisit(OnOffFullTextCatalogOption node) { throw new NotImplementedException(); }
-        public override void ExplicitVisit(ScalarExpression node) { throw new NotImplementedException(); }
+
         public override void ExplicitVisit(TableSampleClause node) { throw new NotImplementedException(); }
         public override void ExplicitVisit(UnqualifiedJoin node) { throw new NotImplementedException(); }
         public override void ExplicitVisit(UnpivotedTableReference node) { throw new NotImplementedException(); }
@@ -1729,7 +1729,7 @@ namespace MemSQL
         public override void Visit(UnqualifiedJoin node) { throw new NotImplementedException(); }
         public override void Visit(ColumnWithSortOrder node) { throw new NotImplementedException(); }
         public override void Visit(TableSampleClause node) { throw new NotImplementedException(); }
-        public override void Visit(ScalarExpression node) { throw new NotImplementedException(); }
+
         public override void Visit(BreakStatement node) { throw new NotImplementedException(); }
         public override void Visit(BooleanExpression node) { throw new NotImplementedException(); }
         public override void Visit(BooleanNotExpression node) { throw new NotImplementedException(); }
