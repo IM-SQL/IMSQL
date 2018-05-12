@@ -367,7 +367,7 @@ namespace MemSQL
         public override void ExplicitVisit(ServerAuditStatement node) { throw new NotImplementedException(); }
         public override void ExplicitVisit(DropServerAuditSpecificationStatement node) { throw new NotImplementedException(); }
         public override void ExplicitVisit(DataModificationStatement node) { throw new NotImplementedException(); }
-        public override void ExplicitVisit(TSqlScript node) { throw new NotImplementedException(); }
+
         public override void ExplicitVisit(IdentifierSnippet node) { throw new NotImplementedException(); }
         public override void ExplicitVisit(TSqlStatementSnippet node) { throw new NotImplementedException(); }
         public override void ExplicitVisit(TSqlFragmentSnippet node) { throw new NotImplementedException(); }
@@ -1318,7 +1318,7 @@ namespace MemSQL
         public override void Visit(IdentifierSnippet node) { throw new NotImplementedException(); }
         public override void Visit(MaxDispatchLatencySessionOption node) { throw new NotImplementedException(); }
         public override void Visit(FullTextPredicate node) { throw new NotImplementedException(); }
-        public override void Visit(TSqlScript node) { throw new NotImplementedException(); }
+
         public override void Visit(LiteralSessionOption node) { throw new NotImplementedException(); }
 
         public override void Visit(InPredicate node) { throw new NotImplementedException(); }

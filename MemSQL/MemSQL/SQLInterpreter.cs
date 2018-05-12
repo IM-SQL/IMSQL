@@ -19,20 +19,15 @@ namespace MemSQL
         public int Execute(string script)
         {
             var parser = new TSql140Parser(false);
-            TSqlScript result = (TSqlScript)parser.Parse(new StringReader(script), out var errors);
-            //TODO: throw errors.
-            foreach (var batch in result.Batches)
-            {
-                ExplicitVisit(batch);
-            }
+            var result = parser.Parse(new StringReader(script), out var errors);
+            result.Accept(this);
             return 1;
         }
 
         public override void ExplicitVisit(CreateTableStatement node)
         {
             SQLCreateInterpreter createVisitor = new SQLCreateInterpreter(ds);
-            node.Accept(createVisitor);
-       
+            node.Accept(createVisitor);       
         }
 
         public override void ExplicitVisit(InsertStatement node)
