@@ -13,14 +13,14 @@ namespace MemSQL
     /// </summary>
     internal class SQLCreateInterpreter : SQLVisitor
     {
+        List<DataColumn> inlinedPKFound;
+        List<DataColumn> inlinedUniqueFound;
+
         public SQLCreateInterpreter(DataSet ds) : base(ds)
         {
             inlinedPKFound = new List<DataColumn>();
             inlinedUniqueFound = new List<DataColumn>();
-
         }
-        List<DataColumn> inlinedPKFound;
-        List<DataColumn> inlinedUniqueFound;
 
         public override void ExplicitVisit(CreateTableStatement node)
         {
@@ -39,18 +39,39 @@ namespace MemSQL
             }
         }
 
+        public override void Visit(CreateTableStatement node)
+        {
+            //TODO: creation errors? what if the name is taken?
+            DataTable t = pop<DataTable>();
+            t.TableName = pop<string>();
+            ds.Tables.Add(t);
+
+            createUniqueConstraint(t, inlinedPKFound.ToArray(), true);
+            createUniqueConstraint(t, inlinedUniqueFound.ToArray(), false);
+            push(t);
+        }
+
         public override void ExplicitVisit(TableDefinition node)
         {
-
             //TODO: indexes
             foreach (var definition in node.ColumnDefinitions)
             {
                 definition.Accept(this);
-
             }
-
             Visit(node);
+        }
 
+        public override void Visit(TableDefinition node)
+        {
+            DataColumn[] columns = new DataColumn[node.ColumnDefinitions.Count];
+            for (int i = node.ColumnDefinitions.Count - 1; i >= 0; i--)
+            {
+                columns[i] = pop<DataColumn>();
+            }
+            var result = new DataTable();
+            result.Columns.AddRange(columns);
+
+            push(result);
         }
 
         public override void ExplicitVisit(ColumnDefinition node)
@@ -69,66 +90,18 @@ namespace MemSQL
             }
         }
 
+        public override void Visit(ColumnDefinition node)
+        {
+            //TODO: identity, collation,indexes, etc,calcultaed values?
+            push(new DataColumn(node.ColumnIdentifier.Value, pop<Type>()));
+        }
+
         public override void ExplicitVisit(IdentityOptions node)
         {
             node.AcceptChildren(this);
             Visit(node);
         }
 
-        public override void ExplicitVisit(DefaultConstraintDefinition node)
-        {
-            //TODO: i think if the default value is a function this might have to be reviewed
-            node.Expression.Accept(this);
-            Visit(node);
-        }
-
-        public override void ExplicitVisit(NullableConstraintDefinition node)
-        {
-            Visit(node);
-        }
-
-        public override void ExplicitVisit(UniqueConstraintDefinition node)
-        {
-            Visit(node);
-        }
-
-        public override void ExplicitVisit(ForeignKeyConstraintDefinition node)
-        {
-            node.ReferenceTableName.Accept(this);
-            Visit(node);
-        }
-
-
-        
-        public override void Visit(CreateTableStatement node)
-        {
-            //TODO: creation errors? what if the name is taken?
-            DataTable t = pop<DataTable>();
-            t.TableName = pop<string>();
-            ds.Tables.Add(t);
-
-            createUniqueConstraint(t, inlinedPKFound.ToArray(), true);
-            createUniqueConstraint(t, inlinedUniqueFound.ToArray(), false);
-            push(t);
-        }
-        public override void Visit(TableDefinition node)
-        {
-            DataColumn[] columns = new DataColumn[node.ColumnDefinitions.Count];
-            for (int i = node.ColumnDefinitions.Count - 1; i >= 0; i--)
-            {
-                columns[i] = pop<DataColumn>();
-            }
-            var result = new DataTable();
-            result.Columns.AddRange(columns);
-
-            push(result);
-        }
-        public override void Visit(ColumnDefinition node)
-        {
-            //TODO: identity, collation,indexes, etc,calcultaed values?
-            push(new DataColumn(node.ColumnIdentifier.Value, pop<Type>()));
-
-        }
         public override void Visit(IdentityOptions node)
         {
             int step = pop<int>();
@@ -139,6 +112,14 @@ namespace MemSQL
             column.AutoIncrementStep = step;
             push(column);
         }
+
+        public override void ExplicitVisit(DefaultConstraintDefinition node)
+        {
+            //TODO: i think if the default value is a function this might have to be reviewed
+            node.Expression.Accept(this);
+            Visit(node);
+        }
+
         public override void Visit(DefaultConstraintDefinition node)
         {
             object value = pop<object>();
@@ -146,6 +127,25 @@ namespace MemSQL
             col.DefaultValue = value;
             push(col);
         }
+
+        public override void ExplicitVisit(NullableConstraintDefinition node)
+        {
+            Visit(node);
+        }
+
+        public override void Visit(NullableConstraintDefinition node)
+        {
+            //the column should be at the top of the stack.
+            DataColumn col = pop<DataColumn>();
+            col.AllowDBNull = node.Nullable;
+            push(col);
+        }
+
+        public override void ExplicitVisit(UniqueConstraintDefinition node)
+        {
+            Visit(node);
+        }
+
         public override void Visit(UniqueConstraintDefinition node)
         {
 
@@ -173,23 +173,13 @@ namespace MemSQL
                 push(table);
             }
         }
-        private void createUniqueConstraint(DataTable table, DataColumn[] columns, bool isPK, string name = null)
+
+        public override void ExplicitVisit(ForeignKeyConstraintDefinition node)
         {
-            if (columns.Length > 0)
-            {
-                var constraint = new UniqueConstraint(name != null ? name :
-                    (isPK ? "PrimaryKeyConstraint_" : "UniqueConstraint_")
-                    + table.TableName, columns, isPK);
-                table.Constraints.Add(constraint);
-            }
+            node.ReferenceTableName.Accept(this);
+            Visit(node);
         }
-        public override void Visit(NullableConstraintDefinition node)
-        {
-            //the column should be at the top of the stack.
-            DataColumn col = pop<DataColumn>();
-            col.AllowDBNull = node.Nullable;
-            push(col);
-        }
+
         public override void Visit(ForeignKeyConstraintDefinition node)
         {
             string referencedTableName = pop<string>();
@@ -203,6 +193,17 @@ namespace MemSQL
             currentTable.Constraints.Add(fk);
 
             push(currentTable);
+        }
+
+        private void createUniqueConstraint(DataTable table, DataColumn[] columns, bool isPK, string name = null)
+        {
+            if (columns.Length > 0)
+            {
+                var constraint = new UniqueConstraint(name != null ? name :
+                    (isPK ? "PrimaryKeyConstraint_" : "UniqueConstraint_")
+                    + table.TableName, columns, isPK);
+                table.Constraints.Add(constraint);
+            }
         }
 
     }
