@@ -137,24 +137,19 @@ namespace MemSQL.Test.Structural
         }
 
         [TestMethod]
-        public void InlineComposedPKTableCreationTest()
+        public void MultipleInlinedPKConstraintsShouldFail()
         {
+            /*
+             * INFO(Richo): This should fail. SQL Server 2016 throws the following error:
+             * Cannot add multiple PRIMARY KEY constraints to table 'TBL'.
+             */
             string script = "Create table [TBL](ID int PRIMARY KEY,ID2 int PRIMARY KEY)";
             DataSet ds = new DataSet();
             var visitor = new SQLInterpreter(ds);
-            int rows = visitor.Execute(script);
-            Assert.IsTrue(ds.Tables.Contains("TBL"), "The table must be created");
-            var table = ds.Tables["TBL"];
-            Assert.IsTrue(table.Columns.Contains("ID"));
-            Assert.AreEqual(typeof(int), table.Columns["ID"].DataType);
-
-            Assert.IsTrue(table.Columns.Contains("ID2"));
-            Assert.AreEqual(typeof(int), table.Columns["ID2"].DataType);
-
-            Assert.IsTrue(table.PrimaryKey.Length == 2, "The Primary Key is missing!");
-            Assert.AreEqual(table.Columns["ID"], table.PrimaryKey[0]);
-            Assert.AreEqual(table.Columns["ID2"], table.PrimaryKey[1]);
-
+            Assert.ThrowsException<ArgumentException>(() =>
+            {
+                visitor.Execute(script);
+            });
         }
 
         [TestMethod]
