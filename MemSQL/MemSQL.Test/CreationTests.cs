@@ -223,6 +223,16 @@ namespace MemSQL.Test.Structural
             Assert.AreEqual(-10, dr1["calc"]);
         }
 
-
+        [TestMethod]
+        public void InvalidSyntaxShouldThrowAnException()
+        {
+            var script = "create table table (a int)";
+            DataSet ds = new DataSet();
+            var visitor = new SQLInterpreter(ds);
+            Assert.ThrowsException<ParseException>(() =>
+            {
+                visitor.Execute(script);
+            });
+        }
     }
 }

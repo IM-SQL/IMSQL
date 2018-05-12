@@ -20,6 +20,7 @@ namespace MemSQL
         {
             var parser = new TSql140Parser(false);
             var result = parser.Parse(new StringReader(script), out var errors);
+            if (errors.Any()) { throw new ParseException(errors); }
             result.Accept(this);
             return 1;
         }
