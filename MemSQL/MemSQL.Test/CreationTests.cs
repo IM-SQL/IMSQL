@@ -153,6 +153,32 @@ namespace MemSQL.Test.Structural
         }
 
         [TestMethod]
+        public void PKConstraintWithMultipleColumns()
+        {
+            string script = @"
+                CREATE TABLE TBL
+                (
+                    [ID1] INT NOT NULL,
+                    [ID2] INT NOT NULL
+                    CONSTRAINT PK_TBL PRIMARY KEY ([ID1], [ID2])
+                )";
+            DataSet ds = new DataSet();
+            var visitor = new SQLInterpreter(ds);
+            int rows = visitor.Execute(script);
+            Assert.IsTrue(ds.Tables.Contains("TBL"), "The table must be created");
+            var table = ds.Tables["TBL"];
+            Assert.IsTrue(table.Columns.Contains("ID1"));
+            Assert.AreEqual(typeof(int), table.Columns["ID1"].DataType);
+
+            Assert.IsTrue(table.Columns.Contains("ID2"));
+            Assert.AreEqual(typeof(int), table.Columns["ID2"].DataType);
+
+            Assert.IsTrue(table.PrimaryKey.Length == 2, "The Primary Key is missing!");
+            Assert.AreEqual(table.Columns["ID1"], table.PrimaryKey[0]);
+            Assert.AreEqual(table.Columns["ID2"], table.PrimaryKey[1]);
+        }
+
+        [TestMethod]
         public void FKCreationTest()
         {
             string script = "Create table [TBL](col1 int NOT NULL,PRIMARY KEY (col1))";

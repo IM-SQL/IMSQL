@@ -166,9 +166,15 @@ namespace MemSQL
             {
                 var isPK = node.IsPrimaryKey;
                 var name = node.ConstraintIdentifier?.Value ?? 
-                    string.Format("{0}_{1}", isPK ? "PrimaryKeyConstraint_" : "UniqueConstraint_", table.TableName);
+                    string.Format("{0}_{1}", isPK ? "PK_" : "UC_", table.TableName);
+
+                /*
+                 * INFO(Richo): We can get the columns from two places: the "column" arg or the node's "Columns" property.
+                 * The node's property takes precedence, but it could come empty if the constraint was specified inline.
+                 * In those cases we rely on the "column" argument.
+                 */
                 DataColumn[] columns;
-                if (column != null)
+                if (node.Columns == null || node.Columns.Count == 0)
                 {
                     columns = new[] { column };
                 }
@@ -178,8 +184,8 @@ namespace MemSQL
                         .Select(c => table.Columns[c.Column.MultiPartIdentifier[0].Value])
                         .ToArray();
                 }
-                var constraint = new UniqueConstraint(name, columns, isPK);
-                table.Constraints.Add(constraint);
+
+                table.Constraints.Add(new UniqueConstraint(name, columns, isPK));
             };
             push(applier);
         }
