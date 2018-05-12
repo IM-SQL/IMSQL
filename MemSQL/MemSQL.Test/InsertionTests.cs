@@ -12,7 +12,7 @@ namespace MemSQL.Test
     public class InsertionTests
     {
         [TestMethod]
-        public void basicInsertTest()
+        public void BasicInsertTest()
         {
             DataSet ds = new DataSet();
             DataTable table = ds.Tables.Add("TBL");

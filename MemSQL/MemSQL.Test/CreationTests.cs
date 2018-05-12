@@ -4,13 +4,13 @@ using MemSQL;
 using System.Collections.Generic;
 using System.Data;
 
-namespace MemSQL.Test.Strcutural
+namespace MemSQL.Test.Structural
 {
     [TestClass]
     public class CreationTests
     {
         [TestMethod]
-        public void basicTableCreationTest()
+        public void BasicTableCreationTest()
         {
             string script = "Create table [TBL](col1 int,col2 varchar(3),col3 bit)";
             DataSet ds = new DataSet();
@@ -25,6 +25,7 @@ namespace MemSQL.Test.Strcutural
             Assert.IsTrue(table.Columns.Contains("col3"));
             Assert.AreEqual(typeof(bool), table.Columns["col3"].DataType);
         }
+
         [TestMethod]
         public void TableCreationTest()
         {
@@ -53,6 +54,7 @@ namespace MemSQL.Test.Strcutural
             Assert.IsTrue(table.PrimaryKey.Length == 1, "The Primary Key is missing!");
             Assert.AreEqual(table.Columns["ID"], table.PrimaryKey[0]);
         }
+
         [TestMethod]
         public void DefaultValuesTableCreationTest()
         {
@@ -77,6 +79,7 @@ namespace MemSQL.Test.Strcutural
             Assert.AreEqual("asd", dr["col2"], "The default value was not present on the row");
             Assert.AreEqual(true, dr["col3"], "The default value was not present on the row");
         }
+
         [TestMethod]
         public void NullableTableCreationTest()
         {
@@ -93,6 +96,7 @@ namespace MemSQL.Test.Strcutural
             Assert.AreEqual(typeof(int), table.Columns["col2"].DataType);
             Assert.IsTrue(table.Columns["col2"].AllowDBNull, "This column should allow nulls");
         }
+
         [TestMethod]
         public void AutoincrementPKTableCreationTest()
         {
@@ -116,6 +120,7 @@ namespace MemSQL.Test.Strcutural
                 Assert.AreEqual(i*2, dr["TWICE"], "The second autonumeric field did not increment");
             }
         }
+
         [TestMethod]
         public void InlinePKTableCreationTest()
         {
@@ -151,6 +156,7 @@ namespace MemSQL.Test.Strcutural
             Assert.AreEqual(table.Columns["ID2"], table.PrimaryKey[1]);
 
         }
+
         [TestMethod]
         public void FKCreationTest()
         {
@@ -190,8 +196,7 @@ namespace MemSQL.Test.Strcutural
             Assert.AreEqual("col1", fk.RelatedColumns[0].ColumnName);
             Assert.AreEqual(table, fk.RelatedTable, "The parent table is not the correct one");
         }
-
-
+        
         [TestMethod]
         public void ComputedColumnCreationTest()
         {
