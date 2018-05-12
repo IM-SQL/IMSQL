@@ -16,13 +16,21 @@ namespace MemSQL
         {
         }
 
-        public int Execute(string script)
+        public int Execute(TextReader script)
         {
             var parser = new TSql140Parser(false);
-            var result = parser.Parse(new StringReader(script), out var errors);
+            var result = parser.Parse(script, out var errors);
             if (errors.Any()) { throw new ParseException(errors); }
             result.Accept(this);
             return 1;
+        }
+
+        public int Execute(string script)
+        {
+            using (var reader = new StringReader(script))
+            {
+                return Execute(reader);
+            }
         }
 
         public override void ExplicitVisit(CreateTableStatement node)
