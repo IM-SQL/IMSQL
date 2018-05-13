@@ -118,7 +118,7 @@ namespace MemSQL.Test.Structural
             {
                 var dr = table.NewRow();
                 Assert.AreEqual(i, dr["ID"], "The first autonumeric field did not increment");
-                Assert.AreEqual(i*2, dr["TWICE"], "The second autonumeric field did not increment");
+                Assert.AreEqual(i * 2, dr["TWICE"], "The second autonumeric field did not increment");
             }
         }
 
@@ -218,7 +218,7 @@ namespace MemSQL.Test.Structural
             Assert.AreEqual("col1", fk.RelatedColumns[0].ColumnName);
             Assert.AreEqual(table, fk.RelatedTable, "The parent table is not the correct one");
         }
-        
+
         [TestMethod]
         public void ComputedColumnCreationTest()
         {
@@ -280,7 +280,7 @@ namespace MemSQL.Test.Structural
         {
             DataSet ds = new DataSet();
             var visitor = new SQLInterpreter(ds);
-            { 
+            {
                 string script = "CREATE TABLE [Client] (ID int NOT NULL PRIMARY KEY)";
                 visitor.Execute(script);
             }
@@ -367,7 +367,7 @@ namespace MemSQL.Test.Structural
 
             var table = ds.Tables["Client"];
             Assert.IsNotNull(table, "The table should be created");
-            CollectionAssert.AreEqual(new[] { "Id" }, 
+            CollectionAssert.AreEqual(new[] { "Id" },
                 table.PrimaryKey.Select(c => c.ColumnName).ToArray(),
                 "The PK should be configured correctly");
 
@@ -492,7 +492,7 @@ namespace MemSQL.Test.Structural
 
             var table = ds.Tables["TBL"];
             Assert.IsTrue(table.Columns["bar"].Unique, "Column should be unique");
-            
+
             {
                 var row = table.NewRow();
                 row["foo"] = "1";
@@ -513,6 +513,30 @@ namespace MemSQL.Test.Structural
                 row["bar"] = 1;
                 table.Rows.Add(row);
             });
+        }
+
+        [TestMethod]
+        public void MultipleUniqueConstraintsOnTheSameColumnAsPKShouldWork()
+        {
+            string script = @"
+                CREATE TABLE [dbo].TBL 
+                (
+                    [id] INT IDENTITY (1, 1) NOT NULL PRIMARY KEY,
+	                [foo] INT NULL,
+	                CONSTRAINT [UC0] UNIQUE (id),
+	                CONSTRAINT [UC1] UNIQUE (id, foo)
+                )";
+            DataSet ds = new DataSet();
+            var visitor = new SQLInterpreter(ds);
+            visitor.Execute(script);
+
+            var table = ds.Tables["TBL"];
+            Assert.IsTrue(table.Columns["id"].Unique, "Column should be unique");
+            CollectionAssert.AreEqual(new[] { table.Columns["id"] }, table.PrimaryKey,
+                "PK should be valid");
+            Assert.IsTrue(table.Constraints.OfType<UniqueConstraint>()
+                .Where(c => c.Columns.SequenceEqual(new[] { table.Columns["id"], table.Columns["foo"] })).Any(),
+                "Composite unique key should exist");
         }
     }
 }

@@ -222,7 +222,7 @@ namespace MemSQL
                 else
                 {
                     var existing = table.Constraints.OfType<UniqueConstraint>()
-                        .FirstOrDefault(c => c.IsPrimaryKey == isPK && c.Columns.SequenceEqual(columns));
+                        .FirstOrDefault(c => c.Columns.SequenceEqual(columns));
                     if (existing != null)
                     {
                         existing.ConstraintName = name;
