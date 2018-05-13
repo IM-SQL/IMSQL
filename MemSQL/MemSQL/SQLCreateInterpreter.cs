@@ -17,27 +17,7 @@ namespace MemSQL
 
         public override void ExplicitVisit(CreateTableStatement node)
         {
-            /*
-             * HACK(Richo): Here I visit the table constraints making sure foreign keys are applied
-             * last. The reason for this is that foreing key constraints automatically add an unique
-             * constraint to the referenced table if one is not already added. Normally, that shouldn't
-             * be a problem because the referenced table should already be created by the time we add
-             * the foreign key but if the foreign key points to the same table then we could have a 
-             * problem because the primary key could not yet be configured. In that case, the foreign
-             * key would add a unique constraint and then the primary key won't be allowed. A better
-             * solution could probably be to replace the existing unique constraint when adding the 
-             * primary key but that would also mean to temporarily remove the foreign key, otherwise
-             * the unique constraint won't be removed. I don't know, it seemed like a lot of work so
-             * I went in this direction but I know I'll probably have to fix it eventually...
-             */
-            var foreignKeyConstraints = node.Definition.TableConstraints
-                .Where(c => c is ForeignKeyConstraintDefinition);
-            foreach (var constraint in foreignKeyConstraints)
-            {
-                constraint.Accept(this);
-            }
-            var tableConstraints = node.Definition.TableConstraints
-                .Where(c => !(c is ForeignKeyConstraintDefinition));
+            var tableConstraints = node.Definition.TableConstraints;
             foreach (var constraint in tableConstraints)
             {
                 constraint.Accept(this);
@@ -224,7 +204,34 @@ namespace MemSQL
                     }
                 }
 
-                table.Constraints.Add(new UniqueConstraint(name, columns, isPK));
+                if (isPK)
+                {
+                    if (table.PrimaryKey.Length > 0)
+                    {
+                        var msg = string.Format("Cannot add multiple PRIMARY KEY constraints to table '{0}'", table.TableName);
+                        throw new ArgumentException(msg);
+                    }
+                    else
+                    {
+                        table.PrimaryKey = columns;
+                        table.Constraints.OfType<UniqueConstraint>()
+                            .First(c => c.Columns.SequenceEqual(columns))
+                            .ConstraintName = name;
+                    }
+                }
+                else
+                {
+                    var existing = table.Constraints.OfType<UniqueConstraint>()
+                        .FirstOrDefault(c => c.IsPrimaryKey == isPK && c.Columns.SequenceEqual(columns));
+                    if (existing != null)
+                    {
+                        existing.ConstraintName = name;
+                    }
+                    else
+                    {
+                        table.Constraints.Add(new UniqueConstraint(name, columns, isPK));
+                    }
+                }
             };
             push(applier);
         }
@@ -279,7 +286,7 @@ namespace MemSQL
                         return dc;
                     })
                     .ToArray();
-
+                
                 var fk = new ForeignKeyConstraint(constraintName, parents, childs);
                 table.Constraints.Add(fk);
             };
