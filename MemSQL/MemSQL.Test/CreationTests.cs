@@ -558,5 +558,23 @@ namespace MemSQL.Test.Structural
                 visitor.Execute(script);
             });
         }
+
+        [TestMethod]
+        public void CreatingAnAlreadyExistingTableShouldFail()
+        {
+            DataSet ds = new DataSet();
+            var visitor = new SQLInterpreter(ds);
+            string script = @"
+                CREATE TABLE [dbo].TBL 
+                (
+                    [id] INT IDENTITY (1, 1) NOT NULL PRIMARY KEY,
+	                [foo] INT NULL,
+                )";
+            visitor.Execute(script);
+            Assert.ThrowsException<DuplicateNameException>(() =>
+            {
+                visitor.Execute(script);
+            });
+        }
     }
 }

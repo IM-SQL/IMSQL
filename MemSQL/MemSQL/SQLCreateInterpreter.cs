@@ -38,9 +38,13 @@ namespace MemSQL
 
         public override void Visit(CreateTableStatement node)
         {
-            //TODO: creation errors? what if the name is taken?
             DataTable table = pop<DataTable>();
             table.TableName = pop<string>();
+            if (ds.Tables.Contains(table.TableName))
+            {
+                var msg = string.Format("There is already an object named '{0}' in the database", table.TableName);
+                throw new DuplicateNameException(msg);
+            }
             ds.Tables.Add(table);
 
             foreach (var cd in node.Definition.ColumnDefinitions)
