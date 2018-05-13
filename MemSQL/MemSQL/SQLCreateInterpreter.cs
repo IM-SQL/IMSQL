@@ -17,7 +17,7 @@ namespace MemSQL
 
         public override void ExplicitVisit(CreateTableStatement node)
         {
-            foreach (var constraint in node.Definition.TableConstraints)
+            foreach (var constraint in node.Definition.TableConstraints.Reverse())
             {
                 constraint.Accept(this);
             }
