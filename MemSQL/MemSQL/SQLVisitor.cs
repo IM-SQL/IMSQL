@@ -56,92 +56,95 @@ namespace MemSQL
 
         public override void Visit(SqlDataTypeReference node)
         {
+            /*
+             * INFO(Richo): Based on the following table
+             * https://docs.microsoft.com/en-us/dotnet/framework/data/adonet/sql-server-data-type-mappings
+             */
             switch (node.SqlDataTypeOption)
             {
                 case SqlDataTypeOption.Int:
-                    push(typeof(int));
+                    push(typeof(Int32));
+                    break;
+
+                case SqlDataTypeOption.BigInt:
+                    push(typeof(Int64));
+                    break;
+
+                case SqlDataTypeOption.SmallInt:
+                    push(typeof(Int16));
+                    break;
+
+                case SqlDataTypeOption.TinyInt:
+                    push(typeof(Byte));
                     break;
 
                 case SqlDataTypeOption.Decimal:
-                    push(typeof(decimal));
-                    break;
-                case SqlDataTypeOption.VarChar:
-                    //TODO: size limit? unicode limit?
-                    push(typeof(string));
-                    break;
-
-                case SqlDataTypeOption.Char:
-                    //TODO: if this has more than 1 space, it should be a string
-                    push(typeof(string));
-                    break;
-                case SqlDataTypeOption.Bit:
-                    push(typeof(bool));
-                    break;
-
-                case SqlDataTypeOption.DateTime:
-                    push(typeof(DateTime));
-                    break;
-                case SqlDataTypeOption.None:
-
-                case SqlDataTypeOption.BigInt:
-
-                case SqlDataTypeOption.SmallInt:
-
-                case SqlDataTypeOption.TinyInt:
-
-
-
                 case SqlDataTypeOption.Numeric:
-
                 case SqlDataTypeOption.Money:
-
                 case SqlDataTypeOption.SmallMoney:
-
-                case SqlDataTypeOption.Float:
-
-                case SqlDataTypeOption.Real:
-
-                case SqlDataTypeOption.SmallDateTime:
+                    push(typeof(Decimal));
+                    break;
 
                 case SqlDataTypeOption.Text:
-
                 case SqlDataTypeOption.NChar:
-
                 case SqlDataTypeOption.NVarChar:
-
                 case SqlDataTypeOption.NText:
+                case SqlDataTypeOption.VarChar:
+                case SqlDataTypeOption.Char:
+                    //TODO: size limit? unicode limit?
+                    //TODO: if this has more than 1 space, it should be a string
+                    push(typeof(String));
+                    break;
 
-                case SqlDataTypeOption.Binary:
+                case SqlDataTypeOption.Bit:
+                    push(typeof(Boolean));
+                    break;
 
-                case SqlDataTypeOption.VarBinary:
+                case SqlDataTypeOption.Float:
+                    push(typeof(Double));
+                    break;
 
-                case SqlDataTypeOption.Image:
-
-                case SqlDataTypeOption.Cursor:
-
-                case SqlDataTypeOption.Sql_Variant:
-
-                case SqlDataTypeOption.Table:
-
-                case SqlDataTypeOption.Timestamp:
-
-                case SqlDataTypeOption.UniqueIdentifier:
-
+                case SqlDataTypeOption.Real:
+                    push(typeof(Single));
+                    break;
+                    
                 case SqlDataTypeOption.Date:
-
-                case SqlDataTypeOption.Time:
-
+                case SqlDataTypeOption.DateTime:
                 case SqlDataTypeOption.DateTime2:
+                case SqlDataTypeOption.SmallDateTime:
+                    push(typeof(DateTime));
+                    break;
+                    
+                case SqlDataTypeOption.Time:
+                    push(typeof(TimeSpan));
+                    break;
 
                 case SqlDataTypeOption.DateTimeOffset:
+                    push(typeof(DateTimeOffset));
+                    break;
 
+                case SqlDataTypeOption.Binary:
+                case SqlDataTypeOption.VarBinary:
+                case SqlDataTypeOption.Image:
                 case SqlDataTypeOption.Rowversion:
+                case SqlDataTypeOption.Timestamp:
+                    push(typeof(Byte[]));
+                    break;
 
+                case SqlDataTypeOption.Sql_Variant:
+                    push(typeof(Object));
+                    break;
+
+                case SqlDataTypeOption.UniqueIdentifier:
+                    push(typeof(Guid));
+                    break;
+
+                case SqlDataTypeOption.None:
+                case SqlDataTypeOption.Cursor:
+                case SqlDataTypeOption.Table:
                 default:
-                    throw new NotImplementedException();
-
+                    throw new NotSupportedException();
             }
-
         }
 
         public override void Visit(IntegerLiteral node)
