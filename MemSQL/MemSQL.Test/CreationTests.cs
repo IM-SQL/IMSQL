@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MemSQL;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 
 namespace MemSQL.Test.Structural
 {
@@ -346,6 +347,74 @@ namespace MemSQL.Test.Structural
             Assert.IsTrue(col.AutoIncrement, "Autoincrement should be set");
             Assert.AreEqual(1, col.AutoIncrementSeed, "Autoincrement seed should be 1");
             Assert.AreEqual(1, col.AutoIncrementStep, "Autoincrement step should be 1");
+        }
+
+        [TestMethod]
+        public void MultipleUniqueConstraintsShouldBeAllowed()
+        {
+            string script = @"
+                CREATE TABLE [dbo].[Client]
+                (
+	                [Id] INT NOT NULL PRIMARY KEY IDENTITY, 
+                    [Name] NVARCHAR(50) NOT NULL UNIQUE, 
+                    [ExternalId] NVARCHAR(40) NOT NULL UNIQUE, 
+                    [InternalId] NVARCHAR(40) NOT NULL UNIQUE
+                )
+                ";
+            DataSet ds = new DataSet();
+            var visitor = new SQLInterpreter(ds);
+            visitor.Execute(script);
+
+            var table = ds.Tables["Client"];
+            Assert.IsNotNull(table, "The table should be created");
+            CollectionAssert.AreEqual(new[] { "Id" }, 
+                table.PrimaryKey.Select(c => c.ColumnName).ToArray(),
+                "The PK should be configured correctly");
+
+            string[] cols = new[] { "Id", "Name", "ExternalId", "InternalId" };
+            for (int i = 0; i < cols.Length; i++)
+            {
+                var col = table.Columns[cols[i]];
+                Assert.IsNotNull(col, "The column should exist");
+                Assert.IsTrue(col.Unique, "Unique constraint should be set");
+                Assert.IsFalse(col.AllowDBNull, "The column should not allow null");
+            }
+        }
+
+
+        [TestMethod]
+        public void AutomaticallyGeneratedConstraintNamesShouldNeverClash()
+        {
+            string script = @"
+                CREATE TABLE [dbo].[Client]
+                (
+	                [Id] INT NOT NULL PRIMARY KEY IDENTITY, 
+                    [Name] NVARCHAR(50) NOT NULL, 
+                    [ExternalId] NVARCHAR(40) NOT NULL, 
+                    [InternalId] NVARCHAR(40) NOT NULL UNIQUE,
+                    
+                    CONSTRAINT PK_Client UNIQUE(Name),
+                    CONSTRAINT UC_Client_ExternalId UNIQUE(ExternalId)  
+                )
+                ";
+            DataSet ds = new DataSet();
+            var visitor = new SQLInterpreter(ds);
+            visitor.Execute(script);
+
+            var table = ds.Tables["Client"];
+            Assert.IsNotNull(table, "The table should be created");
+            CollectionAssert.AreEqual(new[] { "Id" },
+                table.PrimaryKey.Select(c => c.ColumnName).ToArray(),
+                "The PK should be configured correctly");
+
+            string[] cols = new[] { "Id", "Name", "ExternalId", "InternalId" };
+            for (int i = 0; i < cols.Length; i++)
+            {
+                var col = table.Columns[cols[i]];
+                Assert.IsNotNull(col, "The column should exist");
+                Assert.IsTrue(col.Unique, "Unique constraint should be set");
+                Assert.IsFalse(col.AllowDBNull, "The column should not allow null");
+            }
         }
     }
 }

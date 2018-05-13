@@ -170,8 +170,6 @@ namespace MemSQL
             Action<DataTable, DataColumn> applier = (table, column) =>
             {
                 var isPK = node.IsPrimaryKey;
-                var name = node.ConstraintIdentifier?.Value ?? 
-                    string.Format("{0}_{1}", isPK ? "PK_" : "UC_", table.TableName);
 
                 /*
                  * INFO(Richo): We can get the columns from two places: the "column" arg or the node's "Columns" property.
@@ -188,6 +186,21 @@ namespace MemSQL
                     columns = node.Columns
                         .Select(c => table.Columns[c.Column.MultiPartIdentifier[0].Value])
                         .ToArray();
+                }
+
+                var name = node.ConstraintIdentifier?.Value;
+                if (string.IsNullOrWhiteSpace(name))
+                {
+                    string id = string.Join("", Guid.NewGuid().ToByteArray().Select(b => b.ToString("X2")));
+                    if (isPK)
+                    {
+                        name = string.Format("PK_{0}_{1}", table.TableName, id);
+                    }
+                    else
+                    {
+                        name = string.Format("UC_{0}_{1}_{2}", table.TableName,
+                            string.Join("_", columns.Select(c => c.ColumnName)), id);
+                    }
                 }
 
                 table.Constraints.Add(new UniqueConstraint(name, columns, isPK));
