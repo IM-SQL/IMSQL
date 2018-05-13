@@ -45,6 +45,9 @@ namespace MemSQL
             node.Accept(interpreter);
         }
 
-
+        public override void ExplicitVisit(CreateIndexStatement node)
+        {
+            // INFO(Richo): Do nothing
+        }
     }
 }

@@ -224,7 +224,7 @@ namespace MemSQL
         public override void ExplicitVisit(DropClusteredConstraintOption node) { throw new NotImplementedException(); }
         public override void ExplicitVisit(LowPriorityLockWaitTableSwitchOption node) { throw new NotImplementedException(); }
         public override void ExplicitVisit(AlterTableDropTableElementStatement node) { throw new NotImplementedException(); }
-        public override void ExplicitVisit(CreateIndexStatement node) { throw new NotImplementedException(); }
+
         public override void ExplicitVisit(QueueStateOption node) { throw new NotImplementedException(); }
         public override void ExplicitVisit(QueueValueOption node) { throw new NotImplementedException(); }
         public override void ExplicitVisit(CreateSelectiveXmlIndexStatement node) { throw new NotImplementedException(); }
@@ -910,7 +910,7 @@ namespace MemSQL
         public override void ExplicitVisit(AlterTriggerStatement node) { throw new NotImplementedException(); }
         public override void ExplicitVisit(MemoryOptimizedTableOption node) { throw new NotImplementedException(); }
         public override void ExplicitVisit(ExternalFileFormatLiteralOption node) { throw new NotImplementedException(); }
-        public override void ExplicitVisit(Identifier node) { throw new NotImplementedException(); }
+        
         public override void ExplicitVisit(CreateAssemblyStatement node) { throw new NotImplementedException(); }
         public override void ExplicitVisit(LockEscalationTableOption node) { throw new NotImplementedException(); }
         public override void ExplicitVisit(ExternalFileFormatOption node) { throw new NotImplementedException(); }
@@ -1252,7 +1252,7 @@ namespace MemSQL
         public override void Visit(CreateResourcePoolStatement node) { throw new NotImplementedException(); }
         public override void Visit(UpdateMergeAction node) { throw new NotImplementedException(); }
         public override void Visit(SessionOption node) { throw new NotImplementedException(); }
-        public override void Visit(Identifier node) { throw new NotImplementedException(); }
+
         public override void Visit(MergeAction node) { throw new NotImplementedException(); }
         public override void Visit(TriggerObject node) { throw new NotImplementedException(); }
         public override void Visit(ExecuteAsStatement node) { throw new NotImplementedException(); }
@@ -1323,7 +1323,7 @@ namespace MemSQL
 
         public override void Visit(InPredicate node) { throw new NotImplementedException(); }
         public override void Visit(OnOffSessionOption node) { throw new NotImplementedException(); }
-        public override void Visit(TSqlStatement node) { throw new NotImplementedException(); }
+        
         public override void Visit(DataModificationStatement node) { throw new NotImplementedException(); }
         public override void Visit(LikePredicate node) { throw new NotImplementedException(); }
         public override void Visit(MemoryPartitionSessionOption node) { throw new NotImplementedException(); }
@@ -1515,7 +1515,7 @@ namespace MemSQL
         public override void Visit(IndexDefinition node) { throw new NotImplementedException(); }
         public override void Visit(FileTableCollateFileNameTableOption node) { throw new NotImplementedException(); }
         public override void Visit(SystemTimePeriodDefinition node) { throw new NotImplementedException(); }
-        public override void Visit(IndexStatement node) { throw new NotImplementedException(); }
+
         public override void Visit(FileTableDirectoryTableOption node) { throw new NotImplementedException(); }
         public override void Visit(IndexType node) { throw new NotImplementedException(); }
         public override void Visit(RouteStatement node) { throw new NotImplementedException(); }
@@ -1526,7 +1526,7 @@ namespace MemSQL
         public override void Visit(CreateSelectiveXmlIndexStatement node) { throw new NotImplementedException(); }
         public override void Visit(FileGroupOrPartitionScheme node) { throw new NotImplementedException(); }
         public override void Visit(TableOption node) { throw new NotImplementedException(); }
-        public override void Visit(CreateIndexStatement node) { throw new NotImplementedException(); }
+
         public override void Visit(IndexOption node) { throw new NotImplementedException(); }
         public override void Visit(AlterTableSetStatement node) { throw new NotImplementedException(); }
         public override void Visit(IndexStateOption node) { throw new NotImplementedException(); }
