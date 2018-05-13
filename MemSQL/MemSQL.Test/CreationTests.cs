@@ -472,5 +472,47 @@ namespace MemSQL.Test.Structural
 
             Assert.IsTrue(table.Constraints.Contains("FK_LogException_ToLogException"));
         }
+
+        [TestMethod]
+        public void MultipleUniqueConstraintsOnTheSameColumnShouldWork()
+        {
+            string script = @"
+                CREATE TABLE [dbo].[TBL] 
+                (
+                    [id]             INT             IDENTITY (1, 1) NOT NULL,
+                    [foo]            NVARCHAR (256)  NULL,
+                    [bar]            INT             NULL UNIQUE,
+	                CONSTRAINT [UC0] UNIQUE (bar),
+	                CONSTRAINT [UC1] UNIQUE (bar, foo),
+	                CONSTRAINT [UC2] UNIQUE (bar)
+                )";
+            DataSet ds = new DataSet();
+            var visitor = new SQLInterpreter(ds);
+            visitor.Execute(script);
+
+            var table = ds.Tables["TBL"];
+            Assert.IsTrue(table.Columns["bar"].Unique, "Column should be unique");
+            
+            {
+                var row = table.NewRow();
+                row["foo"] = "1";
+                row["bar"] = 1;
+                table.Rows.Add(row);
+            }
+            {
+                var row = table.NewRow();
+                row["foo"] = "1";
+                row["bar"] = 2;
+                table.Rows.Add(row);
+            }
+
+            Assert.ThrowsException<ConstraintException>(() =>
+            {
+                var row = table.NewRow();
+                row["foo"] = "2";
+                row["bar"] = 1;
+                table.Rows.Add(row);
+            });
+        }
     }
 }
