@@ -330,5 +330,22 @@ namespace MemSQL.Test.Structural
             visitor.Execute(script);
             Assert.IsTrue(ds.Tables.Contains("Client"));
         }
+
+        [TestMethod]
+        public void IdentityPKWithoutArgsShouldUseDefaultValues()
+        {
+            string script = @"CREATE TABLE [dbo].[Client] ([Id] INT NOT NULL PRIMARY KEY IDENTITY)";
+            DataSet ds = new DataSet();
+            var visitor = new SQLInterpreter(ds);
+            visitor.Execute(script);
+
+            var table = ds.Tables["Client"];
+            Assert.IsNotNull(table, "The table should be created");
+            var col = table.Columns["Id"];
+            Assert.IsNotNull(col, "The PK should be valid");
+            Assert.IsTrue(col.AutoIncrement, "Autoincrement should be set");
+            Assert.AreEqual(1, col.AutoIncrementSeed, "Autoincrement seed should be 1");
+            Assert.AreEqual(1, col.AutoIncrementStep, "Autoincrement step should be 1");
+        }
     }
 }

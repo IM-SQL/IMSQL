@@ -107,7 +107,12 @@ namespace MemSQL
 
         public override void ExplicitVisit(IdentityOptions node)
         {
-            node.AcceptChildren(this);
+            if (node.IdentitySeed == null) { push(1); }
+            else { node.IdentitySeed.Accept(this); }
+
+            if (node.IdentityIncrement == null) { push(1); }
+            else { node.IdentityIncrement?.Accept(this); }
+
             Visit(node);
         }
 
