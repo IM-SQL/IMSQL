@@ -538,5 +538,25 @@ namespace MemSQL.Test.Structural
                 .Where(c => c.Columns.SequenceEqual(new[] { table.Columns["id"], table.Columns["foo"] })).Any(),
                 "Composite unique key should exist");
         }
+
+        [TestMethod]
+        public void MultiplePKShouldFail()
+        {
+            string script = @"
+                CREATE TABLE [dbo].TBL 
+                (
+                    [id] INT IDENTITY (1, 1) NOT NULL PRIMARY KEY,
+	                [foo] INT NULL,
+	                CONSTRAINT [UC0] UNIQUE (id),
+	                CONSTRAINT [UC1] UNIQUE (id, foo),
+	                CONSTRAINT [PK2] PRIMARY KEY (id)
+                )";
+            DataSet ds = new DataSet();
+            var visitor = new SQLInterpreter(ds);
+            Assert.ThrowsException<ArgumentException>(() =>
+            {
+                visitor.Execute(script);
+            });
+        }
     }
 }
