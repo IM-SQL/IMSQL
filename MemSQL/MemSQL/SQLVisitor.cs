@@ -51,7 +51,7 @@ namespace MemSQL
         public override void Visit(SchemaObjectName node)
         {
             //TODO:server, schema, and database identifier may take an important role here.
-            push(node.Identifiers[0].Value);
+            push(node.Identifiers.Last().Value);
         }
 
         public override void Visit(SqlDataTypeReference node)

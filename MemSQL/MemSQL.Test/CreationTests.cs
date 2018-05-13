@@ -320,5 +320,15 @@ namespace MemSQL.Test.Structural
                 });
             }
         }
+
+        [TestMethod]
+        public void MultipartTableNamesShouldUseTheLastIdentifier()
+        {
+            var script = "CREATE TABLE [dbo].[Client] (ID int NOT NULL PRIMARY KEY)";
+            DataSet ds = new DataSet();
+            var visitor = new SQLInterpreter(ds);
+            visitor.Execute(script);
+            Assert.IsTrue(ds.Tables.Contains("Client"));
+        }
     }
 }
