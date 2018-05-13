@@ -255,5 +255,70 @@ namespace MemSQL.Test.Structural
                 visitor.Execute(script);
             });
         }
+
+        [TestMethod]
+        public void FKToNonExistentTableShouldFail()
+        {
+            var script = @"
+                CREATE TABLE [dbo].[TBL](
+	                [Id] [int] IDENTITY(1,1) NOT NULL,
+                    [ClientId] [int] NOT NULL,
+                    CONSTRAINT [FK_TBL_Client] FOREIGN KEY ([ClientId]) REFERENCES [Client]([Id])
+                )
+                ";
+            DataSet ds = new DataSet();
+            var visitor = new SQLInterpreter(ds);
+            Assert.ThrowsException<NullReferenceException>(() =>
+            {
+                visitor.Execute(script);
+            });
+        }
+
+        [TestMethod]
+        public void FKFromNonExistentColumnShouldFail()
+        {
+            DataSet ds = new DataSet();
+            var visitor = new SQLInterpreter(ds);
+            { 
+                string script = "CREATE TABLE [Client] (ID int NOT NULL PRIMARY KEY)";
+                visitor.Execute(script);
+            }
+            {
+                var script = @"
+                    CREATE TABLE [dbo].[TBL](
+	                    [Id] [int] IDENTITY(1,1) NOT NULL,
+                        CONSTRAINT [FK_TBL_CLIENT] FOREIGN KEY ([ClientId]) REFERENCES [Client]([Id])
+                    )
+                    ";
+                Assert.ThrowsException<NullReferenceException>(() =>
+                {
+                    visitor.Execute(script);
+                });
+            }
+        }
+
+        [TestMethod]
+        public void FKToNonExistentColumnShouldFail()
+        {
+            DataSet ds = new DataSet();
+            var visitor = new SQLInterpreter(ds);
+            {
+                string script = "CREATE TABLE [Client] (ID2 int NOT NULL PRIMARY KEY)";
+                visitor.Execute(script);
+            }
+            {
+                var script = @"
+                    CREATE TABLE [dbo].[TBL](
+	                    [Id] [int] IDENTITY(1,1) NOT NULL,
+                        [ClientId] [int] NOT NULL,
+                        CONSTRAINT [FK_TBL_CLIENT] FOREIGN KEY ([ClientId]) REFERENCES [Client]([Id])
+                    )
+                    ";
+                Assert.ThrowsException<NullReferenceException>(() =>
+                {
+                    visitor.Execute(script);
+                });
+            }
+        }
     }
 }

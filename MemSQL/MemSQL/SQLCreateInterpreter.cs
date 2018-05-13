@@ -200,12 +200,48 @@ namespace MemSQL
         {
             Action<DataTable, DataColumn> applier = (table, ignored) =>
             {
-                var refTable = ds.Tables[pop<string>()];
+                var constraintName = node.ConstraintIdentifier.Value;
 
-                DataColumn[] parents = node.ReferencedTableColumns.Select(c => refTable.Columns[c.Value]).ToArray();
-                DataColumn[] childs = node.Columns.Select(c => table.Columns[c.Value]).ToArray();
+                DataTable refTable;
+                {
+                    var refTableName = pop<string>();
+                    refTable = ds.Tables[refTableName];
+                    if (refTable == null)
+                    {
+                        var msg = string.Format("Foreign key '{0}' references invalid table '{1}'", constraintName, refTableName);
+                        throw new NullReferenceException(msg);
+                    }
+                }
 
-                var fk = new ForeignKeyConstraint(node.ConstraintIdentifier.Value, parents, childs);
+                DataColumn[] parents = node.ReferencedTableColumns
+                    .Select(c => 
+                    {
+                        var dc = refTable.Columns[c.Value];
+                        if (dc == null)
+                        {
+                            var msg = string.Format("Foreign key '{0}' references invalid column '{1}' in referenced table '{2}'",
+                                constraintName, c.Value, refTable.TableName);
+                            throw new NullReferenceException(msg);
+                        }
+                        return dc;
+                    })
+                    .ToArray();
+
+                DataColumn[] childs = node.Columns
+                    .Select(c => 
+                    {
+                        var dc = table.Columns[c.Value];
+                        if (dc == null)
+                        {
+                            var msg = string.Format("Foreign key '{0}' references invalid column '{1}' in referencing table '{2}'",
+                                constraintName, c.Value, table.TableName);
+                            throw new NullReferenceException(msg);
+                        }
+                        return dc;
+                    })
+                    .ToArray();
+
+                var fk = new ForeignKeyConstraint(constraintName, parents, childs);
                 table.Constraints.Add(fk);
             };
             push(applier);
