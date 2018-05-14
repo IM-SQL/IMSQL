@@ -26,7 +26,23 @@ namespace MemSQL.Test
             Assert.AreEqual(1, table.Rows.Count, "There should be one row on the table");
             Assert.AreEqual(3, table.Rows[0]["ID"], "The inserted value was not present on the table");
         }
+        [TestMethod]
+        public void MultivaluedInsertTest()
+        {
+            DataSet ds = new DataSet();
+            DataTable table = ds.Tables.Add("TBL");
+            table.Columns.Add(new DataColumn("A", typeof(int)));
+            table.Columns.Add(new DataColumn("B", typeof(string)));
+            string query = "Insert into [TBL] values(3,'asd')";
 
+            SQLInterpreter interpreter = new SQLInterpreter(ds);
+            int affected = interpreter.Execute(query);
+
+            Assert.AreEqual(1, affected, "There should be one row affected");
+            Assert.AreEqual(1, table.Rows.Count, "There should be one row on the table");
+            Assert.AreEqual(3, table.Rows[0]["A"], "The inserted value was not present on the table");
+            Assert.AreEqual("asd", table.Rows[0]["B"], "The inserted value was not present on the table");
+        }
         [TestMethod]
         public void UnsufficientParametersWithoutFieldNameShouldFail()
         {
