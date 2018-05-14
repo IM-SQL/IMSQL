@@ -688,5 +688,240 @@ namespace MemSQL.Test.Structural
                 row["Id"] = 4;
             });
         }
+
+        [TestMethod]
+        public void TestFKCascadeDeleteAndUpdateRules()
+        {
+            var ds = new DataSet();
+            var visitor = new SQLInterpreter(ds);
+            string script = @"
+                CREATE TABLE T1 (Id INT PRIMARY KEY NOT NULL);
+                CREATE TABLE T2
+                (
+                    Id INT PRIMARY KEY IDENTITY NOT NULL,
+	                [Name] NVARCHAR(50) NULL,
+	                T1 INT NULL,
+                    CONSTRAINT [FK_T1_T2] FOREIGN KEY ([T1]) REFERENCES T1 ([Id])
+	                ON DELETE CASCADE
+	                ON UPDATE CASCADE
+                );
+                ";
+            visitor.Execute(script);
+
+            var t1 = ds.Tables["T1"];
+            Assert.IsNotNull(t1, "Table T1 should exist");
+            var t2 = ds.Tables["T2"];
+            Assert.IsNotNull(t2, "Table T2 should exist");
+
+            // Initialize T1
+            t1.Rows.Add(1); t1.Rows.Add(2); t1.Rows.Add(3);
+
+            // Initialize T2
+            Action<string, int?> t2_insert = (f1, f2) =>
+            {
+                var row = t2.NewRow();
+                row["Name"] = f1;
+                row["T1"] = (object)f2 ?? DBNull.Value;
+                t2.Rows.Add(row);
+            };
+            t2_insert("A", 1);
+            t2_insert("B", 2);
+            t2_insert("C", 3);
+            t2_insert("D", null);
+
+            Assert.ThrowsException<InvalidConstraintException>(() =>
+            {
+                t2_insert("E", 4);
+            });
+
+            t1.Rows.Find(1).Delete();
+            Assert.IsNull(t1.Rows.Find(1), "The parent row should be removed");
+            Assert.IsNull(t2.Rows.Find(1), "The child row should be removed");
+
+            {
+                var row = t1.Rows.Find(2);
+                row["Id"] = 4;
+            }
+            Assert.IsNotNull(t1.Rows.Find(4), "The parent row should be updated");
+            Assert.AreEqual(4, t2.Rows.Find(2)["T1"], "The child row should be updated");
+        }
+
+        [TestMethod]
+        public void TestFKSetNullDeleteAndUpdateRules()
+        {
+            var ds = new DataSet();
+            var visitor = new SQLInterpreter(ds);
+            string script = @"
+                CREATE TABLE T1 (Id INT PRIMARY KEY NOT NULL);
+                CREATE TABLE T2
+                (
+                    Id INT PRIMARY KEY IDENTITY NOT NULL,
+	                [Name] NVARCHAR(50) NULL,
+	                T1 INT NULL,
+                    CONSTRAINT [FK_T1_T2] FOREIGN KEY ([T1]) REFERENCES T1 ([Id])
+	                ON DELETE SET NULL
+	                ON UPDATE SET NULL
+                );
+                ";
+            visitor.Execute(script);
+
+            var t1 = ds.Tables["T1"];
+            Assert.IsNotNull(t1, "Table T1 should exist");
+            var t2 = ds.Tables["T2"];
+            Assert.IsNotNull(t2, "Table T2 should exist");
+
+            // Initialize T1
+            t1.Rows.Add(1); t1.Rows.Add(2); t1.Rows.Add(3);
+
+            // Initialize T2
+            Action<string, int?> t2_insert = (f1, f2) =>
+            {
+                var row = t2.NewRow();
+                row["Name"] = f1;
+                row["T1"] = (object)f2 ?? DBNull.Value;
+                t2.Rows.Add(row);
+            };
+            t2_insert("A", 1);
+            t2_insert("B", 2);
+            t2_insert("C", 3);
+            t2_insert("D", null);
+
+            Assert.ThrowsException<InvalidConstraintException>(() =>
+            {
+                t2_insert("E", 4);
+            });
+
+            t1.Rows.Find(1).Delete();
+            Assert.IsNull(t1.Rows.Find(1), "The parent row should be removed");
+            Assert.IsNotNull(t2.Rows.Find(1), "The child row should not be removed");
+            Assert.AreEqual(DBNull.Value, t2.Rows.Find(1)["T1"], "The child row FK should be null");
+
+            {
+                var row = t1.Rows.Find(2);
+                row["Id"] = 4;
+            }
+            Assert.IsNotNull(t1.Rows.Find(4), "The parent row should be updated");
+            Assert.AreEqual(DBNull.Value, t2.Rows.Find(2)["T1"], "The child row FK should be null");
+        }
+
+        [TestMethod]
+        public void TestFKSetDefaultDeleteAndUpdateRules()
+        {
+            var ds = new DataSet();
+            var visitor = new SQLInterpreter(ds);
+            string script = @"
+                CREATE TABLE T1 (Id INT PRIMARY KEY NOT NULL);
+                CREATE TABLE T2
+                (
+                    Id INT PRIMARY KEY IDENTITY NOT NULL,
+	                [Name] NVARCHAR(50) NULL,
+	                T1 INT NOT NULL DEFAULT 3,
+                    CONSTRAINT [FK_T1_T2] FOREIGN KEY ([T1]) REFERENCES T1 ([Id])
+	                ON DELETE SET DEFAULT
+	                ON UPDATE SET DEFAULT
+                );
+                ";
+            visitor.Execute(script);
+
+            var t1 = ds.Tables["T1"];
+            Assert.IsNotNull(t1, "Table T1 should exist");
+            var t2 = ds.Tables["T2"];
+            Assert.IsNotNull(t2, "Table T2 should exist");
+
+            // Initialize T1
+            t1.Rows.Add(1); t1.Rows.Add(2); t1.Rows.Add(3);
+
+            // Initialize T2
+            Action<string, int?> t2_insert = (f1, f2) =>
+            {
+                var row = t2.NewRow();
+                row["Name"] = f1;
+                if (f2.HasValue) { row["T1"] = f2; }
+                t2.Rows.Add(row);
+            };
+            t2_insert("A", 1);
+            t2_insert("B", 2);
+            t2_insert("C", 3);
+
+            t2_insert("D", null);
+            Assert.AreEqual(3, t2.Rows.Find(4)["T1"]);
+
+            Assert.ThrowsException<InvalidConstraintException>(() =>
+            {
+                t2_insert("E", 4);
+            });
+
+            t1.Rows.Find(1).Delete();
+            Assert.IsNull(t1.Rows.Find(1), "The parent row should be removed");
+            Assert.IsNotNull(t2.Rows.Find(1), "The child row should not be removed");
+            Assert.AreEqual(3, t2.Rows.Find(1)["T1"], "The child row FK should be 3");
+
+            {
+                var row = t1.Rows.Find(2);
+                row["Id"] = 4;
+            }
+            Assert.IsNotNull(t1.Rows.Find(4), "The parent row should be updated");
+            Assert.AreEqual(3, t2.Rows.Find(2)["T1"], "The child row FK should be 3");
+        }
+
+        [TestMethod]
+        public void TestFKSetDefaultDeleteAndUpdateRulesWithNullableColumn()
+        {
+            var ds = new DataSet();
+            var visitor = new SQLInterpreter(ds);
+            string script = @"
+                CREATE TABLE T1 (Id INT PRIMARY KEY NOT NULL);
+                CREATE TABLE T2
+                (
+                    Id INT PRIMARY KEY IDENTITY NOT NULL,
+	                [Name] NVARCHAR(50) NULL,
+	                T1 INT NULL,
+                    CONSTRAINT [FK_T1_T2] FOREIGN KEY ([T1]) REFERENCES T1 ([Id])
+	                ON DELETE SET DEFAULT
+	                ON UPDATE SET DEFAULT
+                );
+                ";
+            visitor.Execute(script);
+
+            var t1 = ds.Tables["T1"];
+            Assert.IsNotNull(t1, "Table T1 should exist");
+            var t2 = ds.Tables["T2"];
+            Assert.IsNotNull(t2, "Table T2 should exist");
+
+            // Initialize T1
+            t1.Rows.Add(1); t1.Rows.Add(2); t1.Rows.Add(3);
+
+            // Initialize T2
+            Action<string, int?> t2_insert = (f1, f2) =>
+            {
+                var row = t2.NewRow();
+                row["Name"] = f1;
+                if (f2.HasValue) { row["T1"] = f2; }
+                t2.Rows.Add(row);
+            };
+            t2_insert("A", 1);
+            t2_insert("B", 2);
+            t2_insert("C", 3);
+
+            t2_insert("D", null);
+            Assert.AreEqual(DBNull.Value, t2.Rows.Find(4)["T1"]);
+
+            Assert.ThrowsException<InvalidConstraintException>(() =>
+            {
+                t2_insert("E", 4);
+            });
+
+            t1.Rows.Find(1).Delete();
+            Assert.IsNull(t1.Rows.Find(1), "The parent row should be removed");
+            Assert.IsNotNull(t2.Rows.Find(1), "The child row should not be removed");
+            Assert.AreEqual(DBNull.Value, t2.Rows.Find(1)["T1"], "The child row FK should be null");
+
+            {
+                var row = t1.Rows.Find(2);
+                row["Id"] = 4;
+            }
+            Assert.IsNotNull(t1.Rows.Find(4), "The parent row should be updated");
+            Assert.AreEqual(DBNull.Value, t2.Rows.Find(2)["T1"], "The child row FK should be null");
+        }
     }
 }

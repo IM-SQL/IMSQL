@@ -292,11 +292,26 @@ namespace MemSQL
                     .ToArray();
                 
                 var fk = new ForeignKeyConstraint(constraintName, parents, childs);
-                fk.DeleteRule = Rule.None;
-                fk.UpdateRule = Rule.None;
+                fk.DeleteRule = GetDeleteUpdateRule(node.DeleteAction);
+                fk.UpdateRule = GetDeleteUpdateRule(node.UpdateAction);
                 table.Constraints.Add(fk);
             };
             push(applier);
+        }
+
+        private Rule GetDeleteUpdateRule(DeleteUpdateAction action)
+        {
+            switch (action)
+            {
+                case DeleteUpdateAction.Cascade: return Rule.Cascade;
+                case DeleteUpdateAction.SetNull: return Rule.SetNull;
+                case DeleteUpdateAction.SetDefault: return Rule.SetDefault;
+
+                case DeleteUpdateAction.NotSpecified:
+                case DeleteUpdateAction.NoAction:
+                default:
+                    return Rule.None;
+            }
         }
     }
 }
