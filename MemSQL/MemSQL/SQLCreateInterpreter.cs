@@ -294,6 +294,20 @@ namespace MemSQL
                 var fk = new ForeignKeyConstraint(constraintName, parents, childs);
                 fk.DeleteRule = GetDeleteUpdateRule(node.DeleteAction);
                 fk.UpdateRule = GetDeleteUpdateRule(node.UpdateAction);
+                if ((fk.DeleteRule == Rule.SetNull || fk.UpdateRule == Rule.SetNull)
+                    && childs.Any(c => !c.AllowDBNull))
+                {
+                    var msg = string.Format("Cannot create the foreign key \"{0}\" with the SET NULL referential action, " + 
+                                            "because one or more referencing columns are not nullable.", constraintName);
+                    throw new InvalidConstraintException(msg);
+                }
+                else if ((fk.DeleteRule == Rule.SetDefault || fk.UpdateRule == Rule.SetDefault)
+                    && childs.Any(c => !c.AllowDBNull && c.DefaultValue == DBNull.Value))
+                {
+                    var msg = string.Format("Cannot create the foreign key \"{0}\" with the SET DEFAULT referential action, " +
+                                            "because one or more referencing not-nullable columns lack a default constraint.", constraintName);
+                    throw new InvalidConstraintException(msg);
+                }
                 table.Constraints.Add(fk);
             };
             push(applier);

@@ -923,5 +923,93 @@ namespace MemSQL.Test.Structural
             Assert.IsNotNull(t1.Rows.Find(4), "The parent row should be updated");
             Assert.AreEqual(DBNull.Value, t2.Rows.Find(2)["T1"], "The child row FK should be null");
         }
+
+        [TestMethod]
+        public void TestFKSetNullDeleteRuleWithNotNullColumn()
+        {
+            var ds = new DataSet();
+            var visitor = new SQLInterpreter(ds);            
+            visitor.Execute(@"CREATE TABLE T1 (Id INT PRIMARY KEY NOT NULL);");
+
+            Assert.ThrowsException<InvalidConstraintException>(() =>
+            {
+                string script = @"
+                    CREATE TABLE T2
+                    (
+                        Id INT PRIMARY KEY IDENTITY NOT NULL,
+	                    [Name] NVARCHAR(50) NULL,
+	                    T1 INT NOT NULL DEFAULT 3,
+                        CONSTRAINT [FK_T1_T2] FOREIGN KEY ([T1]) REFERENCES T1 ([Id])
+	                    ON DELETE SET NULL
+                    )";
+                visitor.Execute(script);
+            });
+        }
+
+        [TestMethod]
+        public void TestFKSetNullUpdateRuleWithNotNullColumn()
+        {
+            var ds = new DataSet();
+            var visitor = new SQLInterpreter(ds);
+            visitor.Execute(@"CREATE TABLE T1 (Id INT PRIMARY KEY NOT NULL);");
+
+            Assert.ThrowsException<InvalidConstraintException>(() =>
+            {
+                string script = @"
+                    CREATE TABLE T2
+                    (
+                        Id INT PRIMARY KEY IDENTITY NOT NULL,
+	                    [Name] NVARCHAR(50) NULL,
+	                    T1 INT NOT NULL DEFAULT 3,
+                        CONSTRAINT [FK_T1_T2] FOREIGN KEY ([T1]) REFERENCES T1 ([Id])
+	                    ON UPDATE SET NULL
+                    )";
+                visitor.Execute(script);
+            });
+        }
+
+        [TestMethod]
+        public void TestFKSetDefaultDeleteRuleWithNotNullColumn()
+        {
+            var ds = new DataSet();
+            var visitor = new SQLInterpreter(ds);
+            visitor.Execute(@"CREATE TABLE T1 (Id INT PRIMARY KEY NOT NULL);");
+
+            Assert.ThrowsException<InvalidConstraintException>(() =>
+            {
+                string script = @"
+                    CREATE TABLE T2
+                    (
+                        Id INT PRIMARY KEY IDENTITY NOT NULL,
+	                    [Name] NVARCHAR(50) NULL,
+	                    T1 INT NOT NULL,
+                        CONSTRAINT [FK_T1_T2] FOREIGN KEY ([T1]) REFERENCES T1 ([Id])
+	                    ON DELETE SET DEFAULT
+                    )";
+                visitor.Execute(script);
+            });
+        }
+
+        [TestMethod]
+        public void TestFKSetDefaultUpdateRuleWithNotNullColumn()
+        {
+            var ds = new DataSet();
+            var visitor = new SQLInterpreter(ds);
+            visitor.Execute(@"CREATE TABLE T1 (Id INT PRIMARY KEY NOT NULL);");
+
+            Assert.ThrowsException<InvalidConstraintException>(() =>
+            {
+                string script = @"
+                    CREATE TABLE T2
+                    (
+                        Id INT PRIMARY KEY IDENTITY NOT NULL,
+	                    [Name] NVARCHAR(50) NULL,
+	                    T1 INT NOT NULL,
+                        CONSTRAINT [FK_T1_T2] FOREIGN KEY ([T1]) REFERENCES T1 ([Id])
+	                    ON UPDATE SET DEFAULT
+                    )";
+                visitor.Execute(script);
+            });
+        }
     }
 }
