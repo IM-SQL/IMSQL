@@ -45,6 +45,7 @@ namespace MemSQL.Test
                 int affected = interpreter.Execute(query);
             });
         }
+        [TestMethod]
         public void DefaultValueInsertTest()
         {
             DataSet ds = new DataSet();
