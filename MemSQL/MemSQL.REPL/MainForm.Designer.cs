@@ -41,15 +41,18 @@
             this.cmdTextBox.TabIndex = 0;
             this.cmdTextBox.Text = "Welcome to MemSQL REPL.\nType here your SQL code. Ctrl+Enter to execute. Ctrl+C to" +
     " cancel.\n\n>>> ";
+            this.cmdTextBox.KeyUp += new System.Windows.Forms.KeyEventHandler(this.cmdTextBox_KeyUp);
             // 
-            // Form1
+            // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(683, 487);
             this.Controls.Add(this.cmdTextBox);
-            this.Name = "Form1";
+            this.Name = "MainForm";
             this.Text = "MemSQL REPL";
+            this.Load += new System.EventHandler(this.MainForm_Load);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyDown);
             this.ResumeLayout(false);
 
         }
