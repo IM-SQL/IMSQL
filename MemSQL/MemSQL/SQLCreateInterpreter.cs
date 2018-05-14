@@ -292,6 +292,8 @@ namespace MemSQL
                     .ToArray();
                 
                 var fk = new ForeignKeyConstraint(constraintName, parents, childs);
+                fk.DeleteRule = Rule.None;
+                fk.UpdateRule = Rule.None;
                 table.Constraints.Add(fk);
             };
             push(applier);

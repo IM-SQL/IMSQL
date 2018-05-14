@@ -576,5 +576,60 @@ namespace MemSQL.Test.Structural
                 visitor.Execute(script);
             });
         }
+
+        [TestMethod]
+        public void TestFKDefaultDeleteAndUpdateRules()
+        {
+            var ds = new DataSet();
+            var visitor = new SQLInterpreter(ds);
+            string script = @"
+                CREATE TABLE T1 (Id INT PRIMARY KEY NOT NULL);
+                CREATE TABLE T2
+                (
+                    Id INT PRIMARY KEY IDENTITY NOT NULL,
+	                [Name] NVARCHAR(50) NULL,
+	                T1 INT NULL,
+                    CONSTRAINT [FK_T1_T2] FOREIGN KEY ([T1]) REFERENCES T1 ([Id])
+                );
+                ";
+            visitor.Execute(script);
+
+            var t1 = ds.Tables["T1"];
+            Assert.IsNotNull(t1, "Table T1 should exist");
+            var t2 = ds.Tables["T2"];
+            Assert.IsNotNull(t2, "Table T2 should exist");
+
+            // Initialize T1
+            t1.Rows.Add(1); t1.Rows.Add(2); t1.Rows.Add(3);
+
+            // Initialize T2
+            Action<string, int?> t2_insert = (f1, f2) =>
+            {
+                var row = t2.NewRow();
+                row["Name"] = f1;
+                row["T1"] = (object)f2 ?? DBNull.Value;
+                t2.Rows.Add(row);
+            };
+            t2_insert("A", 1);
+            t2_insert("B", 2);
+            t2_insert("C", 3);
+            t2_insert("D", null);
+
+            Assert.ThrowsException<InvalidConstraintException>(() =>
+            {
+                t2_insert("E", 4);
+            });
+
+            Assert.ThrowsException<InvalidConstraintException>(() =>
+            {
+                t1.Rows.Find(1).Delete();
+            });
+
+            Assert.ThrowsException<InvalidConstraintException>(() =>
+            {
+                var row = t1.Rows.Find(1);
+                row["Id"] = 4;
+            });
+        }
     }
 }
