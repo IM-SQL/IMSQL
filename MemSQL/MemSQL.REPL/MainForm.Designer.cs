@@ -1,6 +1,6 @@
 ﻿namespace MemSQL.REPL
 {
-    partial class Form1
+    partial class MainForm
     {
         /// <summary>
         /// Required designer variable.
