@@ -19,11 +19,42 @@ namespace MemSQL.REPL
             InitializeComponent();
         }
 
+        public Color TextColor { get; set; }
+
         private void MainForm_Load(object sender, EventArgs e)
         {
             KeyPreview = true;
             lastIndex = cmdTextBox.TextLength;
             cmdTextBox.SelectionStart = lastIndex;
+        }
+
+        public void WithTextColor(Color color, Action action)
+        {
+            Color old = TextColor;
+            try
+            {
+                TextColor = color;
+                action();
+            }
+            finally
+            {
+                TextColor = old;
+            }
+        }
+
+        public void AppendText(string text)
+        {
+            // INFO(Richo): Code for text coloring taken from: https://stackoverflow.com/a/1926822
+            cmdTextBox.SelectionStart = cmdTextBox.TextLength;
+            cmdTextBox.SelectionLength = 0;
+            cmdTextBox.SelectionColor = TextColor;
+            cmdTextBox.AppendText(text);
+        }
+
+        private string Eval(string inputText)
+        {
+            // TODO(Richo): Execute the SQL interpreter and print the results
+            return inputText;
         }
 
         private void cmdTextBox_KeyUp(object sender, KeyEventArgs e)
@@ -36,9 +67,10 @@ namespace MemSQL.REPL
             if (e.Control && e.KeyCode == Keys.Enter)
             {
                 string inputText = cmdTextBox.Text.Substring(lastIndex);
+                string outputText = Eval(inputText);
                 lastIndex = cmdTextBox.TextLength;
-                cmdTextBox.AppendText(inputText);
-                cmdTextBox.AppendText("\r\n>>> ");
+                WithTextColor(Color.Blue, () => AppendText(outputText));
+                AppendText("\r\n>>> ");
                 lastIndex = cmdTextBox.TextLength;
                 cmdTextBox.SelectionStart = lastIndex;
             }
@@ -51,7 +83,7 @@ namespace MemSQL.REPL
                 e.SuppressKeyPress = true;
             }
             else if (cmdTextBox.SelectionStart == lastIndex 
-                && (e.KeyCode == Keys.Up || e.KeyCode == Keys.Left))
+                && (e.KeyCode == Keys.Back || e.KeyCode == Keys.Up || e.KeyCode == Keys.Left))
             {
                 e.SuppressKeyPress = true;
             }
