@@ -22,6 +22,8 @@ namespace MemSQL
         public override void ExplicitVisit(InsertSpecification node)
         {
             node.AcceptChildren(this);
+            string[] columns = node.Columns.Select(s => pop<string>()).Reverse().ToArray();
+            push(columns);
             Visit(node);
         }
         public override void ExplicitVisit(ValuesInsertSource node)
@@ -34,7 +36,16 @@ namespace MemSQL
             node.AcceptChildren(this);
             Visit(node);
         }
-
+        public override void ExplicitVisit(ColumnReferenceExpression node)
+        {
+            node.AcceptChildren(this);
+            Visit(node);
+        }
+        public override void Visit(ColumnReferenceExpression node)
+        {
+            //TODO:what if the column is not regular?
+            //base.Visit(node);
+        }
         public override void Visit(InsertStatement node)
         {
             DataRow dr = pop<DataRow>();
@@ -45,11 +56,31 @@ namespace MemSQL
         }
         public override void Visit(InsertSpecification node)
         {
+            string[] keys = pop<string[]>();
             object[] values = pop<object[]>();
             DataTable table = pop<DataTable>();
             DataRow dr = table.NewRow();
             //what to do if they specified the names??
-            dr.ItemArray = values;
+            Dictionary<string, object> namedValues = new Dictionary<string, object>();
+            foreach (DataColumn column in table.Columns)
+            {
+                int index = Array.IndexOf(keys, column.ColumnName);
+                if (index!=-1)
+                {//i have value for this
+                    namedValues.Add(keys[index], values[index]);
+                }
+                else {
+                    //no value was provided for this
+                    if (column.DefaultValue != null)
+                    {
+                        //i have default value for this column
+                        namedValues.Add(column.ColumnName, column.DefaultValue);
+                    }
+                }
+
+            }
+
+            dr.ItemArray = namedValues.Values.ToArray();
             push(table);
             push(dr);
         }

@@ -24,7 +24,7 @@ namespace MemSQL
         }
         protected void push(object data) { stack.Push(data); }
         protected T pop<T>() { return (T)(stack.Pop()); }
-         
+
         public override void ExplicitVisit(SchemaObjectName node)
         {
             //not checking the childs for now
@@ -51,6 +51,16 @@ namespace MemSQL
         {
             Visit(node);
         }
+        public override void ExplicitVisit(MultiPartIdentifier node)
+        {
+            Visit(node);
+        }
+        public override void Visit(MultiPartIdentifier node)
+        {
+            //TODO: this and the SchemaObjectName should be revised
+            push(node.Identifiers.Last().Value);
+        }
+
         public override void Visit(SchemaObjectName node)
         {
             //TODO:server, schema, and database identifier may take an important role here.
@@ -110,14 +120,14 @@ namespace MemSQL
                 case SqlDataTypeOption.Real:
                     push(typeof(Single));
                     break;
-                    
+
                 case SqlDataTypeOption.Date:
                 case SqlDataTypeOption.DateTime:
                 case SqlDataTypeOption.DateTime2:
                 case SqlDataTypeOption.SmallDateTime:
                     push(typeof(DateTime));
                     break;
-                    
+
                 case SqlDataTypeOption.Time:
                     push(typeof(TimeSpan));
                     break;
