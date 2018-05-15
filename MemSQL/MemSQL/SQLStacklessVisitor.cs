@@ -23,13 +23,13 @@ namespace MemSQL
             return (T)inner.Result;
         }
 
-        protected virtual object VisitSchemaObjectName(SchemaObjectName node)
+        protected virtual object InternalVisit(SchemaObjectName node)
         {
             //TODO:server, schema, and database identifier may take an important role here.
             return node.Identifiers.Last().Value;
         }
 
-        protected virtual object VisitSqlDataTypeReference(SqlDataTypeReference node)
+        protected virtual object InternalVisit(SqlDataTypeReference node)
         {
             /*
              * INFO(Richo): Based on the following table
@@ -107,24 +107,24 @@ namespace MemSQL
             }
         }
 
-        protected virtual object VisitIntegerLiteral(IntegerLiteral node)
+        protected virtual object InternalVisit(IntegerLiteral node)
         {
             return int.Parse(node.Value);
         }
 
-        protected virtual object VisitStringLiteral(StringLiteral node)
+        protected virtual object InternalVisit(StringLiteral node)
         {
             return node.Value.ToString();
         }
 
-        protected virtual object VisitCreateTableStatement(CreateTableStatement node) { throw new NotImplementedException(); }
-        protected virtual object VisitTableDefinition(TableDefinition node) { throw new NotImplementedException(); }
-        protected virtual object VisitColumnDefinition(ColumnDefinition node) { throw new NotImplementedException(); }
-        protected virtual object VisitIdentityOptions(IdentityOptions node) { throw new NotImplementedException(); }
-        protected virtual object VisitDefaultConstraintDefinition(DefaultConstraintDefinition node) { throw new NotImplementedException(); }
-        protected virtual object VisitNullableConstraintDefinition(NullableConstraintDefinition node) { throw new NotImplementedException(); }
-        protected virtual object VisitUniqueConstraintDefinition(UniqueConstraintDefinition node) { throw new NotImplementedException(); }
-        protected virtual object VisitForeignKeyConstraintDefinition(ForeignKeyConstraintDefinition node) { throw new NotImplementedException(); }
+        protected virtual object InternalVisit(CreateTableStatement node) { throw new NotImplementedException(); }
+        protected virtual object InternalVisit(TableDefinition node) { throw new NotImplementedException(); }
+        protected virtual object InternalVisit(ColumnDefinition node) { throw new NotImplementedException(); }
+        protected virtual object InternalVisit(IdentityOptions node) { throw new NotImplementedException(); }
+        protected virtual object InternalVisit(DefaultConstraintDefinition node) { throw new NotImplementedException(); }
+        protected virtual object InternalVisit(NullableConstraintDefinition node) { throw new NotImplementedException(); }
+        protected virtual object InternalVisit(UniqueConstraintDefinition node) { throw new NotImplementedException(); }
+        protected virtual object InternalVisit(ForeignKeyConstraintDefinition node) { throw new NotImplementedException(); }
 
         class SQLInternalVisitor : TSqlFragmentVisitor
         {
@@ -139,62 +139,62 @@ namespace MemSQL
             
             public override void ExplicitVisit(SchemaObjectName node)
             {
-                Result = outer.VisitSchemaObjectName(node);
+                Result = outer.InternalVisit(node);
             }
 
             public override void ExplicitVisit(SqlDataTypeReference node)
             {
-                Result = outer.VisitSqlDataTypeReference(node);
+                Result = outer.InternalVisit(node);
             }
 
             public override void ExplicitVisit(IntegerLiteral node)
             {
-                Result = outer.VisitIntegerLiteral(node);
+                Result = outer.InternalVisit(node);
             }
 
             public override void ExplicitVisit(StringLiteral node)
             {
-                Result = outer.VisitStringLiteral(node);
+                Result = outer.InternalVisit(node);
             }
 
             public override void ExplicitVisit(CreateTableStatement node)
             {
-                Result = outer.VisitCreateTableStatement(node);
+                Result = outer.InternalVisit(node);
             }
 
             public override void ExplicitVisit(TableDefinition node)
             {
-                Result = outer.VisitTableDefinition(node);
+                Result = outer.InternalVisit(node);
             }
 
             public override void ExplicitVisit(ColumnDefinition node)
             {
-                Result = outer.VisitColumnDefinition(node);
+                Result = outer.InternalVisit(node);
             }
 
             public override void ExplicitVisit(IdentityOptions node)
             {
-                Result = outer.VisitIdentityOptions(node);
+                Result = outer.InternalVisit(node);
             }
 
             public override void ExplicitVisit(DefaultConstraintDefinition node)
             {
-                Result = outer.VisitDefaultConstraintDefinition(node);
+                Result = outer.InternalVisit(node);
             }
 
             public override void ExplicitVisit(NullableConstraintDefinition node)
             {
-                Result = outer.VisitNullableConstraintDefinition(node);
+                Result = outer.InternalVisit(node);
             }
 
             public override void ExplicitVisit(UniqueConstraintDefinition node)
             {
-                Result = outer.VisitUniqueConstraintDefinition(node);
+                Result = outer.InternalVisit(node);
             }
 
             public override void ExplicitVisit(ForeignKeyConstraintDefinition node)
             {
-                Result = outer.VisitForeignKeyConstraintDefinition(node);
+                Result = outer.InternalVisit(node);
             }
 
             public override void ExplicitVisit(AutomaticTuningDropIndexOption node) { throw new NotImplementedException(); }

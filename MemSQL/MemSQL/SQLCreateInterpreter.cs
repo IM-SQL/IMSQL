@@ -20,7 +20,7 @@ namespace MemSQL
             this.ds = ds;
         }
 
-        protected override object VisitCreateTableStatement(CreateTableStatement node)
+        protected override object InternalVisit(CreateTableStatement node)
         {
             var table = Visit<DataTable>(node.Definition);
             table.TableName = Visit<string>(node.SchemaObjectName);
@@ -46,7 +46,7 @@ namespace MemSQL
             return table;
         }
 
-        protected override object VisitTableDefinition(TableDefinition node)
+        protected override object InternalVisit(TableDefinition node)
         {
             //TODO: indexes
             var result = new DataTable();
@@ -57,7 +57,7 @@ namespace MemSQL
             return result;
         }
 
-        protected override object VisitColumnDefinition(ColumnDefinition node)
+        protected override object InternalVisit(ColumnDefinition node)
         {
             var type = Visit<Type>(node.DataType);
             var column = new DataColumn(node.ColumnIdentifier.Value, type);
@@ -66,7 +66,7 @@ namespace MemSQL
             return column;
         }
 
-        protected override object VisitIdentityOptions(IdentityOptions node)
+        protected override object InternalVisit(IdentityOptions node)
         {
             Action<DataColumn> applier = column =>
             {
@@ -77,7 +77,7 @@ namespace MemSQL
             return applier;
         }
         
-        protected override object VisitDefaultConstraintDefinition(DefaultConstraintDefinition node)
+        protected override object InternalVisit(DefaultConstraintDefinition node)
         {
             Action<DataColumn> applier = (column) =>
             {
@@ -86,7 +86,7 @@ namespace MemSQL
             return applier;
         }
         
-        protected override object VisitNullableConstraintDefinition(NullableConstraintDefinition node)
+        protected override object InternalVisit(NullableConstraintDefinition node)
         {
             Action<DataTable, DataColumn> applier = (ign, column) =>
             {
@@ -95,7 +95,7 @@ namespace MemSQL
             return applier;
         }
 
-        protected override object VisitUniqueConstraintDefinition(UniqueConstraintDefinition node)
+        protected override object InternalVisit(UniqueConstraintDefinition node)
         {
             Action<DataTable, DataColumn> applier = (table, column) =>
             {
@@ -165,7 +165,7 @@ namespace MemSQL
             return applier;
         }
 
-        protected override object VisitForeignKeyConstraintDefinition(ForeignKeyConstraintDefinition node)
+        protected override object InternalVisit(ForeignKeyConstraintDefinition node)
         {
             Action<DataTable, DataColumn> applier = (table, ignored) =>
             {
