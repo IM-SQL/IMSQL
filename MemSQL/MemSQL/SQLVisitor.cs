@@ -47,7 +47,10 @@ namespace MemSQL
             Visit(node);
         }
 
-        
+        public override void ExplicitVisit(NullLiteral node)
+        {
+            Visit(node);
+        }
         public override void Visit(SchemaObjectName node)
         {
             //TODO:server, schema, and database identifier may take an important role here.
@@ -155,6 +158,10 @@ namespace MemSQL
         public override void Visit(StringLiteral node)
         {
             push(node.Value.ToString());
+        }
+        public override void Visit(NullLiteral node)
+        {
+            push(DBNull.Value);
         }
 
         public override void ExplicitVisit(NamedTableReference node)

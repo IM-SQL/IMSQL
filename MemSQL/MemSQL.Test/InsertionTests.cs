@@ -87,14 +87,14 @@ namespace MemSQL.Test
             DataTable table = ds.Tables.Add("TBL");
             table.Columns.Add(new DataColumn("A", typeof(int)));
             table.Columns[0].AllowDBNull = true;
-            string query = "Insert into [TBL](A) values(NULL)";
+            string query = "Insert into [TBL] values(NULL)";
 
             SQLInterpreter interpreter = new SQLInterpreter(ds);
             int affected = interpreter.Execute(query);
 
             Assert.AreEqual(1, affected, "There should be one row affected");
             Assert.AreEqual(1, table.Rows.Count, "There should be one row on the table");
-            Assert.AreEqual(null, table.Rows[0]["A"], "The inserted value was not present on the table");
+            Assert.AreEqual(DBNull.Value, table.Rows[0]["A"], "The inserted value was not present on the table");
         }
 
         [TestMethod]
