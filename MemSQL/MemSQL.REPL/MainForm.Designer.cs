@@ -37,7 +37,7 @@
             this.cmdTextBox.Font = new System.Drawing.Font("Consolas", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cmdTextBox.Location = new System.Drawing.Point(0, 0);
             this.cmdTextBox.Name = "cmdTextBox";
-            this.cmdTextBox.Size = new System.Drawing.Size(683, 487);
+            this.cmdTextBox.Size = new System.Drawing.Size(1040, 545);
             this.cmdTextBox.TabIndex = 0;
             this.cmdTextBox.Text = "Welcome to MemSQL REPL.\nType here your SQL code. Ctrl+Enter to execute. Ctrl+C to" +
     " cancel.\n\n>>> ";
@@ -47,7 +47,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(683, 487);
+            this.ClientSize = new System.Drawing.Size(1040, 545);
             this.Controls.Add(this.cmdTextBox);
             this.Name = "MainForm";
             this.Text = "MemSQL REPL";

@@ -13,6 +13,7 @@ namespace MemSQL.REPL
     public partial class MainForm : Form
     {
         private int lastIndex;
+        private SQLInterpreter interpreter = new SQLInterpreter();
 
         public MainForm()
         {
@@ -53,8 +54,8 @@ namespace MemSQL.REPL
 
         private string Eval(string inputText)
         {
-            // TODO(Richo): Execute the SQL interpreter and print the results
-            return inputText;
+            var result = interpreter.Execute(inputText);
+            return result.ToString();
         }
 
         private void cmdTextBox_KeyUp(object sender, KeyEventArgs e)
@@ -67,10 +68,20 @@ namespace MemSQL.REPL
             if (e.Control && e.KeyCode == Keys.Enter)
             {
                 string inputText = cmdTextBox.Text.Substring(lastIndex);
-                string outputText = Eval(inputText);
+                string outputText;
+                Color color = Color.Blue;
+                try
+                {
+                    outputText = Eval(inputText);
+                }
+                catch (Exception ex)
+                {
+                    outputText = ex.ToString();
+                    color = Color.Red;
+                }
                 lastIndex = cmdTextBox.TextLength;
-                WithTextColor(Color.Blue, () => AppendText(outputText));
-                AppendText("\r\n>>> ");
+                WithTextColor(color, () => AppendText(outputText));
+                AppendText("\r\n\r\n>>> ");
                 lastIndex = cmdTextBox.TextLength;
                 cmdTextBox.SelectionStart = lastIndex;
             }

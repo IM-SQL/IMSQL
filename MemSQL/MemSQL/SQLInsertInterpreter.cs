@@ -8,97 +8,37 @@ using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace MemSQL
 {
-    internal class SQLInsertInterpreter : SQLVisitor
+    internal class SQLInsertInterpreter : SQLBaseInterpreter
     {
-        public SQLInsertInterpreter(DataSet ds) : base(ds)
+        public SQLInsertInterpreter(DataSet ds) : base(ds) { }
+
+        protected override object InternalVisit(InsertStatement node)
         {
+            return Visit<DataRow[]>(node.InsertSpecification);
         }
 
-        public override void ExplicitVisit(InsertStatement node)
+        protected override object InternalVisit(InsertSpecification node)
         {
-            node.AcceptChildren(this);
-            Visit(node);
-        }
-        public override void ExplicitVisit(InsertSpecification node)
-        {
-            node.AcceptChildren(this);
-            string[] columns = node.Columns.Select(s => pop<string>()).Reverse().ToArray();
-            push(columns);
-            Visit(node);
-        }
-        public override void ExplicitVisit(ValuesInsertSource node)
-        {
-            node.AcceptChildren(this);
-            Visit(node);
-        }
-        public override void ExplicitVisit(RowValue node)
-        {
-            node.AcceptChildren(this);
-            Visit(node);
-        }
-        public override void ExplicitVisit(ColumnReferenceExpression node)
-        {
-            node.AcceptChildren(this);
-            Visit(node);
-        }
-        public override void Visit(ColumnReferenceExpression node)
-        {
-            //TODO:what if the column is not regular?
-            //base.Visit(node);
-        }
-        public override void Visit(InsertStatement node)
-        {
-            DataRow dr = pop<DataRow>();
-            DataTable table = pop<DataTable>();
-            table.Rows.Add(dr);
-
-            push(dr);
-        }
-        public override void Visit(InsertSpecification node)
-        {
-            string[] keys = pop<string[]>();
-            object[] values = pop<object[]>();
-            DataTable table = pop<DataTable>();
-            DataRow dr = table.NewRow();
-            //what to do if they specified the names??
-            Dictionary<string, object> namedValues = new Dictionary<string, object>();
-            foreach (DataColumn column in table.Columns)
+            var table = Visit<DataTable>(node.Target);
+            var rows = Visit<object[][]>(node.InsertSource);
+            return rows.Select(row =>
             {
-                int index = Array.IndexOf(keys, column.ColumnName);
-                if (index!=-1)
-                {//i have value for this
-                    namedValues.Add(keys[index], values[index]);
-                }
-                else {
-                    //no value was provided for this
-                    if (column.DefaultValue != null)
-                    {
-                        //i have default value for this column
-                        namedValues.Add(column.ColumnName, column.DefaultValue);
-                    }
-                }
-
-            }
-
-            dr.ItemArray = namedValues.Values.ToArray();
-            push(table);
-            push(dr);
+                DataRow dr = table.NewRow();
+                //what to do if they specified the names??
+                dr.ItemArray = row;
+                table.Rows.Add(dr);
+                return dr;
+            }).ToArray();
         }
-        public override void Visit(ValuesInsertSource node)
+
+        protected override object InternalVisit(ValuesInsertSource node)
         {
-           //do nothing for now, i think.
+            return node.RowValues.Select(rv => Visit<object[]>(rv)).ToArray();
         }
-        public override void Visit(RowValue node)
+
+        protected override object InternalVisit(RowValue node)
         {
-            //by now i should have all the values pushed into the stack, and the table right after.
-
-            Stack<object> values = new Stack<object>();
-            for (int i = 0; i < node.ColumnValues.Count; i++)
-            {
-                values.Push(pop<object>());
-            }
-
-            push(values.ToArray());
+            return node.ColumnValues.Select(cv => Visit<object>(cv)).ToArray();
         }
 
     }

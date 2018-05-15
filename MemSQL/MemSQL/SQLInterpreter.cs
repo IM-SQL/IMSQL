@@ -9,23 +9,20 @@ using System.Threading.Tasks;
 
 namespace MemSQL
 { 
-    public class SQLInterpreter : SQLVisitor
+    public class SQLInterpreter : SQLBaseInterpreter
     {
-
-        public SQLInterpreter(DataSet ds):base(ds)
-        {
-        }
-
-        public int Execute(TextReader script)
+        public SQLInterpreter() : this(new DataSet()) {}
+        public SQLInterpreter(DataSet ds) : base(ds) {}
+        
+        public SQLExecutionResult Execute(TextReader script)
         {
             var parser = new TSql140Parser(false);
-            var result = parser.Parse(script, out var errors);
+            var parseResult = parser.Parse(script, out var errors);
             if (errors.Any()) { throw new ParseException(errors); }
-            result.Accept(this);
-            return 1;
+            return Visit<SQLExecutionResult>(parseResult);
         }
 
-        public int Execute(string script)
+        public SQLExecutionResult Execute(string script)
         {
             using (var reader = new StringReader(script))
             {
@@ -33,21 +30,24 @@ namespace MemSQL
             }
         }
 
-        public override void ExplicitVisit(CreateTableStatement node)
+        protected override object InternalVisit(CreateTableStatement node)
         {
-            SQLCreateInterpreter createVisitor = new SQLCreateInterpreter(ds);
-            node.Accept(createVisitor);       
+            var interpreter = new SQLCreateInterpreter(ds);
+            var table = interpreter.Visit<DataTable>(node);
+            return new SQLExecutionResult(0, table);
         }
 
-        public override void ExplicitVisit(InsertStatement node)
+        protected override object InternalVisit(InsertStatement node)
         {
-            SQLInsertInterpreter interpreter = new SQLInsertInterpreter(ds);
-            node.Accept(interpreter);
+            var interpreter = new SQLInsertInterpreter(ds);
+            var rows = interpreter.Visit<DataRow[]>(node);
+            return new SQLExecutionResult(rows.Length, rows);
         }
 
-        public override void ExplicitVisit(CreateIndexStatement node)
+        protected override object InternalVisit(CreateIndexStatement node)
         {
             // INFO(Richo): Do nothing
+            return new SQLExecutionResult(0, null);
         }
     }
 }

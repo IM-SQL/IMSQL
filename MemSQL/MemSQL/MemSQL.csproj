@@ -46,10 +46,11 @@
     <Compile Include="Database.cs" />
     <Compile Include="ParseException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SQLBaseInterpreter.cs" />
     <Compile Include="SQLCreateInterpreter.cs" />
+    <Compile Include="SQLExecutionResult.cs" />
     <Compile Include="SQLInsertInterpreter.cs" />
     <Compile Include="SQLInterpreter.cs" />
-    <Compile Include="SQLTemporalInterpreter.cs" />
     <Compile Include="SQLVisitor.cs" />
   </ItemGroup>
   <ItemGroup>
