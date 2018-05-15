@@ -11,35 +11,19 @@ namespace MemSQL
     /// <summary>
     /// This class implements the methods necesary to execute a create table statement
     /// </summary>
-    internal class SQLCreateInterpreter : SQLVisitor
+    internal class SQLCreateInterpreter : SQLStacklessVisitor
     {
-        public SQLCreateInterpreter(DataSet ds) : base(ds) {}
+        private DataSet ds;
 
-        public override void ExplicitVisit(CreateTableStatement node)
+        public SQLCreateInterpreter(DataSet ds)
         {
-            var tableConstraints = node.Definition.TableConstraints;
-            foreach (var constraint in tableConstraints)
-            {
-                constraint.Accept(this);
-            }
-
-            var columnConstraints = node.Definition.ColumnDefinitions
-                .SelectMany(cd => cd.Constraints)
-                .Reverse();
-            foreach (var constraint in columnConstraints)
-            {
-                constraint.Accept(this);
-            }
-
-            node.SchemaObjectName.Accept(this);
-            node.Definition.Accept(this);
-            Visit(node);            
+            this.ds = ds;
         }
 
-        public override void Visit(CreateTableStatement node)
+        protected override object VisitCreateTableStatement(CreateTableStatement node)
         {
-            DataTable table = pop<DataTable>();
-            table.TableName = pop<string>();
+            var table = Visit<DataTable>(node.Definition);
+            table.TableName = Visit<string>(node.SchemaObjectName);
             if (ds.Tables.Contains(table.TableName))
             {
                 var msg = string.Format("There is already an object named '{0}' in the database", table.TableName);
@@ -49,128 +33,69 @@ namespace MemSQL
 
             foreach (var cd in node.Definition.ColumnDefinitions)
             {
-                for (int i = 0; i < cd.Constraints.Count; i++)
+                foreach (var constraint in cd.Constraints)
                 {
                     var column = table.Columns[cd.ColumnIdentifier.Value];
-                    pop<Action<DataTable, DataColumn>>()?.Invoke(table, column);
+                    Visit<Action<DataTable, DataColumn>>(constraint)?.Invoke(table, column);
                 }
             }
-            for (int i = 0; i < node.Definition.TableConstraints.Count; i++)
+            foreach (var constraint in node.Definition.TableConstraints)
             {
-                pop<Action<DataTable, DataColumn>>()?.Invoke(table, null);
+                Visit<Action<DataTable, DataColumn>>(constraint)?.Invoke(table, null);
             }
-            push(table);
+            return table;
         }
 
-        public override void ExplicitVisit(TableDefinition node)
+        protected override object VisitTableDefinition(TableDefinition node)
         {
             //TODO: indexes
-            foreach (var definition in node.ColumnDefinitions)
-            {
-                definition.Accept(this);
-            }
-            Visit(node);
-        }
-
-        public override void Visit(TableDefinition node)
-        {
-            DataColumn[] columns = new DataColumn[node.ColumnDefinitions.Count];
-            for (int i = node.ColumnDefinitions.Count - 1; i >= 0; i--)
-            {
-                columns[i] = pop<DataColumn>();
-            }
             var result = new DataTable();
-            result.Columns.AddRange(columns);
-
-            push(result);
+            result.Columns
+                .AddRange(node.ColumnDefinitions
+                    .Select(cd => Visit<DataColumn>(cd))
+                    .ToArray());
+            return result;
         }
 
-        public override void ExplicitVisit(ColumnDefinition node)
+        protected override object VisitColumnDefinition(ColumnDefinition node)
         {
-            //if i dont override this it tries to call visit columndefinitionbase
-            //TODO: collation? other childs?
-            node.DefaultConstraint?.Accept(this);
-            node.IdentityOptions?.Accept(this);
-            node.DataType.Accept(this);
-            Visit(node);
-        }
-
-        public override void Visit(ColumnDefinition node)
-        {
-            var type = pop<Type>();
+            var type = Visit<Type>(node.DataType);
             var column = new DataColumn(node.ColumnIdentifier.Value, type);
-            if (node.IdentityOptions != null)
-            {
-                pop<Action<DataColumn>>()(column);
-            }
-            if (node.DefaultConstraint != null)
-            {
-                pop<Action<DataColumn>>()(column);
-            }
-            push(column);
+            Visit<Action<DataColumn>>(node.IdentityOptions)?.Invoke(column);
+            Visit<Action<DataColumn>>(node.DefaultConstraint)?.Invoke(column);
+            return column;
         }
 
-        public override void ExplicitVisit(IdentityOptions node)
-        {
-            if (node.IdentitySeed == null) { push(1); }
-            else { node.IdentitySeed.Accept(this); }
-
-            if (node.IdentityIncrement == null) { push(1); }
-            else { node.IdentityIncrement?.Accept(this); }
-
-            Visit(node);
-        }
-
-        public override void Visit(IdentityOptions node)
+        protected override object VisitIdentityOptions(IdentityOptions node)
         {
             Action<DataColumn> applier = column =>
             {
-                int step = pop<int>();
-                int seed = pop<int>();
                 column.AutoIncrement = true;
-                column.AutoIncrementSeed = seed;
-                column.AutoIncrementStep = step;
+                column.AutoIncrementSeed = Visit(node.IdentitySeed, 1);
+                column.AutoIncrementStep = Visit(node.IdentityIncrement, 1);
             };
-            push(applier);
+            return applier;
         }
-
-        public override void ExplicitVisit(DefaultConstraintDefinition node)
-        {
-            //TODO: i think if the default value is a function this might have to be reviewed
-            node.Expression.Accept(this);
-            Visit(node);
-        }
-
-        public override void Visit(DefaultConstraintDefinition node)
+        
+        protected override object VisitDefaultConstraintDefinition(DefaultConstraintDefinition node)
         {
             Action<DataColumn> applier = (column) =>
             {
-                object value = pop<object>();
-                column.DefaultValue = value;
+                column.DefaultValue = Visit<object>(node.Expression);
             };
-            push(applier);
+            return applier;
         }
-
-        public override void ExplicitVisit(NullableConstraintDefinition node)
-        {
-            Visit(node);
-        }
-
-        public override void Visit(NullableConstraintDefinition node)
+        
+        protected override object VisitNullableConstraintDefinition(NullableConstraintDefinition node)
         {
             Action<DataTable, DataColumn> applier = (ign, column) =>
             {
                 column.AllowDBNull = node.Nullable;
             };
-            push(applier);
+            return applier;
         }
 
-        public override void ExplicitVisit(UniqueConstraintDefinition node)
-        {
-            Visit(node);
-        }
-
-        public override void Visit(UniqueConstraintDefinition node)
+        protected override object VisitUniqueConstraintDefinition(UniqueConstraintDefinition node)
         {
             Action<DataTable, DataColumn> applier = (table, column) =>
             {
@@ -237,16 +162,10 @@ namespace MemSQL
                     }
                 }
             };
-            push(applier);
+            return applier;
         }
 
-        public override void ExplicitVisit(ForeignKeyConstraintDefinition node)
-        {
-            node.ReferenceTableName.Accept(this);
-            Visit(node);
-        }
-
-        public override void Visit(ForeignKeyConstraintDefinition node)
+        protected override object VisitForeignKeyConstraintDefinition(ForeignKeyConstraintDefinition node)
         {
             Action<DataTable, DataColumn> applier = (table, ignored) =>
             {
@@ -254,7 +173,7 @@ namespace MemSQL
 
                 DataTable refTable;
                 {
-                    var refTableName = pop<string>();
+                    var refTableName = Visit<string>(node.ReferenceTableName);
                     refTable = ds.Tables[refTableName];
                     if (refTable == null)
                     {
@@ -310,7 +229,7 @@ namespace MemSQL
                 }
                 table.Constraints.Add(fk);
             };
-            push(applier);
+            return applier;
         }
 
         private Rule GetDeleteUpdateRule(DeleteUpdateAction action)

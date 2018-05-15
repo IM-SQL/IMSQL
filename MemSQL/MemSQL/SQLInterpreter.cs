@@ -35,8 +35,8 @@ namespace MemSQL
 
         public override void ExplicitVisit(CreateTableStatement node)
         {
-            SQLCreateInterpreter createVisitor = new SQLCreateInterpreter(ds);
-            node.Accept(createVisitor);       
+            var createVisitor = new SQLCreateInterpreter(ds);
+            createVisitor.Visit<DataTable>(node);
         }
 
         public override void ExplicitVisit(InsertStatement node)
