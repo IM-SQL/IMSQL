@@ -11,6 +11,7 @@ namespace MemSQL
 { 
     public class SQLInterpreter : SQLBaseInterpreter
     {
+        public SQLInterpreter() : this(new DataSet()) {}
         public SQLInterpreter(DataSet ds) : base(ds) {}
         
         public SQLExecutionResult Execute(TextReader script)
