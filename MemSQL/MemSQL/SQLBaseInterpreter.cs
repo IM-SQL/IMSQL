@@ -110,5 +110,13 @@ namespace MemSQL
         {
             return node.Value.ToString();
         }
+
+        protected override object InternalVisit(NamedTableReference node)
+        {
+            //TODO: alias?
+            var tableName = Visit<string>(node.SchemaObject);
+            //TODO: error on table not present?
+            return ds.Tables[tableName];
+        }
     }
 }

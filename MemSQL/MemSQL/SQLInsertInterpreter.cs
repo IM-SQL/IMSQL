@@ -8,59 +8,38 @@ using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace MemSQL
 {
-    internal class SQLInsertInterpreter : SQLVisitor
+    internal class SQLInsertInterpreter : SQLBaseInterpreter
     {
-        public SQLInsertInterpreter(DataSet ds) : base(ds)
+        public SQLInsertInterpreter(DataSet ds) : base(ds) { }
+
+        protected override object InternalVisit(InsertStatement node)
         {
+            return Visit<DataRow[]>(node.InsertSpecification);
         }
 
-        public override void ExplicitVisit(InsertStatement node)
+        protected override object InternalVisit(InsertSpecification node)
         {
-            node.AcceptChildren(this);
-            Visit(node);
-        }
-        public override void ExplicitVisit(InsertSpecification node)
-        {
-            node.AcceptChildren(this);
-            Visit(node);
-        }
-        public override void ExplicitVisit(ValuesInsertSource node)
-        {
-            node.AcceptChildren(this);
-            Visit(node);
-        }
-        public override void ExplicitVisit(RowValue node)
-        {
-            node.AcceptChildren(this);
-            Visit(node);
+            var table = Visit<DataTable>(node.Target);
+            var rows = Visit<object[][]>(node.InsertSource);
+            return rows.Select(row =>
+            {
+                DataRow dr = table.NewRow();
+                //what to do if they specified the names??
+                dr.ItemArray = row;
+                table.Rows.Add(dr);
+                return dr;
+            }).ToArray();
         }
 
-        public override void Visit(InsertStatement node)
+        protected override object InternalVisit(ValuesInsertSource node)
         {
-            DataRow dr = pop<DataRow>();
-            DataTable table = pop<DataTable>();
-            table.Rows.Add(dr);
+            return node.RowValues.Select(rv => Visit<object[]>(rv)).ToArray();
+        }
 
-            push(dr);
-        }
-        public override void Visit(InsertSpecification node)
-        {
-            object[] values = pop<object[]>();
-            DataTable table = pop<DataTable>();
-            DataRow dr = table.NewRow();
-            //what to do if they specified the names??
-            dr.ItemArray = values;
-            push(table);
-            push(dr);
-        }
-        public override void Visit(ValuesInsertSource node)
-        {
-           //do nothing for now, i think.
-        }
-        public override void Visit(RowValue node)
+        protected override object InternalVisit(RowValue node)
         {
             //by now i should have all the values pushed into the stack, and the table right after.
-
+            /*
             Stack<object> values = new Stack<object>();
             for (int i = 0; i < node.ColumnValues.Count; i++)
             {
@@ -68,6 +47,8 @@ namespace MemSQL
             }
 
             push(values.ToArray());
+            */
+            return node.ColumnValues.Select(cv => Visit<object>(cv)).ToArray();
         }
 
     }

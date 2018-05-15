@@ -32,15 +32,14 @@ namespace MemSQL
 
         protected override object InternalVisit(CreateTableStatement node)
         {
-            var createVisitor = new SQLCreateInterpreter(ds);
-            return createVisitor.Visit<DataTable>(node);
+            var interpreter = new SQLCreateInterpreter(ds);
+            return interpreter.Visit<DataTable>(node);
         }
 
         protected override object InternalVisit(InsertStatement node)
         {
-            SQLInsertInterpreter interpreter = new SQLInsertInterpreter(ds);
-            node.Accept(interpreter);
-            return null;
+            var interpreter = new SQLInsertInterpreter(ds);
+            return interpreter.Visit<DataRow[]>(node);
         }
 
         protected override object InternalVisit(CreateIndexStatement node)
