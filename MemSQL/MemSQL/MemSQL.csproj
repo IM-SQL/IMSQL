@@ -51,8 +51,6 @@
     <Compile Include="SQLInsertInterpreter.cs" />
     <Compile Include="SQLInterpreter.cs" />
     <Compile Include="SQLStacklessVisitor.cs" />
-    <Compile Include="SQLTemporalInterpreter.cs" />
-    <Compile Include="SQLVisitor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
