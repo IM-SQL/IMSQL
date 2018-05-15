@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace MemSQL
 {
-    public abstract class SQLStacklessVisitor
+    public abstract class SQLVisitor
     {
         private SQLInternalVisitor inner;
 
-        public SQLStacklessVisitor()
+        public SQLVisitor()
         {
             inner = new SQLInternalVisitor(this);
         }
@@ -44,9 +44,9 @@ namespace MemSQL
 
         class SQLInternalVisitor : TSqlFragmentVisitor
         {
-            private SQLStacklessVisitor outer;
+            private SQLVisitor outer;
 
-            public SQLInternalVisitor(SQLStacklessVisitor visitor)
+            public SQLInternalVisitor(SQLVisitor visitor)
             {
                 outer = visitor;
             }

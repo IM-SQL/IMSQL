@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MemSQL
 {
-    public abstract class SQLBaseInterpreter : SQLStacklessVisitor
+    public abstract class SQLBaseInterpreter : SQLVisitor
     {
         protected DataSet ds;
 
