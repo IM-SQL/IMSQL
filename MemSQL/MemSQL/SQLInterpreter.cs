@@ -18,8 +18,7 @@ namespace MemSQL
             var parser = new TSql140Parser(false);
             var result = parser.Parse(script, out var errors);
             if (errors.Any()) { throw new ParseException(errors); }
-            Visit<object>(result);
-            return 1;
+            return Visit<int>(result);            
         }
 
         public int Execute(string script)
@@ -33,19 +32,21 @@ namespace MemSQL
         protected override object InternalVisit(CreateTableStatement node)
         {
             var interpreter = new SQLCreateInterpreter(ds);
-            return interpreter.Visit<DataTable>(node);
+            interpreter.Visit<DataTable>(node);
+            return 0;
         }
 
         protected override object InternalVisit(InsertStatement node)
         {
             var interpreter = new SQLInsertInterpreter(ds);
-            return interpreter.Visit<DataRow[]>(node);
+            var rows = interpreter.Visit<DataRow[]>(node);
+            return rows.Length;
         }
 
         protected override object InternalVisit(CreateIndexStatement node)
         {
             // INFO(Richo): Do nothing
-            return null;
+            return 0;
         }
     }
 }
