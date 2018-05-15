@@ -24,6 +24,7 @@ namespace MemSQL
             var rows = Visit<object[][]>(node.InsertSource);
 
             //if no column was provided then the whole table has to be provided as parameter.
+            //TODO: i believe that a column flagged as identity should not be included in the providedColumns
             if (providedColumns.Length == 0)
             {
                 providedColumns = new string[table.Columns.Count];
