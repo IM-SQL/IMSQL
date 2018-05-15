@@ -38,16 +38,6 @@ namespace MemSQL
 
         protected override object InternalVisit(RowValue node)
         {
-            //by now i should have all the values pushed into the stack, and the table right after.
-            /*
-            Stack<object> values = new Stack<object>();
-            for (int i = 0; i < node.ColumnValues.Count; i++)
-            {
-                values.Push(pop<object>());
-            }
-
-            push(values.ToArray());
-            */
             return node.ColumnValues.Select(cv => Visit<object>(cv)).ToArray();
         }
 
