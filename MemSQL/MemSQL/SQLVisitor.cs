@@ -27,6 +27,7 @@ namespace MemSQL
         protected virtual object InternalVisit(SqlDataTypeReference node) { throw new NotImplementedException(); }
         protected virtual object InternalVisit(IntegerLiteral node) { throw new NotImplementedException(); }
         protected virtual object InternalVisit(StringLiteral node) { throw new NotImplementedException(); }
+        protected virtual object InternalVisit(NullLiteral node) { throw new NotImplementedException(); }
         protected virtual object InternalVisit(CreateTableStatement node) { throw new NotImplementedException(); }
         protected virtual object InternalVisit(TableDefinition node) { throw new NotImplementedException(); }
         protected virtual object InternalVisit(ColumnDefinition node) { throw new NotImplementedException(); }
@@ -41,6 +42,7 @@ namespace MemSQL
         protected virtual object InternalVisit(ValuesInsertSource node) { throw new NotImplementedException(); }
         protected virtual object InternalVisit(RowValue node) { throw new NotImplementedException(); }
         protected virtual object InternalVisit(NamedTableReference node) { throw new NotImplementedException(); }
+        protected virtual object InternalVisit(ColumnReferenceExpression node) { throw new NotImplementedException(); }
 
         class SQLInternalVisitor : TSqlFragmentVisitor
         {
@@ -64,6 +66,10 @@ namespace MemSQL
             }
 
             public override void ExplicitVisit(IntegerLiteral node)
+            {
+                Result = outer.InternalVisit(node);
+            }
+            public override void ExplicitVisit(NullLiteral node)
             {
                 Result = outer.InternalVisit(node);
             }
@@ -140,6 +146,9 @@ namespace MemSQL
 
             public override void ExplicitVisit(NamedTableReference node)
             {
+                Result = outer.InternalVisit(node);
+            }
+            public override void ExplicitVisit(ColumnReferenceExpression node) {
                 Result = outer.InternalVisit(node);
             }
 
@@ -797,7 +806,6 @@ namespace MemSQL
             public override void ExplicitVisit(SubqueryComparisonPredicate node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(ParenthesisExpression node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(InlineDerivedTable node) { throw new NotImplementedException(); }
-            public override void ExplicitVisit(ColumnReferenceExpression node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(QueryDerivedTable node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(MaxLiteral node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(DefaultLiteral node) { throw new NotImplementedException(); }
@@ -825,7 +833,7 @@ namespace MemSQL
             public override void ExplicitVisit(BinaryLiteral node) { throw new NotImplementedException(); }
             
             public override void ExplicitVisit(XmlForClause node) { throw new NotImplementedException(); }
-            public override void ExplicitVisit(NullLiteral node) { throw new NotImplementedException(); }
+            
             public override void ExplicitVisit(ReadOnlyForClause node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(ExecuteInsertSource node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(LiteralTableHint node) { throw new NotImplementedException(); }

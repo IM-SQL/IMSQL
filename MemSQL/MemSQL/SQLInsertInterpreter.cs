@@ -20,7 +20,52 @@ namespace MemSQL
         protected override object InternalVisit(InsertSpecification node)
         {
             var table = Visit<DataTable>(node.Target);
-            var rows = Visit<object[][]>(node.InsertSource);
+            var providedColumns = node.Columns.Select(columnReference => Visit<string>(columnReference)).ToArray();
+            var providedValue = Visit<object[][]>(node.InsertSource);
+
+            //if no column was provided then the whole table has to be provided as parameter.
+            if (providedColumns.Length == 0)
+            {
+                    providedColumns = new string[table.Columns.Count];
+                for (int i = 0; i < table.Columns.Count; i++)
+                {
+                    providedColumns[i] = table.Columns[i].ColumnName;
+                }
+            }
+
+            List<object[]> rows = new List<object[]>(providedValue.Select(r => new object[table.Columns.Count]));
+            for (int i = 0; i < table.Columns.Count; i++)
+            {
+                int index = Array.IndexOf(providedColumns, table.Columns[i].ColumnName);
+                if (index != -1)
+                {
+                    //a value for this column was provided, and as such i should use the value.
+                    for (int j = 0; j < providedValue.Length; j++)
+                    {
+                        rows[j][i] = providedValue[j][index];
+                    }
+                }
+                else
+                {
+                    object value = table.Columns[i].DefaultValue;
+                    //check if the column has a default value 
+                    if (value != null)
+                    {
+                        for (int j = 0; j < providedValue.Length; j++)
+                        {
+                            rows[j][i] = value;
+                        }
+                    }
+                    else
+                    {
+                        if (!table.Columns[i].AllowDBNull)
+                        {
+                            throw new InvalidOperationException(string.Format("A Null was provided for the column {0}", table.Columns[i].ColumnName));
+                        }
+                    }
+                }
+
+            }
             return rows.Select(row =>
             {
                 DataRow dr = table.NewRow();
