@@ -9,19 +9,16 @@ using System.Threading.Tasks;
 
 namespace MemSQL
 { 
-    public class SQLInterpreter : SQLVisitor
+    public class SQLInterpreter : SQLBaseInterpreter
     {
-
-        public SQLInterpreter(DataSet ds):base(ds)
-        {
-        }
+        public SQLInterpreter(DataSet ds) : base(ds) {}
 
         public int Execute(TextReader script)
         {
             var parser = new TSql140Parser(false);
             var result = parser.Parse(script, out var errors);
             if (errors.Any()) { throw new ParseException(errors); }
-            result.Accept(this);
+            Visit<object>(result);
             return 1;
         }
 
@@ -33,21 +30,23 @@ namespace MemSQL
             }
         }
 
-        public override void ExplicitVisit(CreateTableStatement node)
+        protected override object InternalVisit(CreateTableStatement node)
         {
             var createVisitor = new SQLCreateInterpreter(ds);
-            createVisitor.Visit<DataTable>(node);
+            return createVisitor.Visit<DataTable>(node);
         }
 
-        public override void ExplicitVisit(InsertStatement node)
+        protected override object InternalVisit(InsertStatement node)
         {
             SQLInsertInterpreter interpreter = new SQLInsertInterpreter(ds);
             node.Accept(interpreter);
+            return null;
         }
 
-        public override void ExplicitVisit(CreateIndexStatement node)
+        protected override object InternalVisit(CreateIndexStatement node)
         {
             // INFO(Richo): Do nothing
+            return null;
         }
     }
 }

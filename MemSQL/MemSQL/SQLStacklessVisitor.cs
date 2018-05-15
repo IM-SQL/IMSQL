@@ -35,6 +35,8 @@ namespace MemSQL
         protected virtual object InternalVisit(NullableConstraintDefinition node) { throw new NotImplementedException(); }
         protected virtual object InternalVisit(UniqueConstraintDefinition node) { throw new NotImplementedException(); }
         protected virtual object InternalVisit(ForeignKeyConstraintDefinition node) { throw new NotImplementedException(); }
+        protected virtual object InternalVisit(InsertStatement node) { throw new NotImplementedException(); }
+        protected virtual object InternalVisit(CreateIndexStatement node) { throw new NotImplementedException(); }
 
         class SQLInternalVisitor : TSqlFragmentVisitor
         {
@@ -103,6 +105,16 @@ namespace MemSQL
             }
 
             public override void ExplicitVisit(ForeignKeyConstraintDefinition node)
+            {
+                Result = outer.InternalVisit(node);
+            }
+
+            public override void ExplicitVisit(InsertStatement node)
+            {
+                Result = outer.InternalVisit(node);
+            }
+            
+            public override void ExplicitVisit(CreateIndexStatement node)
             {
                 Result = outer.InternalVisit(node);
             }
@@ -866,7 +878,7 @@ namespace MemSQL
             public override void ExplicitVisit(UpdateDeleteSpecificationBase node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(TryCastCall node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(DeleteSpecification node) { throw new NotImplementedException(); }
-            public override void ExplicitVisit(InsertStatement node) { throw new NotImplementedException(); }
+
             public override void ExplicitVisit(CastCall node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(InsertSpecification node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(TryParseCall node) { throw new NotImplementedException(); }
