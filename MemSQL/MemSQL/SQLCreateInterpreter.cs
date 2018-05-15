@@ -11,14 +11,9 @@ namespace MemSQL
     /// <summary>
     /// This class implements the methods necesary to execute a create table statement
     /// </summary>
-    internal class SQLCreateInterpreter : SQLStacklessVisitor
+    internal class SQLCreateInterpreter : SQLBaseInterpreter
     {
-        private DataSet ds;
-
-        public SQLCreateInterpreter(DataSet ds)
-        {
-            this.ds = ds;
-        }
+        public SQLCreateInterpreter(DataSet ds) : base(ds) { }
 
         protected override object InternalVisit(CreateTableStatement node)
         {
