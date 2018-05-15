@@ -20,7 +20,8 @@ namespace MemSQL.Test
             string query = "Insert into [TBL] values(3)";
 
             SQLInterpreter interpreter = new SQLInterpreter(ds);
-            int affected = interpreter.Execute(query);
+            var result = interpreter.Execute(query);
+            int affected = result.RowsAffected;
 
             Assert.AreEqual(1, affected, "There should be one row affected");
             Assert.AreEqual(1, table.Rows.Count, "There should be one row on the table");
@@ -36,7 +37,8 @@ namespace MemSQL.Test
             string query = "Insert into [TBL] values(3,'asd')";
 
             SQLInterpreter interpreter = new SQLInterpreter(ds);
-            int affected = interpreter.Execute(query);
+            var result = interpreter.Execute(query);
+            int affected = result.RowsAffected;
 
             Assert.AreEqual(1, affected, "There should be one row affected");
             Assert.AreEqual(1, table.Rows.Count, "There should be one row on the table");
@@ -58,7 +60,7 @@ namespace MemSQL.Test
                 //Sql says 
                 //Msg 213, Level 16, State 1, Line 1
                 //Column name or number of supplied values does not match table definition.
-                int affected = interpreter.Execute(query);
+                interpreter.Execute(query);
             });
         }
         [TestMethod]
@@ -72,7 +74,8 @@ namespace MemSQL.Test
             string query = "Insert into [TBL](A) values(3)";
 
             SQLInterpreter interpreter = new SQLInterpreter(ds);
-            int affected = interpreter.Execute(query);
+            var result = interpreter.Execute(query);
+            int affected = result.RowsAffected;
             Assert.AreEqual(1, affected, "There should be one row affected");
             Assert.AreEqual(1, table.Rows.Count, "There should be one row on the table");
             Assert.AreEqual(3, table.Rows[0]["A"], "The inserted value was not present on the table");
@@ -90,7 +93,8 @@ namespace MemSQL.Test
             string query = "Insert into [TBL](A) values(NULL)";
 
             SQLInterpreter interpreter = new SQLInterpreter(ds);
-            int affected = interpreter.Execute(query);
+            var result = interpreter.Execute(query);
+            int affected = result.RowsAffected;
 
             Assert.AreEqual(1, affected, "There should be one row affected");
             Assert.AreEqual(1, table.Rows.Count, "There should be one row on the table");
@@ -107,7 +111,8 @@ namespace MemSQL.Test
             string query = "Insert into [TBL](B,A) values(2,1)";
 
             SQLInterpreter interpreter = new SQLInterpreter(ds);
-            int affected = interpreter.Execute(query);
+            var result = interpreter.Execute(query);
+            int affected = result.RowsAffected;
 
             Assert.AreEqual(1, affected, "There should be one row affected");
             Assert.AreEqual(1, table.Rows.Count, "There should be one row on the table");
@@ -127,7 +132,8 @@ namespace MemSQL.Test
             string query = "Insert into [TBL](B,A) values(2,1)";
 
             SQLInterpreter interpreter = new SQLInterpreter(ds);
-            int affected = interpreter.Execute(query);
+            var result = interpreter.Execute(query);
+            int affected = result.RowsAffected;
 
             Assert.AreEqual(1, affected, "There should be one row affected");
             Assert.AreEqual(1, table.Rows.Count, "There should be one row on the table");
@@ -159,7 +165,8 @@ namespace MemSQL.Test
                 "Insert into [TBL] values {0}", string.Join(", ", testData.Select(t => printTuple(t))));
 
             SQLInterpreter interpreter = new SQLInterpreter(ds);
-            int affected = interpreter.Execute(query);
+            var result = interpreter.Execute(query);
+            int affected = result.RowsAffected;
 
             Assert.AreEqual(testData.Count, affected, "The amount of rows affected is wrong");
             Assert.AreEqual(testData.Count, table.Rows.Count, "All the test data should have been inserted");

@@ -12,16 +12,16 @@ namespace MemSQL
     public class SQLInterpreter : SQLBaseInterpreter
     {
         public SQLInterpreter(DataSet ds) : base(ds) {}
-
-        public int Execute(TextReader script)
+        
+        public SQLExecutionResult Execute(TextReader script)
         {
             var parser = new TSql140Parser(false);
-            var result = parser.Parse(script, out var errors);
+            var parseResult = parser.Parse(script, out var errors);
             if (errors.Any()) { throw new ParseException(errors); }
-            return Visit<int>(result);            
+            return Visit<SQLExecutionResult>(parseResult);
         }
 
-        public int Execute(string script)
+        public SQLExecutionResult Execute(string script)
         {
             using (var reader = new StringReader(script))
             {
@@ -32,21 +32,21 @@ namespace MemSQL
         protected override object InternalVisit(CreateTableStatement node)
         {
             var interpreter = new SQLCreateInterpreter(ds);
-            interpreter.Visit<DataTable>(node);
-            return 0;
+            var table = interpreter.Visit<DataTable>(node);
+            return new SQLExecutionResult(0, table);
         }
 
         protected override object InternalVisit(InsertStatement node)
         {
             var interpreter = new SQLInsertInterpreter(ds);
             var rows = interpreter.Visit<DataRow[]>(node);
-            return rows.Length;
+            return new SQLExecutionResult(rows.Length, rows);
         }
 
         protected override object InternalVisit(CreateIndexStatement node)
         {
             // INFO(Richo): Do nothing
-            return 0;
+            return new SQLExecutionResult(0, null);
         }
     }
 }
