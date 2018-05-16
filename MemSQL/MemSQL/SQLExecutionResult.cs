@@ -31,10 +31,19 @@ namespace MemSQL
                 if (Value is DataRow[])
                 {
                     StringBuilder sb = new StringBuilder();
-                    foreach (var row in Value as DataRow[])
+                    var rows = Value as DataRow[];
+                    for (int i = 0; i < rows.Length; i++)
                     {
-                        sb.AppendFormat("({0})", string.Join(", ", row.ItemArray));
-                        sb.AppendLine();
+                        var row = rows[i];
+                        if (i > 0) { sb.AppendLine(); }
+                        var items = row.ItemArray.Select(item =>
+                        {
+                            if (item == null || item == DBNull.Value) return "NULL";
+                            if (item is string) return "'" + item + "'";
+
+                            return item.ToString();
+                        });
+                        sb.AppendFormat("({0})", string.Join(", ", items));
                     }
                     return sb.ToString();
                 }
