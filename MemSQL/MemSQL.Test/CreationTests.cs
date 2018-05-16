@@ -157,6 +157,7 @@ namespace MemSQL.Test.Structural
             {
                 visitor.Execute(script);
             });
+            Assert.IsNull(ds.Tables["TBL"], "TBL should not exist");
         }
 
         [TestMethod]
@@ -263,6 +264,7 @@ namespace MemSQL.Test.Structural
             {
                 visitor.Execute(script);
             });
+            Assert.IsNull(ds.Tables["table"], "Table 'table' should not exist");
         }
 
         [TestMethod]
@@ -281,6 +283,7 @@ namespace MemSQL.Test.Structural
             {
                 visitor.Execute(script);
             });
+            Assert.IsNull(ds.Tables["TBL"], "TBL should not exist");
         }
 
         [TestMethod]
@@ -294,7 +297,8 @@ namespace MemSQL.Test.Structural
             }
             {
                 var script = @"
-                    CREATE TABLE [dbo].[TBL](
+                    CREATE TABLE [dbo].[TBL]
+                    (
 	                    [Id] [int] IDENTITY(1,1) NOT NULL,
                         CONSTRAINT [FK_TBL_CLIENT] FOREIGN KEY ([ClientId]) REFERENCES [Client]([Id])
                     )
@@ -303,6 +307,7 @@ namespace MemSQL.Test.Structural
                 {
                     visitor.Execute(script);
                 });
+                Assert.IsNull(ds.Tables["TBL"], "TBL should not exist");
             }
         }
 
@@ -317,7 +322,8 @@ namespace MemSQL.Test.Structural
             }
             {
                 var script = @"
-                    CREATE TABLE [dbo].[TBL](
+                    CREATE TABLE [dbo].[TBL]
+                    (
 	                    [Id] [int] IDENTITY(1,1) NOT NULL,
                         [ClientId] [int] NOT NULL,
                         CONSTRAINT [FK_TBL_CLIENT] FOREIGN KEY ([ClientId]) REFERENCES [Client]([Id])
@@ -327,6 +333,7 @@ namespace MemSQL.Test.Structural
                 {
                     visitor.Execute(script);
                 });
+                Assert.IsNull(ds.Tables["TBL"], "TBL should not exist");
             }
         }
 
@@ -565,6 +572,7 @@ namespace MemSQL.Test.Structural
             {
                 visitor.Execute(script);
             });
+            Assert.IsNull(ds.Tables["TBL"], "TBL should not exist");
         }
 
         [TestMethod]
@@ -579,10 +587,12 @@ namespace MemSQL.Test.Structural
 	                [foo] INT NULL,
                 )";
             visitor.Execute(script);
+            Assert.IsNotNull(ds.Tables["TBL"], "TBL should exist");
             Assert.ThrowsException<DuplicateNameException>(() =>
             {
                 visitor.Execute(script);
             });
+            Assert.IsNotNull(ds.Tables["TBL"], "TBL should still exist");
         }
 
         [TestMethod]
@@ -952,6 +962,7 @@ namespace MemSQL.Test.Structural
                     )";
                 visitor.Execute(script);
             });
+            Assert.IsNull(ds.Tables["T2"], "T2 should not exist");
         }
 
         [TestMethod]
@@ -974,6 +985,7 @@ namespace MemSQL.Test.Structural
                     )";
                 visitor.Execute(script);
             });
+            Assert.IsNull(ds.Tables["T2"], "T2 should not exist");
         }
 
         [TestMethod]
@@ -996,6 +1008,7 @@ namespace MemSQL.Test.Structural
                     )";
                 visitor.Execute(script);
             });
+            Assert.IsNull(ds.Tables["T2"], "T2 should not exist");
         }
 
         [TestMethod]
@@ -1018,6 +1031,7 @@ namespace MemSQL.Test.Structural
                     )";
                 visitor.Execute(script);
             });
+            Assert.IsNull(ds.Tables["T2"], "T2 should not exist");
         }
     }
 }

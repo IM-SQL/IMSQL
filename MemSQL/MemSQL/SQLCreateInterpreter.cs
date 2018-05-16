@@ -26,17 +26,25 @@ namespace MemSQL
             }
             ds.Tables.Add(table);
 
-            foreach (var cd in node.Definition.ColumnDefinitions)
+            try
             {
-                foreach (var constraint in cd.Constraints)
+                foreach (var cd in node.Definition.ColumnDefinitions)
                 {
-                    var column = table.Columns[cd.ColumnIdentifier.Value];
-                    Visit<Action<DataTable, DataColumn>>(constraint)?.Invoke(table, column);
+                    foreach (var constraint in cd.Constraints)
+                    {
+                        var column = table.Columns[cd.ColumnIdentifier.Value];
+                        Visit<Action<DataTable, DataColumn>>(constraint)?.Invoke(table, column);
+                    }
+                }
+                foreach (var constraint in node.Definition.TableConstraints)
+                {
+                    Visit<Action<DataTable, DataColumn>>(constraint)?.Invoke(table, null);
                 }
             }
-            foreach (var constraint in node.Definition.TableConstraints)
+            catch
             {
-                Visit<Action<DataTable, DataColumn>>(constraint)?.Invoke(table, null);
+                ds.Tables.Remove(table);
+                throw;
             }
             return table;
         }
