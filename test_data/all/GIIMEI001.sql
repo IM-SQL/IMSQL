@@ -1,0 +1,33 @@
+﻿CREATE TABLE [dbo].[GIIMEI001]
+(
+	[Id] INT NOT NULL PRIMARY KEY IDENTITY, 
+    [AccountID] NVARCHAR(40) NOT NULL, 
+    [ReferenceNumber] NVARCHAR(40) NULL, 
+    [OEM] NVARCHAR(20) NULL, 
+    [PalletNumber] NVARCHAR(20) NULL, 
+    [IMEI] NVARCHAR(20) NOT NULL, 
+    [Item] NVARCHAR(40) NOT NULL, 
+    [UnlockCode] NVARCHAR(40) NULL, 
+    [GIDATE] NVARCHAR(8) NOT NULL, 
+    [DATE_1] DATE NULL, 
+    [DATE_2] DATE NULL, 
+    [ETC_1] NVARCHAR(50) NOT NULL, 
+    [ETC_2] NVARCHAR(50) NULL, 
+    [ETC_3] NVARCHAR(100) NULL, 
+    [ETC_4] NVARCHAR(100) NULL, 
+    [QTY_1] DECIMAL(15, 3) NOT NULL, 
+    [QTY_2] DECIMAL(15, 3) NULL, 
+    [Timestamp] DATETIME NOT NULL DEFAULT getutcdate(), 
+    [PackageId] INT NULL, 
+    [Processed] BIT NOT NULL DEFAULT 0, 
+    CONSTRAINT [FK_GIIMEI001_ToPackage] FOREIGN KEY ([PackageId]) REFERENCES [Package]([Id]), 
+    CONSTRAINT [FK_GIIMEI001_ToClient] FOREIGN KEY ([AccountID]) REFERENCES [Client]([ExternalId]) 
+)
+
+GO
+
+CREATE INDEX [IX_GIIMEI001_PackageId] ON [dbo].[GIIMEI001] ([PackageId])
+
+GO
+
+CREATE INDEX [IX_GIIMEI001_AccountIdProcessed] ON [dbo].[GIIMEI001] ([AccountID],[Processed])
