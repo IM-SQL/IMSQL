@@ -35,16 +35,16 @@ namespace MemSQL
             }
 
             return rows.Select(row =>
-          {
-              DataRow dr = table.NewRow();
-              //what to do if they specified the names??
-              for (int i = 0; i < providedColumns.Length; i++)
-              {
-                  dr[providedColumns[i]] = row[i];
-              }
-              table.Rows.Add(dr);
-              return dr;
-          }).ToArray();
+            {
+                DataRow dr = table.NewRow();
+                //what to do if they specified the names??
+                for (int i = 0; i < providedColumns.Length; i++)
+                {
+                    dr[providedColumns[i]] = row[i];
+                }
+                table.Rows.Add(dr);
+                return dr;
+            }).ToArray();
         }
 
         protected override object InternalVisit(ValuesInsertSource node)

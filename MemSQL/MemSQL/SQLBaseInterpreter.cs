@@ -16,11 +16,13 @@ namespace MemSQL
         {
             this.ds = ds;
         }
+
         protected override object InternalVisit(ColumnReferenceExpression node)
         {
             //TODO: this and SchemaObject should work differently.
             return node.MultiPartIdentifier.Identifiers.Last().Value;
         }
+
         protected override object InternalVisit(SchemaObjectName node)
         {
             //TODO:server, schema, and database identifier may take an important role here.
@@ -114,11 +116,12 @@ namespace MemSQL
         {
             return node.Value.ToString();
         }
+
         protected override object InternalVisit(NullLiteral node)
         {
             return DBNull.Value;
-
         }
+
         protected override object InternalVisit(NamedTableReference node)
         {
             //TODO: alias?

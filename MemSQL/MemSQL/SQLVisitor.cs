@@ -69,6 +69,7 @@ namespace MemSQL
             {
                 Result = outer.InternalVisit(node);
             }
+
             public override void ExplicitVisit(NullLiteral node)
             {
                 Result = outer.InternalVisit(node);
@@ -148,7 +149,9 @@ namespace MemSQL
             {
                 Result = outer.InternalVisit(node);
             }
-            public override void ExplicitVisit(ColumnReferenceExpression node) {
+
+            public override void ExplicitVisit(ColumnReferenceExpression node)
+            {
                 Result = outer.InternalVisit(node);
             }
 
