@@ -105,7 +105,7 @@ namespace MemSQL.Test.Structural
         [TestMethod]
         public void AutoincrementPKTableCreationTest()
         {
-            string script = "Create table [TBL](ID int IDENTITY(1,1) PRIMARY KEY, TWICE int IDENTITY(2,2))";
+            string script = "Create table [TBL](ID int IDENTITY(3,3) PRIMARY KEY)";
             DataSet ds = new DataSet();
             var visitor = new SQLInterpreter(ds);
             var result = visitor.Execute(script);
@@ -113,18 +113,15 @@ namespace MemSQL.Test.Structural
             Assert.IsTrue(ds.Tables.Contains("TBL"), "The table must be created");
             var table = ds.Tables["TBL"];
             Assert.IsTrue(table.Columns.Contains("ID"));
-            Assert.AreEqual(typeof(int), table.Columns["ID"].DataType);
-            Assert.IsTrue(table.Columns.Contains("TWICE"));
-            Assert.AreEqual(typeof(int), table.Columns["TWICE"].DataType);
+            Assert.AreEqual(typeof(int), table.Columns["ID"].DataType); 
             Assert.IsTrue(table.PrimaryKey.Length == 1, "The Primary Key is missing!");
             Assert.AreEqual(table.Columns["ID"], table.PrimaryKey[0]);
 
             for (int i = 1; i < 10; i++)
             {
                 var dr = table.NewRow();
-                Assert.AreEqual(i, dr["ID"], "The first autonumeric field did not increment");
-                Assert.AreEqual(i * 2, dr["TWICE"], "The second autonumeric field did not increment");
-            }
+                Assert.AreEqual(i*3, dr["ID"], "The autonumeric field did not increment correctly");
+             }
         }
 
         [TestMethod]
