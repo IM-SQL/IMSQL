@@ -54,19 +54,21 @@ namespace MemSQL.Test
 
             table.Columns["A"].AutoIncrement = true;
             table.Columns["A"].AutoIncrementSeed = 1;
-            table.Columns["A"].AutoIncrementStep = 1; 
+            table.Columns["A"].AutoIncrementStep = 1;
             string query = "Insert into [TBL](A) values(3)";
 
             SQLInterpreter interpreter = new SQLInterpreter(ds);
             Assert.ThrowsException<InvalidOperationException>(() =>
             {
-            //Sql says 
-            //Msg 544, Level 16, State 1, Line 4
-            //Cannot insert explicit value for identity column in table 'TBL' when IDENTITY_INSERT is set to OFF.
+                /*
+                * INFO(Tera): This should fail. SQL Server 2016 throws the following error: 
+                * Msg 544, Level 16, State 1, Line 4
+                * Cannot insert explicit value for identity column in table 'TBL' when IDENTITY_INSERT is set to OFF.
+                */
                 interpreter.Execute(query);
             });
         }
-       
+
         [TestMethod]
         public void DefaultValueInsertTest()
         {
@@ -193,9 +195,11 @@ namespace MemSQL.Test
             SQLInterpreter interpreter = new SQLInterpreter(ds);
             Assert.ThrowsException<ArgumentException>(() =>
             {
-                //Sql says 
-                //Msg 213, Level 16, State 1, Line 1
-                //Column name or number of supplied values does not match table definition.
+                /*
+                 * INFO(Tera): This should fail. SQL Server 2016 throws the following error: 
+                 * Msg 213, Level 16, State 1, Line 4
+                 * Column name or number of supplied values does not match table definition.
+                 */
                 interpreter.Execute(query);
             });
         }
@@ -212,9 +216,11 @@ namespace MemSQL.Test
             SQLInterpreter interpreter = new SQLInterpreter(ds);
             Assert.ThrowsException<ArgumentException>(() =>
             {
-                //Sql says 
-                //Msg 213, Level 16, State 1, Line 1
-                //Column name or number of supplied values does not match table definition.
+                /*
+                 * INFO(Tera): This should fail. SQL Server 2016 throws the following error: 
+                 * Msg 213, Level 16, State 1, Line 4
+                 * Column name or number of supplied values does not match table definition.
+                 */
                 interpreter.Execute(query);
             });
         }
