@@ -33,6 +33,10 @@ namespace MemSQL
                         providedColumns.Add(table.Columns[i].ColumnName);
                 }
             }
+            else {
+                if (providedColumns.Any(name => table.Columns[name].AutoIncrement))
+                    throw new InvalidOperationException("Cannot insert explicit value for identity column ");
+            }
             if (providedColumns.Count != rows[0].Length)
             {
                 //there are probably columns missing.
