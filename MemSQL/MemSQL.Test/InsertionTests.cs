@@ -55,7 +55,7 @@ namespace MemSQL.Test
             string query = "Insert into [TBL] values(3)";
 
             SQLInterpreter interpreter = new SQLInterpreter(ds);
-            Assert.ThrowsException<Exception>(() =>
+            Assert.ThrowsException<ArgumentException>(() =>
             {
                 //Sql says 
                 //Msg 213, Level 16, State 1, Line 1

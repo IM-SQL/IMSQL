@@ -33,7 +33,12 @@ namespace MemSQL
                     providedColumns[i] = table.Columns[i].ColumnName;
                 }
             }
+            if (providedColumns.Length != rows[0].Length)
+            {
+                //there are probably columns missing.
 
+                throw new ArgumentException("The values provided do not match the expected columns");
+            }
             return rows.Select(row =>
             {
                 DataRow dr = table.NewRow();
