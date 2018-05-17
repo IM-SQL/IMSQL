@@ -61,7 +61,7 @@ namespace MemSQL.Test
             Assert.ThrowsException<InvalidOperationException>(() =>
             {
                 /*
-                * INFO(Tera): This should fail. SQL Server 2016 throws the following error: 
+                * INFO(Tera): This should fail. SQL Server 2014 throws the following error: 
                 * Msg 544, Level 16, State 1, Line 4
                 * Cannot insert explicit value for identity column in table 'TBL' when IDENTITY_INSERT is set to OFF.
                 */
@@ -196,7 +196,7 @@ namespace MemSQL.Test
             Assert.ThrowsException<ArgumentException>(() =>
             {
                 /*
-                 * INFO(Tera): This should fail. SQL Server 2016 throws the following error: 
+                 * INFO(Tera): This should fail. SQL Server 2014 throws the following error: 
                  * Msg 213, Level 16, State 1, Line 4
                  * Column name or number of supplied values does not match table definition.
                  */
@@ -217,7 +217,7 @@ namespace MemSQL.Test
             Assert.ThrowsException<ArgumentException>(() =>
             {
                 /*
-                 * INFO(Tera): This should fail. SQL Server 2016 throws the following error: 
+                 * INFO(Tera): This should fail. SQL Server 2014 throws the following error: 
                  * Msg 213, Level 16, State 1, Line 4
                  * Column name or number of supplied values does not match table definition.
                  */

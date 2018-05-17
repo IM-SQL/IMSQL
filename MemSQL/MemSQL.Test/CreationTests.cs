@@ -574,7 +574,29 @@ namespace MemSQL.Test.Structural
             });
             Assert.IsNull(ds.Tables["TBL"], "TBL should not exist");
         }
-
+        [TestMethod]
+        public void MultipleIdentityShouldFail()
+        {
+            string script = @"
+                CREATE TABLE [dbo].TBL 
+                (
+                    [id] INT IDENTITY (1, 1) ,
+	                [foo] INT IDENTITY (1, 1), 
+	                CONSTRAINT [PK2] PRIMARY KEY (id)
+                )";
+            DataSet ds = new DataSet();
+            var visitor = new SQLInterpreter(ds);
+            Assert.ThrowsException<ArgumentException>(() =>
+            {
+                /*
+               * INFO(Tera): This should fail. SQL Server 2014 throws the following error: 
+               * Msg 2744, Level 16, State 2, Line 1
+               * Multiple identity columns specified for table 'TBL'. Only one identity column per table is allowed.
+               */
+                visitor.Execute(script);
+            });
+            Assert.IsNull(ds.Tables["TBL"], "TBL should not exist");
+        }
         [TestMethod]
         public void CreatingAnAlreadyExistingTableShouldFail()
         {
