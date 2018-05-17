@@ -20,20 +20,20 @@ namespace MemSQL
         protected override object InternalVisit(InsertSpecification node)
         {
             var table = Visit<DataTable>(node.Target);
-            var providedColumns = node.Columns.Select(columnReference => Visit<string>(columnReference)).ToArray();
+            List<string> providedColumns = node.Columns.Select(columnReference => Visit<string>(columnReference)).ToList();
             var rows = Visit<object[][]>(node.InsertSource);
 
-            //if no column was provided then the whole table has to be provided as parameter.
-            //TODO: i believe that a column flagged as identity should not be included in the providedColumns
-            if (providedColumns.Length == 0)
+            //if no column was provided then the whole table has to be provided as parameter. 
+            if (providedColumns.Count == 0)
             {
-                providedColumns = new string[table.Columns.Count];
+                providedColumns = new List<string>();
                 for (int i = 0; i < table.Columns.Count; i++)
                 {
-                    providedColumns[i] = table.Columns[i].ColumnName;
+                    if (!table.Columns[i].AutoIncrement)
+                        providedColumns.Add(table.Columns[i].ColumnName);
                 }
             }
-            if (providedColumns.Length != rows[0].Length)
+            if (providedColumns.Count != rows[0].Length)
             {
                 //there are probably columns missing.
 
@@ -43,7 +43,7 @@ namespace MemSQL
             {
                 DataRow dr = table.NewRow();
                 //what to do if they specified the names??
-                for (int i = 0; i < providedColumns.Length; i++)
+                for (int i = 0; i < providedColumns.Count; i++)
                 {
                     dr[providedColumns[i]] = row[i];
                 }
