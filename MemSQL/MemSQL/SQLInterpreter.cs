@@ -49,5 +49,12 @@ namespace MemSQL
             // INFO(Richo): Do nothing
             return new SQLExecutionResult(0, null);
         }
+
+        protected override object InternalVisit(DeleteStatement node)
+        {
+            var interpreter = new SQLDeleteInterpreter(ds);
+            var rows = interpreter.Visit<DataRow[]>(node);
+            return new SQLExecutionResult(rows.Length, rows);
+        }
     }
 }

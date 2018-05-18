@@ -43,6 +43,8 @@ namespace MemSQL
         protected virtual object InternalVisit(RowValue node) { throw new NotImplementedException(); }
         protected virtual object InternalVisit(NamedTableReference node) { throw new NotImplementedException(); }
         protected virtual object InternalVisit(ColumnReferenceExpression node) { throw new NotImplementedException(); }
+        protected virtual object InternalVisit(DeleteStatement node) { throw new NotImplementedException(); }
+
 
         class SQLInternalVisitor : TSqlFragmentVisitor
         {
@@ -52,9 +54,9 @@ namespace MemSQL
             {
                 outer = visitor;
             }
-            
+
             public object Result { get; set; }
-            
+
             public override void ExplicitVisit(SchemaObjectName node)
             {
                 Result = outer.InternalVisit(node);
@@ -124,7 +126,11 @@ namespace MemSQL
             {
                 Result = outer.InternalVisit(node);
             }
-            
+            public override void ExplicitVisit(DeleteStatement node)
+            {
+                Result = outer.InternalVisit(node);
+            }
+
             public override void ExplicitVisit(CreateIndexStatement node)
             {
                 Result = outer.InternalVisit(node);
@@ -190,7 +196,7 @@ namespace MemSQL
             public override void ExplicitVisit(ColumnEncryptionDefinition node) { throw new NotImplementedException(); }
 
             public override void ExplicitVisit(AlterTableAlterColumnStatement node) { throw new NotImplementedException(); }
-            
+
             public override void ExplicitVisit(AutoCleanupChangeTrackingOptionDetail node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(ChangeTrackingOptionDetail node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(ChangeTrackingDatabaseOption node) { throw new NotImplementedException(); }
@@ -815,7 +821,7 @@ namespace MemSQL
             public override void ExplicitVisit(BrowseForClause node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(IdentifierLiteral node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(OptimizeForOptimizerHint node) { throw new NotImplementedException(); }
-            
+
             public override void ExplicitVisit(ForceSeekTableHint node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(PrintStatement node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(TableHintsOptimizerHint node) { throw new NotImplementedException(); }
@@ -834,9 +840,9 @@ namespace MemSQL
             public override void ExplicitVisit(MoneyLiteral node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(XmlForClauseOption node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(BinaryLiteral node) { throw new NotImplementedException(); }
-            
+
             public override void ExplicitVisit(XmlForClause node) { throw new NotImplementedException(); }
-            
+
             public override void ExplicitVisit(ReadOnlyForClause node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(ExecuteInsertSource node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(LiteralTableHint node) { throw new NotImplementedException(); }
@@ -874,7 +880,7 @@ namespace MemSQL
             public override void ExplicitVisit(SchemaObjectFunctionTableReference node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(CreateSequenceStatement node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(AlterSequenceStatement node) { throw new NotImplementedException(); }
-            
+
             public override void ExplicitVisit(DropSequenceStatement node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(DeclareTableVariableStatement node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(SecurityPolicyStatement node) { throw new NotImplementedException(); }
@@ -893,7 +899,7 @@ namespace MemSQL
             public override void ExplicitVisit(SecurityPredicateAction node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(SelectInsertSource node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(UseHintList node) { throw new NotImplementedException(); }
-            
+
             public override void ExplicitVisit(IfStatement node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(LeftFunctionCall node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(LabelStatement node) { throw new NotImplementedException(); }
@@ -908,14 +914,13 @@ namespace MemSQL
             public override void ExplicitVisit(TransactionStatement node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(WhileStatement node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(FunctionCall node) { throw new NotImplementedException(); }
-            public override void ExplicitVisit(DeleteStatement node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(AtTimeZoneCall node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(UpdateDeleteSpecificationBase node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(TryCastCall node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(DeleteSpecification node) { throw new NotImplementedException(); }
 
             public override void ExplicitVisit(CastCall node) { throw new NotImplementedException(); }
-            
+
             public override void ExplicitVisit(TryParseCall node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(RightFunctionCall node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(GoToStatement node) { throw new NotImplementedException(); }
@@ -1102,5 +1107,6 @@ namespace MemSQL
             public override void ExplicitVisit(ExecuteOption node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(AlterTableStatement node) { throw new NotImplementedException(); }
         }
+
     }
 }
