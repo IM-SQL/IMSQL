@@ -85,7 +85,7 @@ namespace MemSQL.Test
                 row["ID"] = i;
                 table.Rows.Add(row);
             }
-            string query = "Delete TOP(50) PERCENT from [TBL]";
+            string query = "Delete TOP (50) PERCENT from [TBL]";
             SQLInterpreter interpreter = new SQLInterpreter(ds);
 
             var result = interpreter.Execute(query);

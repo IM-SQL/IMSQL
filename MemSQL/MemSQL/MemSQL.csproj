@@ -50,9 +50,11 @@
     <Compile Include="SQLCreateInterpreter.cs" />
     <Compile Include="SQLDeleteInterpreter.cs" />
     <Compile Include="SQLExecutionResult.cs" />
+    <Compile Include="SQLExpressionInterpreter.cs" />
     <Compile Include="SQLInsertInterpreter.cs" />
     <Compile Include="SQLInterpreter.cs" />
     <Compile Include="SQLVisitor.cs" />
+    <Compile Include="TopResult.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

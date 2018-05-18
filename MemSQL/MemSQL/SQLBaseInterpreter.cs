@@ -129,5 +129,19 @@ namespace MemSQL
             //TODO: error on table not present?
             return ds.Tables[tableName];
         }
+
+        protected override object InternalVisit(TopRowFilter node)
+        {
+
+            return new TopResult(Visit<Func<int>>(node.Expression)(), node.Percent, node.WithTies);
+
+        }
+
+        /*INFO(Tera):i believe the expressions should be habdled differently,
+         * and should always start a new interpreter from the top of the expression*/
+        protected override object InternalVisit(ParenthesisExpression node)
+        {
+            return new SQLExpressionInterpreter(ds).InternalVisit(node);
+        }
     }
 }

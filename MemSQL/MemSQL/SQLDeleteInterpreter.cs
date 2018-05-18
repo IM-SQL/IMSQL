@@ -22,15 +22,30 @@ namespace MemSQL
             //TODO:node.OutputClause;
             //TODO:node.OutputIntoClause;
             //TODO:node.Target;
-            //TODO:node.TopRowFilter;
             //TODO:node.WhereClause;
 
             var table = Visit<DataTable>(node.Target);
-            List<DataRow> result = new List<DataRow>();
-            foreach (DataRow item in table.Rows)
+
+            int size = table.Rows.Count;
+
+            int top = size;
+            if (node.TopRowFilter != null)
             {
-                result.Add(item);
+                var t = Visit<TopResult>(node.TopRowFilter);
+                double amount = t.Amount;
+                if (t.Percent) {
+                    amount =amount*size/ 100;
+                    amount = Math.Round(amount); 
+                }
+                top = (int)amount;
             }
+
+            List<DataRow> result = new List<DataRow>();
+            int index = 0;
+
+            while (index < size && result.Count < top) {
+                result.Add(table.Rows[index++]);
+            } 
             foreach (DataRow item in result)
             {
                 item.Delete();
