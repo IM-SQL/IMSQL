@@ -31,7 +31,7 @@ namespace MemSQL.Test
 
             Assert.AreEqual(1, affected, "There should be one row affected");
             Assert.AreEqual(0, table.Rows.Count, "There should be no rows on the table");
-            Assert.IsTrue(row.RowState == DataRowState.Deleted, "The created row should have been deleted");
+            Assert.IsTrue(row.RowState == DataRowState.Detached, "The created row should have been detached because it is no longer in the table");
         }
     }
 }
