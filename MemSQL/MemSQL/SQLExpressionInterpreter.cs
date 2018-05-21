@@ -10,6 +10,8 @@ namespace MemSQL
 {
     internal class SQLExpressionInterpreter : SQLBaseInterpreter
     {
+        Environment currentEnvironment;
+
         public SQLExpressionInterpreter(DataSet ds) : base(ds)
         {
         }
@@ -18,15 +20,31 @@ namespace MemSQL
             return Visit<object>(node.Expression);
         }
 
-        DataRow currentRow;
         protected override object InternalVisit(WhereClause node)
         {
             //TODO: node.Cursor
-            return new Func<DataRow, bool>((row) =>
+            return new Func<Environment, IEnumerable<DataRow>>((env) =>
             {
-                currentRow = row;
-                return Visit<Func<bool>>(node.SearchCondition)();
+                DataTable table = env.At<DataTable>("Target");
+                int top = env.At<int>("Top");
+                int size = table.Rows.Count;
+                int index = 0;
+
+                currentEnvironment = env;
+                env.Add("currentRow", null);
+                var filter = Visit<Func<bool>>(node.SearchCondition);
+                List<DataRow> result = new List<DataRow>();
+                while (index < size && result.Count < top)
+                {
+                    int i = index++;
+                    env["currentRow"] = table.Rows[i];
+                    if (filter())
+                        result.Add(table.Rows[i]);
+                }
+                return result;
             });
+
+
         }
 
         protected override object InternalVisit(BooleanComparisonExpression node)
@@ -90,7 +108,7 @@ namespace MemSQL
             //TODO(Tera): we should check what about the other parts of the identifier
             return new Func<object>(() =>
             {
-                return currentRow[node.MultiPartIdentifier.Identifiers.Last().Value];
+                return currentEnvironment.At<DataRow>("currentRow")[node.MultiPartIdentifier.Identifiers.Last().Value];
             });
         }
         protected override object InternalVisit(BooleanBinaryExpression node)
@@ -117,7 +135,7 @@ namespace MemSQL
             ;
         }
         protected override object InternalVisit(BooleanNotExpression node)
-        { 
+        {
             return new Func<bool>(() => { return !(Visit<Func<bool>>(node.Expression)()); });
         }
     }
