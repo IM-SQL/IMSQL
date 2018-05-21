@@ -14,10 +14,7 @@ namespace MemSQL
         {
         }
         protected override object InternalVisit(ParenthesisExpression node)
-        {
-            //      return InternalVisit(node.Expression);
-
-            //TODO: here i should use node.scalarExpression.accept(this) to build a correct expression.
+        { 
             return Visit<object>(node.Expression);
         }
 
