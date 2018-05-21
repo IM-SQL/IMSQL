@@ -133,7 +133,7 @@ namespace MemSQL
         protected override object InternalVisit(TopRowFilter node)
         {
 
-            return new TopResult(Visit<Func<int>>(node.Expression)(), node.Percent, node.WithTies);
+            return new TopResult((int)Visit<Func<object>>(node.Expression)(), node.Percent, node.WithTies);
 
         }
 

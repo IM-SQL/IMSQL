@@ -18,9 +18,22 @@ namespace MemSQL
             //      return InternalVisit(node.Expression);
 
             //TODO: here i should use node.scalarExpression.accept(this) to build a correct expression.
-            int value = int.Parse(((IntegerLiteral)node.Expression).Value);
-            Func<int> result = () => { return value; };
-            return result;
+            return Visit<object>(node.Expression);
+        }
+
+        protected override object InternalVisit(IntegerLiteral node)
+        {
+            return new Func<object>( () => { return int.Parse(node.Value); });
+        }
+
+        protected override object InternalVisit(StringLiteral node)
+        {
+            return new Func<object>(() => { return node.Value.ToString(); });
+        }
+
+        protected override object InternalVisit(NullLiteral node)
+        {
+            return new Func<object>(() => { return DBNull.Value; });
         }
     }
 }
