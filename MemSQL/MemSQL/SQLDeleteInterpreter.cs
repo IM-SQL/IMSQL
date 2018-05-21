@@ -22,8 +22,7 @@ namespace MemSQL
             //TODO:node.OutputClause;
             //TODO:node.OutputIntoClause;
             //TODO:node.Target;
-            //TODO:node.WhereClause;
-
+            
             var table = Visit<DataTable>(node.Target);
 
             int size = table.Rows.Count;
