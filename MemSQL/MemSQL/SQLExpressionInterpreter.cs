@@ -20,12 +20,12 @@ namespace MemSQL
 
         protected override object InternalVisit(IntegerLiteral node)
         {
-            return new Func<object>( () => { return int.Parse(node.Value); });
+            return new Func<int>( () => { return int.Parse(node.Value); });
         }
 
         protected override object InternalVisit(StringLiteral node)
         {
-            return new Func<object>(() => { return node.Value.ToString(); });
+            return new Func<string>(() => { return node.Value.ToString(); });
         }
 
         protected override object InternalVisit(NullLiteral node)
