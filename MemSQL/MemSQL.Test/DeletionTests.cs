@@ -295,5 +295,46 @@ namespace MemSQL.Test
             Assert.AreEqual(3, affected, "There should be 3 row affected");
             Assert.AreEqual(97, table.Rows.Count, "There should be 97 rows on the table");
         }
+
+        [TestMethod]
+        public void DeleteWhereNot()
+        {
+            DataSet ds = new DataSet();
+            DataTable table = ds.Tables.Add("TBL");
+            table.Columns.Add(new DataColumn("ID", typeof(int)));
+            for (int i = 0; i < 100; i++)
+            {
+                var row = table.NewRow();
+                row["ID"] = i;
+                table.Rows.Add(row);
+            }
+            string query = "Delete from [TBL] where not [ID] = 1";
+            SQLInterpreter interpreter = new SQLInterpreter(ds);
+
+            var result = interpreter.Execute(query);
+            int affected = result.RowsAffected;
+            Assert.AreEqual(99, affected, "There should be 1 row affected");
+            Assert.AreEqual(1, table.Rows.Count, "There should be 99 rows on the table");
+        }
+        [TestMethod]
+        public void DeleteWhereAnd()
+        {
+            DataSet ds = new DataSet();
+            DataTable table = ds.Tables.Add("TBL");
+            table.Columns.Add(new DataColumn("ID", typeof(int)));
+            for (int i = 0; i < 100; i++)
+            {
+                var row = table.NewRow();
+                row["ID"] = i;
+                table.Rows.Add(row);
+            }
+            string query = "Delete from [TBL] where [ID] > 1 AND [ID] < 5";
+            SQLInterpreter interpreter = new SQLInterpreter(ds);
+
+            var result = interpreter.Execute(query);
+            int affected = result.RowsAffected;
+            Assert.AreEqual(3, affected, "There should be 3 row affected");
+            Assert.AreEqual(97, table.Rows.Count, "There should be 97 rows on the table");
+        }
     }
 }
