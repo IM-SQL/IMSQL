@@ -76,8 +76,8 @@ namespace MemSQL
             Action<DataColumn> applier = column =>
             {
                 column.AutoIncrement = true;
-                column.AutoIncrementSeed = Visit(node.IdentitySeed, 1);
-                column.AutoIncrementStep = Visit(node.IdentityIncrement, 1);
+                column.AutoIncrementSeed = node.IdentitySeed != null ? (int)Visit<Func<object>>(node.IdentitySeed)() : 1;
+                column.AutoIncrementStep = node.IdentityIncrement != null ? (int)Visit<Func<object>>(node.IdentityIncrement)() : 1;
             };
             return applier;
         }
@@ -86,7 +86,7 @@ namespace MemSQL
         {
             Action<DataColumn> applier = (column) =>
             {
-                column.DefaultValue = Visit<object>(node.Expression);
+                column.DefaultValue = Visit<Func<object>>(node.Expression)();
             };
             return applier;
         }
