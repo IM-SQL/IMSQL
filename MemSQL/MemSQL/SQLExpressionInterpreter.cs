@@ -35,7 +35,21 @@ namespace MemSQL
                     target = -1;
                     break;
                 case BooleanComparisonType.GreaterThanOrEqualTo:
+                    return new Func<DataRow, bool>((row) =>
+                    {
+                        currentRow = row;
+                        var first = Visit<Func<object>>(node.FirstExpression)();
+                        var second = Visit<Func<object>>(node.SecondExpression)();
+                        return -1 < System.Collections.Comparer.DefaultInvariant.Compare(first, second);
+                    });
                 case BooleanComparisonType.LessThanOrEqualTo:
+                    return new Func<DataRow, bool>((row) =>
+                    {
+                        currentRow = row;
+                        var first = Visit<Func<object>>(node.FirstExpression)();
+                        var second = Visit<Func<object>>(node.SecondExpression)();
+                        return 1 > System.Collections.Comparer.DefaultInvariant.Compare(first, second);
+                    });
                 case BooleanComparisonType.NotEqualToBrackets:
                 case BooleanComparisonType.NotEqualToExclamation:
                 case BooleanComparisonType.NotLessThan:
