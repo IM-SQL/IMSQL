@@ -106,6 +106,7 @@ namespace MemSQL
                         return first || second;
                     });
                 default:
+                    throw new NotImplementedException();
                     break;
             }
             ;
