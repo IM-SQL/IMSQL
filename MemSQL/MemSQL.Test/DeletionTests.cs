@@ -74,6 +74,25 @@ namespace MemSQL.Test
             Assert.AreEqual(150, table.Rows.Count, "There should be 150 rows on the table");
         }
         [TestMethod]
+        public void TopDeleteWithTiesShouldFail()
+        {
+            DataSet ds = new DataSet();
+            DataTable table = ds.Tables.Add("TBL");
+            table.Columns.Add(new DataColumn("ID", typeof(int)));
+            for (int i = 0; i < 200; i++)
+            {
+                var row = table.NewRow();
+                row["ID"] = i;
+                table.Rows.Add(row);
+            }
+            string query = "Delete TOP(50) with ties from [TBL]";
+            SQLInterpreter interpreter = new SQLInterpreter(ds);
+            Assert.ThrowsException<ParseException>(() => {
+
+                var result = interpreter.Execute(query);
+            });
+        }
+        [TestMethod]
         public void TopPercentDeleteTest()
         {
             DataSet ds = new DataSet();
