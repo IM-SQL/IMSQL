@@ -143,5 +143,10 @@ namespace MemSQL
         {
             return new SQLExpressionInterpreter(ds).InternalVisit(node);
         }
+        protected override object InternalVisit(WhereClause node)
+        {
+            //TODO: node.Cursor
+            return new SQLExpressionInterpreter(ds).Visit<object>(node.SearchCondition);
+        }
     }
 }

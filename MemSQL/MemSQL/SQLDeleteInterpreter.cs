@@ -33,19 +33,34 @@ namespace MemSQL
             {
                 var t = Visit<TopResult>(node.TopRowFilter);
                 double amount = t.Amount;
-                if (t.Percent) {
-                    amount =amount*size/ 100;
-                    amount = Math.Round(amount); 
+                if (t.Percent)
+                {
+                    amount = amount * size / 100;
+                    amount = Math.Round(amount);
                 }
                 top = (int)amount;
+            }
+
+
+            Func<DataRow, bool> predicate;
+            if (node.WhereClause != null)
+            {
+                predicate = Visit<Func<DataRow, bool>>(node.WhereClause);
+            }
+            else
+            {
+                predicate = (v) => { return true; };
             }
 
             List<DataRow> result = new List<DataRow>();
             int index = 0;
 
-            while (index < size && result.Count < top) {
-                result.Add(table.Rows[index++]);
-            } 
+            while (index < size && result.Count < top)
+            {
+                int i = index++;
+                if (predicate(table.Rows[i]))
+                    result.Add(table.Rows[i]);
+            }
             foreach (DataRow item in result)
             {
                 item.Delete();
