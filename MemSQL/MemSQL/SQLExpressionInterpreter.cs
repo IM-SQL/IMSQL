@@ -34,6 +34,7 @@ namespace MemSQL
                 case BooleanComparisonType.LessThan:
                     target = -1;
                     break;
+                case BooleanComparisonType.NotLessThan:
                 case BooleanComparisonType.GreaterThanOrEqualTo:
                     return new Func<DataRow, bool>((row) =>
                     {
@@ -42,6 +43,7 @@ namespace MemSQL
                         var second = Visit<Func<object>>(node.SecondExpression)();
                         return -1 < System.Collections.Comparer.DefaultInvariant.Compare(first, second);
                     });
+                case BooleanComparisonType.NotGreaterThan:
                 case BooleanComparisonType.LessThanOrEqualTo:
                     return new Func<DataRow, bool>((row) =>
                     {
@@ -50,10 +52,18 @@ namespace MemSQL
                         var second = Visit<Func<object>>(node.SecondExpression)();
                         return 1 > System.Collections.Comparer.DefaultInvariant.Compare(first, second);
                     });
+
+
                 case BooleanComparisonType.NotEqualToBrackets:
                 case BooleanComparisonType.NotEqualToExclamation:
-                case BooleanComparisonType.NotLessThan:
-                case BooleanComparisonType.NotGreaterThan:
+                    return new Func<DataRow, bool>((row) =>
+                    {
+                        currentRow = row;
+                        var first = Visit<Func<object>>(node.FirstExpression)();
+                        var second = Visit<Func<object>>(node.SecondExpression)();
+                        return 0 != System.Collections.Comparer.DefaultInvariant.Compare(first, second);
+                    });
+
                 case BooleanComparisonType.LeftOuterJoin:
                 case BooleanComparisonType.RightOuterJoin:
                 default:
