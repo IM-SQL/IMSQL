@@ -19,6 +19,16 @@ namespace MemSQL
         }
 
         DataRow currentRow;
+        protected override object InternalVisit(WhereClause node)
+        {
+            //TODO: node.Cursor
+            return new Func<DataRow, bool>((row) =>
+            {
+                currentRow = row;
+                return Visit<Func<bool>>(node.SearchCondition)();
+            });
+        }
+
         protected override object InternalVisit(BooleanComparisonExpression node)
         {
             int target = 0;
@@ -36,46 +46,42 @@ namespace MemSQL
                     break;
                 case BooleanComparisonType.NotLessThan:
                 case BooleanComparisonType.GreaterThanOrEqualTo:
-                    return new Func<DataRow, bool>((row) =>
-                    {
-                        currentRow = row;
-                        var first = Visit<Func<object>>(node.FirstExpression)();
-                        var second = Visit<Func<object>>(node.SecondExpression)();
-                        return -1 < System.Collections.Comparer.DefaultInvariant.Compare(first, second);
-                    });
+                    return new Func<bool>(() =>
+                   {
+                       var first = Visit<Func<object>>(node.FirstExpression)();
+                       var second = Visit<Func<object>>(node.SecondExpression)();
+                       return -1 < System.Collections.Comparer.DefaultInvariant.Compare(first, second);
+                   });
                 case BooleanComparisonType.NotGreaterThan:
                 case BooleanComparisonType.LessThanOrEqualTo:
-                    return new Func<DataRow, bool>((row) =>
-                    {
-                        currentRow = row;
-                        var first = Visit<Func<object>>(node.FirstExpression)();
-                        var second = Visit<Func<object>>(node.SecondExpression)();
-                        return 1 > System.Collections.Comparer.DefaultInvariant.Compare(first, second);
-                    });
+                    return new Func<bool>(() =>
+                   {
+                       var first = Visit<Func<object>>(node.FirstExpression)();
+                       var second = Visit<Func<object>>(node.SecondExpression)();
+                       return 1 > System.Collections.Comparer.DefaultInvariant.Compare(first, second);
+                   });
 
 
                 case BooleanComparisonType.NotEqualToBrackets:
                 case BooleanComparisonType.NotEqualToExclamation:
-                    return new Func<DataRow, bool>((row) =>
-                    {
-                        currentRow = row;
-                        var first = Visit<Func<object>>(node.FirstExpression)();
-                        var second = Visit<Func<object>>(node.SecondExpression)();
-                        return 0 != System.Collections.Comparer.DefaultInvariant.Compare(first, second);
-                    });
+                    return new Func<bool>(() =>
+                   {
+                       var first = Visit<Func<object>>(node.FirstExpression)();
+                       var second = Visit<Func<object>>(node.SecondExpression)();
+                       return 0 != System.Collections.Comparer.DefaultInvariant.Compare(first, second);
+                   });
 
                 case BooleanComparisonType.LeftOuterJoin:
                 case BooleanComparisonType.RightOuterJoin:
                 default:
                     throw new NotImplementedException();
             }
-            return new Func<DataRow, bool>((row) =>
-            {
-                currentRow = row;
-                var first = Visit<Func<object>>(node.FirstExpression)();
-                var second = Visit<Func<object>>(node.SecondExpression)();
-                return target == System.Collections.Comparer.DefaultInvariant.Compare(first, second);
-            });
+            return new Func<bool>(() =>
+           {
+               var first = Visit<Func<object>>(node.FirstExpression)();
+               var second = Visit<Func<object>>(node.SecondExpression)();
+               return target == System.Collections.Comparer.DefaultInvariant.Compare(first, second);
+           });
 
         }
 
@@ -94,26 +100,25 @@ namespace MemSQL
                 case BooleanBinaryExpressionType.And:
                     return new Func<bool>(() =>
                     {
-                        var first = (bool)Visit<Func<object>>(node.FirstExpression)();
-                        var second = (bool)Visit<Func<object>>(node.SecondExpression)();
+                        var first = Visit<Func<bool>>(node.FirstExpression)();
+                        var second = Visit<Func<bool>>(node.SecondExpression)();
                         return first && second;
-                    }); 
+                    });
                 case BooleanBinaryExpressionType.Or:
                     return new Func<bool>(() =>
                     {
-                        var first = (bool)Visit<Func<object>>(node.FirstExpression)();
-                        var second = (bool)Visit<Func<object>>(node.SecondExpression)();
+                        var first = Visit<Func<bool>>(node.FirstExpression)();
+                        var second = Visit<Func<bool>>(node.SecondExpression)();
                         return first || second;
                     });
                 default:
                     throw new NotImplementedException();
-                    break;
             }
             ;
         }
         protected override object InternalVisit(BooleanNotExpression node)
-        {
-            return new Func<object>(() => { return !((bool)Visit<object>(node.Expression)); });
+        { 
+            return new Func<bool>(() => { return !(Visit<Func<bool>>(node.Expression)()); });
         }
     }
 }

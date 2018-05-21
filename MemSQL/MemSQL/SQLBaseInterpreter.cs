@@ -146,7 +146,7 @@ namespace MemSQL
         protected override object InternalVisit(WhereClause node)
         {
             //TODO: node.Cursor
-            return new SQLExpressionInterpreter(ds).Visit<object>(node.SearchCondition);
+            return new SQLExpressionInterpreter(ds).Visit<object>(node);
         }
         protected override object InternalVisit(BooleanBinaryExpression node)
         {
