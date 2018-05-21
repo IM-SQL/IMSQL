@@ -148,5 +148,15 @@ namespace MemSQL
             //TODO: node.Cursor
             return new SQLExpressionInterpreter(ds).Visit<object>(node.SearchCondition);
         }
+        protected override object InternalVisit(BooleanBinaryExpression node)
+        {
+            //TODO: node.Cursor
+            return new SQLExpressionInterpreter(ds).Visit<object>(node);
+        }
+        protected override object InternalVisit(BooleanNotExpression node)
+        {
+            //TODO: node.Cursor
+            return new SQLExpressionInterpreter(ds).Visit<object>(node);
+        }
     }
 }

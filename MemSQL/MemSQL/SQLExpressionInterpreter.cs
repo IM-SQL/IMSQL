@@ -87,6 +87,32 @@ namespace MemSQL
                 return currentRow[node.MultiPartIdentifier.Identifiers.Last().Value];
             });
         }
-
+        protected override object InternalVisit(BooleanBinaryExpression node)
+        {
+            switch (node.BinaryExpressionType)
+            {
+                case BooleanBinaryExpressionType.And:
+                    return new Func<bool>(() =>
+                    {
+                        var first = (bool)Visit<Func<object>>(node.FirstExpression)();
+                        var second = (bool)Visit<Func<object>>(node.SecondExpression)();
+                        return first && second;
+                    }); 
+                case BooleanBinaryExpressionType.Or:
+                    return new Func<bool>(() =>
+                    {
+                        var first = (bool)Visit<Func<object>>(node.FirstExpression)();
+                        var second = (bool)Visit<Func<object>>(node.SecondExpression)();
+                        return first || second;
+                    });
+                default:
+                    break;
+            }
+            ;
+        }
+        protected override object InternalVisit(BooleanNotExpression node)
+        {
+            return new Func<object>(() => { return !((bool)Visit<object>(node.Expression)); });
+        }
     }
 }
