@@ -43,30 +43,23 @@ namespace MemSQL
 
 
             Func<Environment, IEnumerable<DataRow>> filter;
-            if (node.WhereClause != null)
+            if (node.WhereClause == null)
             {
-                filter = Visit<Func<Environment, IEnumerable<DataRow>>>(node.WhereClause);
-            }
-            else
-            {
-                //TODO: this code is duplicated, perhaps i should just create a where 1=1?
-                filter = (v) =>
+                node.WhereClause = new WhereClause()
                 {
-                    DataTable _table = v.At<DataTable>("Target");
-                    int _top = v.At<int>("Top");
-                    int _size = table.Rows.Count;
-
-                    int index = 0;
-                    List<DataRow> r = new List<DataRow>();
-                    while (index < _size && r.Count < _top)
+                 /*   SearchCondition = new BooleanIsNullExpression()
                     {
-                        int i = index++;
-                         r.Add(_table.Rows[i]);
+                        Expression = new NullLiteral()
+                    }*/
+                    SearchCondition=new BooleanComparisonExpression() {
+                        ComparisonType=BooleanComparisonType.Equals,
+                        FirstExpression=new StringLiteral() { Value=""},
+                        SecondExpression=new StringLiteral() { Value=""}
                     }
-                    return r;
-
                 };
+
             }
+            filter = Visit<Func<Environment, IEnumerable<DataRow>>>(node.WhereClause);
 
             List<DataRow> result = new List<DataRow>();
             Environment env = new Environment();
