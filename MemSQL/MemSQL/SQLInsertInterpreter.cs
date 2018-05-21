@@ -63,7 +63,7 @@ namespace MemSQL
 
         protected override object InternalVisit(RowValue node)
         {
-            return node.ColumnValues.Select(cv => Visit<object>(cv)).ToArray();
+            return node.ColumnValues.Select(cv => Visit<Func<object>>(cv)()).ToArray();
         }
 
     }
