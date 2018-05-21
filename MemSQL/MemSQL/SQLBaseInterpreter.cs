@@ -109,17 +109,17 @@ namespace MemSQL
 
         protected override object InternalVisit(IntegerLiteral node)
         {
-            return int.Parse(node.Value);
+            return new Func<object>(() => { return int.Parse(node.Value); });
         }
 
         protected override object InternalVisit(StringLiteral node)
         {
-            return node.Value.ToString();
+            return new Func<object>(() => { return node.Value.ToString(); });
         }
 
         protected override object InternalVisit(NullLiteral node)
         {
-            return DBNull.Value;
+            return new Func<object>(() => { return DBNull.Value; });
         }
 
         protected override object InternalVisit(NamedTableReference node)
