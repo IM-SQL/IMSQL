@@ -18,19 +18,6 @@ namespace MemSQL
             return Visit<object>(node.Expression);
         }
 
-        protected override object InternalVisit(IntegerLiteral node)
-        {
-            return new Func<int>( () => { return int.Parse(node.Value); });
-        }
 
-        protected override object InternalVisit(StringLiteral node)
-        {
-            return new Func<string>(() => { return node.Value.ToString(); });
-        }
-
-        protected override object InternalVisit(NullLiteral node)
-        {
-            return new Func<object>(() => { return DBNull.Value; });
-        }
     }
 }
