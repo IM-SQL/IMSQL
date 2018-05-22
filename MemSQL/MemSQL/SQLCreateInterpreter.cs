@@ -53,10 +53,12 @@ namespace MemSQL
         {
             //TODO: indexes
             var result = new DataTable();
-            result.Columns
-                .AddRange(node.ColumnDefinitions
+            var columns = node.ColumnDefinitions
                     .Select(cd => Visit<DataColumn>(cd))
-                    .ToArray());
+                    .ToArray();
+            if (columns.Count(col => col.AutoIncrement) > 1)
+            { throw new ArgumentException(" Only one identity column per table is allowed"); }
+            result.Columns.AddRange(columns);
             return result;
         }
 
@@ -74,21 +76,21 @@ namespace MemSQL
             Action<DataColumn> applier = column =>
             {
                 column.AutoIncrement = true;
-                column.AutoIncrementSeed = Visit(node.IdentitySeed, 1);
-                column.AutoIncrementStep = Visit(node.IdentityIncrement, 1);
+                column.AutoIncrementSeed = node.IdentitySeed != null ? (int)Visit<Func<object>>(node.IdentitySeed)() : 1;
+                column.AutoIncrementStep = node.IdentityIncrement != null ? (int)Visit<Func<object>>(node.IdentityIncrement)() : 1;
             };
             return applier;
         }
-        
+
         protected override object InternalVisit(DefaultConstraintDefinition node)
         {
             Action<DataColumn> applier = (column) =>
             {
-                column.DefaultValue = Visit<object>(node.Expression);
+                column.DefaultValue = Visit<Func<object>>(node.Expression)();
             };
             return applier;
         }
-        
+
         protected override object InternalVisit(NullableConstraintDefinition node)
         {
             Action<DataTable, DataColumn> applier = (ign, column) =>
@@ -186,7 +188,7 @@ namespace MemSQL
                 }
 
                 DataColumn[] parents = node.ReferencedTableColumns
-                    .Select(c => 
+                    .Select(c =>
                     {
                         var dc = refTable.Columns[c.Value];
                         if (dc == null)
@@ -200,7 +202,7 @@ namespace MemSQL
                     .ToArray();
 
                 DataColumn[] childs = node.Columns
-                    .Select(c => 
+                    .Select(c =>
                     {
                         var dc = table.Columns[c.Value];
                         if (dc == null)
@@ -212,14 +214,14 @@ namespace MemSQL
                         return dc;
                     })
                     .ToArray();
-                
+
                 var fk = new ForeignKeyConstraint(constraintName, parents, childs);
                 fk.DeleteRule = GetDeleteUpdateRule(node.DeleteAction);
                 fk.UpdateRule = GetDeleteUpdateRule(node.UpdateAction);
                 if ((fk.DeleteRule == Rule.SetNull || fk.UpdateRule == Rule.SetNull)
                     && childs.Any(c => !c.AllowDBNull))
                 {
-                    var msg = string.Format("Cannot create the foreign key \"{0}\" with the SET NULL referential action, " + 
+                    var msg = string.Format("Cannot create the foreign key \"{0}\" with the SET NULL referential action, " +
                                             "because one or more referencing columns are not nullable.", constraintName);
                     throw new InvalidConstraintException(msg);
                 }

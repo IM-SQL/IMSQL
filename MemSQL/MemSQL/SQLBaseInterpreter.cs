@@ -109,17 +109,17 @@ namespace MemSQL
 
         protected override object InternalVisit(IntegerLiteral node)
         {
-            return int.Parse(node.Value);
+            return new Func<object>(() => { return int.Parse(node.Value); });
         }
 
         protected override object InternalVisit(StringLiteral node)
         {
-            return node.Value.ToString();
+            return new Func<object>(() => { return node.Value.ToString(); });
         }
 
         protected override object InternalVisit(NullLiteral node)
         {
-            return DBNull.Value;
+            return new Func<object>(() => { return DBNull.Value; });
         }
 
         protected override object InternalVisit(NamedTableReference node)
@@ -128,6 +128,35 @@ namespace MemSQL
             var tableName = Visit<string>(node.SchemaObject);
             //TODO: error on table not present?
             return ds.Tables[tableName];
+        }
+
+        protected override object InternalVisit(TopRowFilter node)
+        {
+
+            return new TopResult((int)Visit<Func<object>>(node.Expression)(), node.Percent, node.WithTies);
+
+        }
+
+        /*INFO(Tera):i believe the expressions should be habdled differently,
+         * and should always start a new interpreter from the top of the expression*/
+        protected override object InternalVisit(ParenthesisExpression node)
+        {
+            return new SQLExpressionInterpreter(ds).InternalVisit(node);
+        }
+        protected override object InternalVisit(WhereClause node)
+        {
+            //TODO: node.Cursor
+            return new SQLExpressionInterpreter(ds).Visit<object>(node);
+        }
+        protected override object InternalVisit(BooleanBinaryExpression node)
+        {
+            //TODO: node.Cursor
+            return new SQLExpressionInterpreter(ds).Visit<object>(node);
+        }
+        protected override object InternalVisit(BooleanNotExpression node)
+        {
+            //TODO: node.Cursor
+            return new SQLExpressionInterpreter(ds).Visit<object>(node);
         }
     }
 }
