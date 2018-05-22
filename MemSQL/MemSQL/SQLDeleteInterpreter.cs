@@ -47,8 +47,8 @@ namespace MemSQL
                     SearchCondition=new BooleanComparisonExpression()
                     {
                         ComparisonType = BooleanComparisonType.Equals,
-                        FirstExpression = new StringLiteral() { Value="" },
-                        SecondExpression = new StringLiteral() { Value="" }
+                        FirstExpression = new StringLiteral() { Value = "" },
+                        SecondExpression = new StringLiteral() { Value = "" }
                     }
                 };
             }

@@ -81,9 +81,10 @@ namespace MemSQL
         {
             Action<DataColumn> applier = column =>
             {
+                // TODO(Richo): Use the global environment here or what? For now, I'm using null...
+                column.AutoIncrementSeed = (int)Visit<Func<Environment, object>>(node.IdentitySeed, env => 1)(null);
+                column.AutoIncrementStep = (int)Visit<Func<Environment, object>>(node.IdentityIncrement, env => 1)(null);
                 column.AutoIncrement = true;
-                column.AutoIncrementSeed = node.IdentitySeed != null ? (int)Visit<Func<object>>(node.IdentitySeed)() : 1;
-                column.AutoIncrementStep = node.IdentityIncrement != null ? (int)Visit<Func<object>>(node.IdentityIncrement)() : 1;
             };
             return applier;
         }
@@ -92,7 +93,8 @@ namespace MemSQL
         {
             Action<DataColumn> applier = (column) =>
             {
-                column.DefaultValue = Visit<Func<object>>(node.Expression)();
+                // TODO(Richo): Use the global environment here or what? For now, I'm using null...
+                column.DefaultValue = Visit<Func<Environment, object>>(node.Expression)(null);
             };
             return applier;
         }

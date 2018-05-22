@@ -114,17 +114,17 @@ namespace MemSQL
 
         protected override object InternalVisit(IntegerLiteral node)
         {
-            return new Func<object>(() => { return int.Parse(node.Value); });
+            return new Func<Environment, object>(env => int.Parse(node.Value));
         }
 
         protected override object InternalVisit(StringLiteral node)
         {
-            return new Func<object>(() => { return node.Value.ToString(); });
+            return new Func<Environment, object>(env => node.Value.ToString());
         }
 
         protected override object InternalVisit(NullLiteral node)
         {
-            return new Func<object>(() => { return DBNull.Value; });
+            return new Func<Environment, object>(env => DBNull.Value);
         }
 
         protected override object InternalVisit(NamedTableReference node)
@@ -137,7 +137,14 @@ namespace MemSQL
 
         protected override object InternalVisit(TopRowFilter node)
         {
-            return new TopResult((int)Visit<Func<object>>(node.Expression)(), node.Percent, node.WithTies);
+            return new TopResult(
+                /*
+                 * TODO(Richo): The amount should probably be stored as a function so that when we need it we can
+                 * invoke it and supply the current environment
+                 */
+                amount: (int)Visit<Func<Environment, object>>(node.Expression)(null), 
+                percent: node.Percent, 
+                ties: node.WithTies);
         }
 
         /*INFO(Tera):i believe the expressions should be habdled differently,

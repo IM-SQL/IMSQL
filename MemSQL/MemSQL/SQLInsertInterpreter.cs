@@ -54,7 +54,6 @@ namespace MemSQL
             return rows.Select(row =>
             {
                 DataRow dr = table.NewRow();
-                //what to do if they specified the names??
                 for (int i = 0; i < providedColumns.Count; i++)
                 {
                     dr[providedColumns[i]] = row[i];
@@ -71,7 +70,8 @@ namespace MemSQL
 
         protected override object InternalVisit(RowValue node)
         {
-            return node.ColumnValues.Select(cv => Visit<Func<object>>(cv)()).ToArray();
+            // TODO(Richo): Use the global environment here or what? For now, I'm using null...
+            return node.ColumnValues.Select(cv => Visit<Func<Environment, object>>(cv)(null)).ToArray();
         }
     }
 }

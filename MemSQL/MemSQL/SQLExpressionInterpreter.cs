@@ -11,8 +11,6 @@ namespace MemSQL
 {
     internal class SQLExpressionInterpreter : SQLBaseInterpreter
     {
-        Environment currentEnvironment;
-
         public SQLExpressionInterpreter(DataSet ds) : base(ds) {}
 
         protected override object InternalVisit(ParenthesisExpression node)
@@ -29,16 +27,15 @@ namespace MemSQL
                 int top = env.At<int>("Top");
                 int size = table.Rows.Count;
                 int index = 0;
-
-                currentEnvironment = env;
+                
                 env.Add("currentRow", null);
-                var filter = Visit<Func<bool>>(node.SearchCondition);
+                var filter = Visit<Func<Environment, bool>>(node.SearchCondition);
                 List<DataRow> result = new List<DataRow>();
                 while (index < size && result.Count < top)
                 {
                     int i = index++;
                     env["currentRow"] = table.Rows[i];
-                    if (filter()) { result.Add(table.Rows[i]); }
+                    if (filter(env)) { result.Add(table.Rows[i]); }
                 }
                 return result;
             });
@@ -47,35 +44,35 @@ namespace MemSQL
         protected override object InternalVisit(BooleanComparisonExpression node)
         {
             var comparer = Comparer.DefaultInvariant;
-            Func<object, object, bool> comparison;
+            Func<object, object, bool> func;
 
             switch (node.ComparisonType)
             {
                 case BooleanComparisonType.Equals:
-                    comparison = (first, second) => 0 == comparer.Compare(first, second);
+                    func = (first, second) => 0 == comparer.Compare(first, second);
                     break;
 
                 case BooleanComparisonType.GreaterThan:
-                    comparison = (first, second) => 1 == comparer.Compare(first, second);
+                    func = (first, second) => 1 == comparer.Compare(first, second);
                     break;
 
                 case BooleanComparisonType.LessThan:
-                    comparison = (first, second) => -1 == comparer.Compare(first, second);
+                    func = (first, second) => -1 == comparer.Compare(first, second);
                     break;
 
                 case BooleanComparisonType.NotLessThan:
                 case BooleanComparisonType.GreaterThanOrEqualTo:
-                    comparison = (first, second) => -1 < comparer.Compare(first, second);
+                    func = (first, second) => -1 < comparer.Compare(first, second);
                     break;
 
                 case BooleanComparisonType.NotGreaterThan:
                 case BooleanComparisonType.LessThanOrEqualTo:
-                    comparison = (first, second) => 1 > comparer.Compare(first, second);
+                    func = (first, second) => 1 > comparer.Compare(first, second);
                     break;
 
                 case BooleanComparisonType.NotEqualToBrackets:
                 case BooleanComparisonType.NotEqualToExclamation:
-                    comparison = (first, second) => 0 != comparer.Compare(first, second);
+                    func = (first, second) => 0 != comparer.Compare(first, second);
                     break;
 
                 case BooleanComparisonType.LeftOuterJoin:
@@ -84,51 +81,51 @@ namespace MemSQL
                     throw new NotImplementedException();
             }
 
-            return new Func<bool>(() =>
+            return new Func<Environment, bool>((env) =>
             {
-                var first = Visit<Func<object>>(node.FirstExpression)();
-                var second = Visit<Func<object>>(node.SecondExpression)();
-                return comparison(first, second);
+                var first = Visit<Func<Environment, object>>(node.FirstExpression)(env);
+                var second = Visit<Func<Environment, object>>(node.SecondExpression)(env);
+                return func(first, second);
             });
         }
 
         protected override object InternalVisit(ColumnReferenceExpression node)
         {
             //TODO(Tera): we should check what about the other parts of the identifier
-            return new Func<object>(() =>
+            return new Func<Environment, object>((env) =>
             {
-                return currentEnvironment.At<DataRow>("currentRow")[Visit<string[]>(node.MultiPartIdentifier).Last()];
+                return env.At<DataRow>("currentRow")[Visit<string[]>(node.MultiPartIdentifier).Last()];
             });
         }
 
         protected override object InternalVisit(BooleanBinaryExpression node)
         {
+            Func<bool, bool, bool> func = null;
             switch (node.BinaryExpressionType)
             {
                 case BooleanBinaryExpressionType.And:
-                    return new Func<bool>(() =>
-                    {
-                        // TODO(Richo): Should we implement short circuit? Check SQL server...
-                        var first = Visit<Func<bool>>(node.FirstExpression)();
-                        var second = Visit<Func<bool>>(node.SecondExpression)();
-                        return first && second;
-                    });
+                    func = (first, second) => first && second;
+                    break;
+
                 case BooleanBinaryExpressionType.Or:
-                    return new Func<bool>(() =>
-                    {
-                        // TODO(Richo): Should we implement short circuit? Check SQL server...
-                        var first = Visit<Func<bool>>(node.FirstExpression)();
-                        var second = Visit<Func<bool>>(node.SecondExpression)();
-                        return first || second;
-                    });
-                default:
-                    throw new NotImplementedException();
+                    func = (first, second) => first || second;
+                    break;
             }
+            return new Func<Environment, bool>(env =>
+            {
+                // INFO(Richo): We don't need to implement short-circuit because it's not a requirement for SQL
+                var first = Visit<Func<Environment, bool>>(node.FirstExpression)(env);
+                var second = Visit<Func<Environment, bool>>(node.SecondExpression)(env);
+                return func(first, second);
+            });
         }
 
         protected override object InternalVisit(BooleanNotExpression node)
         {
-            return new Func<bool>(() => { return !(Visit<Func<bool>>(node.Expression)()); });
+            return new Func<Environment, bool>(env =>
+            {
+                return !(Visit<Func<Environment, bool>>(node.Expression)(env));
+            });
         }
     }
 }
