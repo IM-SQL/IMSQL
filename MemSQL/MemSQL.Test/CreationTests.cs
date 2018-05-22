@@ -227,7 +227,7 @@ namespace MemSQL.Test.Structural
         [TestMethod]
         public void ComputedColumnCreationTest()
         {
-            string script = "CREATE TABLE [cTest](  " +
+            string script = "CREATE TABLE [TBL](  " +
                 "[num] INT NOT NULL," +
                 "  [calc]  AS" +
                 "    CASE WHEN num < 0" +
