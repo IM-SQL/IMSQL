@@ -20,7 +20,9 @@ namespace MemSQL
         protected override object InternalVisit(InsertSpecification node)
         {
             var table = Visit<DataTable>(node.Target);
-            List<string> providedColumns = node.Columns.Select(columnReference => Visit<string>(columnReference)).ToList();
+            List<string> providedColumns = node.Columns
+                .Select(columnReference => Visit<string>(columnReference))
+                .ToList();
             var rows = Visit<object[][]>(node.InsertSource);
 
             //if no column was provided then the whole table has to be provided as parameter. 
@@ -30,19 +32,25 @@ namespace MemSQL
                 for (int i = 0; i < table.Columns.Count; i++)
                 {
                     if (!table.Columns[i].AutoIncrement)
+                    {
                         providedColumns.Add(table.Columns[i].ColumnName);
+                    }
                 }
             }
-            else {
+            else
+            {
                 if (providedColumns.Any(name => table.Columns[name].AutoIncrement))
-                    throw new InvalidOperationException("Cannot insert explicit value for identity column ");
+                {
+                    throw new InvalidOperationException("Cannot insert explicit value for identity column");
+                }
             }
+
             if (providedColumns.Count != rows[0].Length)
             {
                 //there are probably columns missing.
-
                 throw new ArgumentException("The values provided do not match the expected columns");
             }
+
             return rows.Select(row =>
             {
                 DataRow dr = table.NewRow();
@@ -65,6 +73,5 @@ namespace MemSQL
         {
             return node.ColumnValues.Select(cv => Visit<Func<object>>(cv)()).ToArray();
         }
-
     }
 }

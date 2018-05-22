@@ -571,6 +571,7 @@ namespace MemSQL.Test.Structural
             });
             Assert.IsNull(ds.Tables["TBL"], "TBL should not exist");
         }
+
         [TestMethod]
         public void MultipleIdentityShouldFail()
         {
@@ -594,6 +595,7 @@ namespace MemSQL.Test.Structural
             });
             Assert.IsNull(ds.Tables["TBL"], "TBL should not exist");
         }
+
         [TestMethod]
         public void CreatingAnAlreadyExistingTableShouldFail()
         {

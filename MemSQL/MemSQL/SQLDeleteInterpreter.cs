@@ -8,15 +8,13 @@ namespace MemSQL
 {
     internal class SQLDeleteInterpreter : SQLBaseInterpreter
     {
-        public SQLDeleteInterpreter(DataSet ds) : base(ds)
-        {
-        }
+        public SQLDeleteInterpreter(DataSet ds) : base(ds) {}
 
         protected override object InternalVisit(DeleteStatement node)
         {
             return Visit<DataRow[]>(node.DeleteSpecification);
-
         }
+
         protected override object InternalVisit(DeleteSpecification node)
         {
             //TODO:node.FromClause;
@@ -40,26 +38,21 @@ namespace MemSQL
                 }
                 top = (int)amount;
             }
-
-
-            Func<Environment, IEnumerable<DataRow>> filter;
+            
+            // TODO(Richo): Hack to make sure all rows are deleted when no WHERE is specified
             if (node.WhereClause == null)
             {
                 node.WhereClause = new WhereClause()
                 {
-                 /*   SearchCondition = new BooleanIsNullExpression()
+                    SearchCondition=new BooleanComparisonExpression()
                     {
-                        Expression = new NullLiteral()
-                    }*/
-                    SearchCondition=new BooleanComparisonExpression() {
-                        ComparisonType=BooleanComparisonType.Equals,
-                        FirstExpression=new StringLiteral() { Value=""},
-                        SecondExpression=new StringLiteral() { Value=""}
+                        ComparisonType = BooleanComparisonType.Equals,
+                        FirstExpression = new StringLiteral() { Value="" },
+                        SecondExpression = new StringLiteral() { Value="" }
                     }
                 };
-
             }
-            filter = Visit<Func<Environment, IEnumerable<DataRow>>>(node.WhereClause);
+            var filter = Visit<Func<Environment, IEnumerable<DataRow>>>(node.WhereClause);
 
             List<DataRow> result = new List<DataRow>();
             Environment env = new Environment();
@@ -69,6 +62,7 @@ namespace MemSQL
 
             foreach (DataRow item in result)
             {
+                // TODO(Richo): What happens if one of these throws an error?
                 item.Delete();
             }
             table.AcceptChanges();

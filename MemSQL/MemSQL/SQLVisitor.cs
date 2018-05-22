@@ -166,17 +166,41 @@ namespace MemSQL
             {
                 Result = outer.InternalVisit(node);
             }
+
             public override void ExplicitVisit(DeleteSpecification node)
             {
                 Result = outer.InternalVisit(node);
             }
-            public override void ExplicitVisit(TopRowFilter node) { Result = outer.InternalVisit(node); }
 
-            public override void ExplicitVisit(WhereClause node) { Result = outer.InternalVisit(node); }
-            public override void ExplicitVisit(ParenthesisExpression node) { Result = outer.InternalVisit(node); }
-            public override void ExplicitVisit(BooleanComparisonExpression node) { Result = outer.InternalVisit(node); }
-            public override void ExplicitVisit(BooleanBinaryExpression node) { Result = outer.InternalVisit(node); }
-            public override void ExplicitVisit(BooleanNotExpression node) { Result = outer.InternalVisit(node); }
+            public override void ExplicitVisit(TopRowFilter node)
+            {
+                Result = outer.InternalVisit(node);
+            }
+
+            public override void ExplicitVisit(WhereClause node)
+            {
+                Result = outer.InternalVisit(node);
+            }
+
+            public override void ExplicitVisit(ParenthesisExpression node)
+            {
+                Result = outer.InternalVisit(node);
+            }
+
+            public override void ExplicitVisit(BooleanComparisonExpression node)
+            {
+                Result = outer.InternalVisit(node);
+            }
+
+            public override void ExplicitVisit(BooleanBinaryExpression node)
+            {
+                Result = outer.InternalVisit(node);
+            }
+
+            public override void ExplicitVisit(BooleanNotExpression node)
+            {
+                Result = outer.InternalVisit(node);
+            }
 
             public override void ExplicitVisit(AutomaticTuningDropIndexOption node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(AutomaticTuningCreateIndexOption node) { throw new NotImplementedException(); }

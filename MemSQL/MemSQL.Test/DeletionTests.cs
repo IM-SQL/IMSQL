@@ -31,6 +31,7 @@ namespace MemSQL.Test
             Assert.AreEqual(0, table.Rows.Count, "There should be no rows on the table");
             Assert.IsTrue(row.RowState == DataRowState.Detached, "The created row should have been detached because it is no longer in the table");
         }
+
         [TestMethod]
         public void BatchDeleteTest()
         {
@@ -39,11 +40,9 @@ namespace MemSQL.Test
             table.Columns.Add(new DataColumn("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
-
                 var row = table.NewRow();
                 row["ID"] = i;
                 table.Rows.Add(row);
-
             }
             string query = "Delete from [TBL]";
             SQLInterpreter interpreter = new SQLInterpreter(ds);
@@ -53,6 +52,7 @@ namespace MemSQL.Test
             Assert.AreEqual(100, affected, "There should be 100 row affected");
             Assert.AreEqual(0, table.Rows.Count, "There should be no rows on the table");
         }
+
         [TestMethod]
         public void TopDeleteTest()
         {
@@ -73,6 +73,7 @@ namespace MemSQL.Test
             Assert.AreEqual(50, affected, "There should be 50 row affected");
             Assert.AreEqual(150, table.Rows.Count, "There should be 150 rows on the table");
         }
+
         [TestMethod]
         public void TopDeleteWithTiesShouldFail()
         {
@@ -87,11 +88,12 @@ namespace MemSQL.Test
             }
             string query = "Delete TOP(50) with ties from [TBL]";
             SQLInterpreter interpreter = new SQLInterpreter(ds);
-            Assert.ThrowsException<ParseException>(() => {
-
-                var result = interpreter.Execute(query);
+            Assert.ThrowsException<ParseException>(() => 
+            {
+                interpreter.Execute(query);
             });
         }
+
         [TestMethod]
         public void TopPercentDeleteTest()
         {
@@ -133,6 +135,7 @@ namespace MemSQL.Test
             Assert.AreEqual(1, affected, "There should be 1 row affected");
             Assert.AreEqual(99, table.Rows.Count, "There should be 99 rows on the table");
         }
+
         [TestMethod]
         public void DeleteWhereNotEqualsE()
         {
@@ -153,6 +156,7 @@ namespace MemSQL.Test
             Assert.AreEqual(99, affected, "There should be 99 row affected");
             Assert.AreEqual(1, table.Rows.Count, "There should be 1 rows on the table");
         }
+
         [TestMethod]
         public void DeleteWhereNotEqualsB()
         {
@@ -194,6 +198,7 @@ namespace MemSQL.Test
             Assert.AreEqual(2, affected, "There should be 2 row affected");
             Assert.AreEqual(98, table.Rows.Count, "There should be 98 rows on the table");
         }
+
         [TestMethod]
         public void DeleteWhereGT()
         {
@@ -235,6 +240,7 @@ namespace MemSQL.Test
             Assert.AreEqual(3, affected, "There should be 3 row affected");
             Assert.AreEqual(97, table.Rows.Count, "There should be 97 rows on the table");
         }
+
         [TestMethod]
         public void DeleteWhereNLT()
         {
@@ -255,6 +261,7 @@ namespace MemSQL.Test
             Assert.AreEqual(3, affected, "There should be 3 row affected");
             Assert.AreEqual(97, table.Rows.Count, "There should be 97 rows on the table");
         }
+
         [TestMethod]
         public void DeleteWhereNGT()
         {
@@ -275,6 +282,7 @@ namespace MemSQL.Test
             Assert.AreEqual(3, affected, "There should be 3 row affected");
             Assert.AreEqual(97, table.Rows.Count, "There should be 97 rows on the table");
         }
+
         [TestMethod]
         public void DeleteWhereGTE()
         {
@@ -316,6 +324,7 @@ namespace MemSQL.Test
             Assert.AreEqual(99, affected, "There should be 1 row affected");
             Assert.AreEqual(1, table.Rows.Count, "There should be 99 rows on the table");
         }
+
         [TestMethod]
         public void DeleteWhereAnd()
         {
@@ -336,6 +345,7 @@ namespace MemSQL.Test
             Assert.AreEqual(3, affected, "There should be 3 row affected");
             Assert.AreEqual(97, table.Rows.Count, "There should be 97 rows on the table");
         }
+
         [TestMethod]
         public void DeleteWhereOr()
         {

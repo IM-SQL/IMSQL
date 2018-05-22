@@ -27,6 +27,7 @@ namespace MemSQL.Test
             Assert.AreEqual(1, table.Rows.Count, "There should be one row on the table");
             Assert.AreEqual(3, table.Rows[0]["ID"], "The inserted value was not present on the table");
         }
+
         [TestMethod]
         public void MultivaluedInsertTest()
         {
@@ -45,6 +46,7 @@ namespace MemSQL.Test
             Assert.AreEqual(3, table.Rows[0]["A"], "The inserted value was not present on the table");
             Assert.AreEqual("asd", table.Rows[0]["B"], "The inserted value was not present on the table");
         }
+
         [TestMethod]
         public void InsertIdentityShouldFail()
         {
@@ -86,7 +88,6 @@ namespace MemSQL.Test
             Assert.AreEqual(1, table.Rows.Count, "There should be one row on the table");
             Assert.AreEqual(3, table.Rows[0]["A"], "The inserted value was not present on the table");
             Assert.AreEqual(5, table.Rows[0]["B"], "The Default value was not present on the table");
-
         }
 
         [TestMethod]
@@ -159,7 +160,7 @@ namespace MemSQL.Test
                     testData.Add(new Tuple<int, int>(i, j));
                 }
             }
-            Func<Tuple<int, int>, string> printTuple = (t) => { return string.Format("( {0} , {1} )", t.Item1, t.Item2); };
+            Func<Tuple<int, int>, string> printTuple = (t) => string.Format("( {0} , {1} )", t.Item1, t.Item2);
 
             DataSet ds = new DataSet();
             DataTable table = ds.Tables.Add("TBL");
@@ -184,7 +185,7 @@ namespace MemSQL.Test
         }
 
         [TestMethod]
-        public void UnsufficientParametersWithoutFieldNameShouldFail()
+        public void InsufficientParametersWithoutFieldNameShouldFail()
         {
             DataSet ds = new DataSet();
             DataTable table = ds.Tables.Add("TBL");
@@ -203,8 +204,9 @@ namespace MemSQL.Test
                 interpreter.Execute(query);
             });
         }
+
         [TestMethod]
-        public void UnsufficientParametersWithoutFieldNameEvenWithDefaultValuesShouldFail()
+        public void InsufficientParametersWithoutFieldNameEvenWithDefaultValuesShouldFail()
         {
             DataSet ds = new DataSet();
             DataTable table = ds.Tables.Add("TBL");
@@ -224,8 +226,9 @@ namespace MemSQL.Test
                 interpreter.Execute(query);
             });
         }
+
         [TestMethod]
-        public void UnsifficientParametersWithoutNameShouldNotConsiderIdentityColumns()
+        public void InsufficientParametersWithoutNameShouldNotConsiderIdentityColumns()
         {
             DataSet ds = new DataSet();
             DataTable table = ds.Tables.Add("TBL");

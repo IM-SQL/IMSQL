@@ -57,13 +57,19 @@ namespace MemSQL
                     .Select(cd => Visit<DataColumn>(cd))
                     .ToArray();
             if (columns.Count(col => col.AutoIncrement) > 1)
-            { throw new ArgumentException(" Only one identity column per table is allowed"); }
+            {
+                throw new ArgumentException("Only one identity column per table is allowed");
+            }
             result.Columns.AddRange(columns);
             return result;
         }
 
         protected override object InternalVisit(ColumnDefinition node)
         {
+            /*
+             * TODO(Richo): Computed columns don't necessarily include the datatype, in that case
+             * the data type has to be extracted from the computed expression.
+             */
             var type = Visit<Type>(node.DataType);
             var column = new DataColumn(node.ColumnIdentifier.Value, type);
             Visit<Action<DataColumn>>(node.IdentityOptions)?.Invoke(column);

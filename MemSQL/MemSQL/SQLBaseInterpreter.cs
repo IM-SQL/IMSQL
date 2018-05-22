@@ -132,9 +132,7 @@ namespace MemSQL
 
         protected override object InternalVisit(TopRowFilter node)
         {
-
             return new TopResult((int)Visit<Func<object>>(node.Expression)(), node.Percent, node.WithTies);
-
         }
 
         /*INFO(Tera):i believe the expressions should be habdled differently,
@@ -143,16 +141,19 @@ namespace MemSQL
         {
             return new SQLExpressionInterpreter(ds).InternalVisit(node);
         }
+
         protected override object InternalVisit(WhereClause node)
         {
             //TODO: node.Cursor
             return new SQLExpressionInterpreter(ds).Visit<object>(node);
         }
+
         protected override object InternalVisit(BooleanBinaryExpression node)
         {
             //TODO: node.Cursor
             return new SQLExpressionInterpreter(ds).Visit<object>(node);
         }
+
         protected override object InternalVisit(BooleanNotExpression node)
         {
             //TODO: node.Cursor

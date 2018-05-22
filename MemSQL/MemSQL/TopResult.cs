@@ -8,18 +8,17 @@ namespace MemSQL
 {
     struct TopResult
     {
-        public TopResult(int amount) : this(amount, false, false)
-        {
+        public TopResult(int amount) : this(amount, false, false) {}
 
-        }
         public TopResult(int amount, bool percent, bool ties)
         {
             Amount = amount;
             Percent = percent;
             WithTies = ties;
         }
-        public int Amount;
-        public bool Percent;
-        public bool WithTies;
+
+        public int Amount { get; }
+        public bool Percent { get; }
+        public bool WithTies { get; }
     }
 }

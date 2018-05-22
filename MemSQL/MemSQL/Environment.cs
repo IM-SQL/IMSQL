@@ -11,12 +11,15 @@ namespace MemSQL
     {
         private Dictionary<string, object> values;
         private Environment parent;
+
         public Environment(Environment parent)
         {
             this.parent = parent;
             values = new Dictionary<string, object>();
         }
+
         public Environment() : this(null) { }
+        
         public object this[string key]
         {
             get
@@ -32,7 +35,6 @@ namespace MemSQL
                     throw new KeyNotFoundException();
                 }
             }
-
             set
             {
                 if (values.ContainsKey(key))
@@ -50,7 +52,7 @@ namespace MemSQL
 
         public ICollection<string> Keys => parent == null ? values.Keys : (ICollection<string>)values.Keys.Union(parent.Keys).Distinct();
 
-        public ICollection<object> Values => (ICollection<object>)this.Keys.Select(k => this[k]);
+        public ICollection<object> Values => (ICollection<object>)Keys.Select(k => this[k]);
 
         public int Count => Keys.Count;
 
@@ -63,7 +65,6 @@ namespace MemSQL
 
         public void Add(KeyValuePair<string, object> item)
         {
-
             values[item.Key] = item.Value;
         }
 
