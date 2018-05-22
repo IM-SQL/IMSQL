@@ -51,6 +51,7 @@ namespace MemSQL
         protected virtual object InternalVisit(BooleanComparisonExpression node) { throw new NotImplementedException(); }
         protected virtual object InternalVisit(BooleanBinaryExpression node) { throw new NotImplementedException(); }
         protected virtual object InternalVisit(BooleanNotExpression node) { throw new NotImplementedException(); }
+        protected virtual object InternalVisit(MultiPartIdentifier node) { throw new NotImplementedException(); }
 
         class SQLInternalVisitor : TSqlFragmentVisitor
         {
@@ -198,6 +199,11 @@ namespace MemSQL
             }
 
             public override void ExplicitVisit(BooleanNotExpression node)
+            {
+                Result = outer.InternalVisit(node);
+            }
+
+            public override void ExplicitVisit(MultiPartIdentifier node)
             {
                 Result = outer.InternalVisit(node);
             }
@@ -939,7 +945,6 @@ namespace MemSQL
             public override void ExplicitVisit(LeftFunctionCall node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(LabelStatement node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(UserDefinedTypeCallTarget node) { throw new NotImplementedException(); }
-            public override void ExplicitVisit(MultiPartIdentifier node) { throw new NotImplementedException(); }
 
             public override void ExplicitVisit(MultiPartIdentifierCallTarget node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(ChildObjectName node) { throw new NotImplementedException(); }

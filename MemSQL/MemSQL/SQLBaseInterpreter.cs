@@ -17,10 +17,15 @@ namespace MemSQL
             this.ds = ds;
         }
 
+        protected override object InternalVisit(MultiPartIdentifier node)
+        {
+            return node.Identifiers.Select(each => each.Value).ToArray();
+        }
+
         protected override object InternalVisit(ColumnReferenceExpression node)
         {
             //TODO: this and SchemaObject should work differently.
-            return node.MultiPartIdentifier.Identifiers.Last().Value;
+            return Visit<string[]>(node.MultiPartIdentifier).Last();
         }
 
         protected override object InternalVisit(SchemaObjectName node)

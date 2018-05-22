@@ -125,7 +125,7 @@ namespace MemSQL
                 else
                 {
                     columns = node.Columns
-                        .Select(c => table.Columns[c.Column.MultiPartIdentifier[0].Value])
+                        .Select(c => table.Columns[Visit<string[]>(c.Column.MultiPartIdentifier).Last()])
                         .ToArray();
                 }
 

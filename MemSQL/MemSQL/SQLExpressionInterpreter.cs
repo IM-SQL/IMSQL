@@ -105,7 +105,7 @@ namespace MemSQL
             //TODO(Tera): we should check what about the other parts of the identifier
             return new Func<object>(() =>
             {
-                return currentEnvironment.At<DataRow>("currentRow")[node.MultiPartIdentifier.Identifiers.Last().Value];
+                return currentEnvironment.At<DataRow>("currentRow")[Visit<string[]>(node.MultiPartIdentifier).Last()];
             });
         }
 
