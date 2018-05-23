@@ -113,6 +113,32 @@ namespace MemSQL.Test
             Assert.AreEqual(100, affected, "There was suposed to be 100 rows with the updated ID");
 
         }
+        [TestMethod]
+        public void UpdateWhereEquals()
+        {
+            DataSet ds = new DataSet();
+            DataTable table = ds.Tables.Add("TBL");
+            table.Columns.Add(new DataColumn("ID", typeof(int)));
+            for (int i = 0; i < 100; i++)
+            {
+                var row = table.NewRow();
+                row["ID"] = i;
+                table.Rows.Add(row);
+            }
+            string query = "Update [TBL] set [ID]=5 where [ID] = 1";
+            SQLInterpreter interpreter = new SQLInterpreter(ds);
 
+            var result = interpreter.Execute(query);
+            int affected = result.RowsAffected;
+            Assert.AreEqual(1, affected, "There should be 1 row affected");
+            int count = 0;
+            for (int i = 0; i < 100; i++)
+            {
+                if (table.Rows[i]["ID"].Equals(5))
+                    count++;
+            }
+            Assert.AreEqual(2, count, "There was suposed to be 2 rows with the updated ID");
+
+        }
     }
 }
