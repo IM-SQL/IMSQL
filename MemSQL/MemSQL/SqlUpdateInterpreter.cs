@@ -25,7 +25,7 @@ namespace MemSQL
             //TODO:node.OutputClause
             //TODO:node.OutputIntoClause 
 
-            var table = Visit<DataTable>(node.Target);
+            var table = Visit<Tuple<string, DataTable>>(node.Target).Item2;
             TopResult top = Visit<TopResult>(node.TopRowFilter);
 
             //TODO:This environment should be kind of global
@@ -54,7 +54,7 @@ namespace MemSQL
         }
         private Action<DataRow> CreateSetClause(IList<SetClause> clauses, Environment env)
         {
-            var sets = Visit<Func<Environment, Action<DataRow>>>(clauses).Select(f => f(env));
+            var sets = Visit<Func<Environment, Action<DataRow>>>(clauses).Select(f => f(env)).ToArray();
             return new Action<DataRow>((row) =>
             {
                 foreach (var item in sets)
@@ -66,7 +66,7 @@ namespace MemSQL
         //TODO: this may be useful in the parent class.
         public IEnumerable<T> Visit<T>(IEnumerable<TSqlFragment> nodes, T defaultValue = default(T))
         {
-            return nodes.Select(n => Visit<T>(n, defaultValue));
+            return nodes.Select(n => Visit<T>(n, defaultValue)).ToArray();
         }
 
 

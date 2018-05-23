@@ -221,7 +221,7 @@ namespace MemSQL
             {
                 Result = outer.InternalVisit(node);
             }
-            public override void ExplicitVisit(AssignmentSetClause node) { }
+            public override void ExplicitVisit(AssignmentSetClause node) { Result = outer.InternalVisit(node); }
             public override void ExplicitVisit(SelectStatement node) { Result = outer.InternalVisit(node); }
             public override void ExplicitVisit(QuerySpecification node) { Result = outer.InternalVisit(node); }
             public override void ExplicitVisit(FromClause node) { Result = outer.InternalVisit(node); }

@@ -132,7 +132,9 @@ namespace MemSQL
             //TODO: alias?
             var tableName = Visit<string>(node.SchemaObject);
             //TODO: error on table not present?
-            return ds.Tables[tableName];
+
+            string name = node.Alias != null ? node.Alias.Value : tableName;
+            return new Tuple<string,DataTable>(name, ds.Tables[tableName]);
         }
 
         protected override object InternalVisit(TopRowFilter node)

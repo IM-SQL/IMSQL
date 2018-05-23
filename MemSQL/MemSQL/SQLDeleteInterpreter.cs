@@ -21,7 +21,7 @@ namespace MemSQL
             //TODO:node.OutputClause;
             //TODO:node.OutputIntoClause; 
 
-            var table = Visit<DataTable>(node.Target);
+            var table = Visit<Tuple<string, DataTable>>(node.Target).Item2;
             TopResult top = Visit<TopResult>(node.TopRowFilter);
 
             //TODO:This environment should be kind of global

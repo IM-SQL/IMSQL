@@ -60,7 +60,7 @@ namespace MemSQL
         }
         protected override object InternalVisit(FromClause node)
         {
-            return node.TableReferences.Select(t => Visit<DataTable>(t)).ToArray();
+            return node.TableReferences.Select(t => Visit<Tuple<string,DataTable>>(t).Item2).ToArray();
 
         }
     }
