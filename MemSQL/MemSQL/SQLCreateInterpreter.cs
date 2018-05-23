@@ -13,18 +13,18 @@ namespace MemSQL
     /// </summary>
     internal class SQLCreateInterpreter : SQLBaseInterpreter
     {
-        public SQLCreateInterpreter(DataSet ds) : base(ds) { }
+        public SQLCreateInterpreter(Database db) : base(db) { }
 
         protected override object InternalVisit(CreateTableStatement node)
         {
             var table = Visit<DataTable>(node.Definition);
             table.TableName = Visit<string>(node.SchemaObjectName);
-            if (ds.Tables.Contains(table.TableName))
+            if (Database.Tables.Contains(table.TableName))
             {
                 var msg = string.Format("There is already an object named '{0}' in the database", table.TableName);
                 throw new DuplicateNameException(msg);
             }
-            ds.Tables.Add(table);
+            Database.Tables.Add(table);
 
             try
             {
@@ -43,7 +43,7 @@ namespace MemSQL
             }
             catch
             {
-                ds.Tables.Remove(table);
+                Database.Tables.Remove(table);
                 throw;
             }
             return table;
@@ -187,7 +187,7 @@ namespace MemSQL
                 DataTable refTable;
                 {
                     var refTableName = Visit<string>(node.ReferenceTableName);
-                    refTable = ds.Tables[refTableName];
+                    refTable = Database.Tables[refTableName];
                     if (refTable == null)
                     {
                         var msg = string.Format("Foreign key '{0}' references invalid table '{1}'", constraintName, refTableName);

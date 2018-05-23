@@ -10,12 +10,12 @@ namespace MemSQL
 {
     public abstract class SQLBaseInterpreter : SQLVisitor
     {
-        protected DataSet ds;
-
-        public SQLBaseInterpreter(DataSet ds)
+        public SQLBaseInterpreter(Database db)
         {
-            this.ds = ds;
+            Database = db;
         }
+
+        protected Database Database { get; }
 
         protected override object InternalVisit(MultiPartIdentifier node)
         {
@@ -132,9 +132,8 @@ namespace MemSQL
             //TODO: alias?
             var tableName = Visit<string>(node.SchemaObject);
             //TODO: error on table not present?
-
             string name = node.Alias != null ? node.Alias.Value : tableName;
-            return new Tuple<string,DataTable>(name, ds.Tables[tableName]);
+            return new Tuple<string,DataTable>(name, Database.Tables[tableName]);
         }
 
         protected override object InternalVisit(TopRowFilter node)
@@ -153,25 +152,25 @@ namespace MemSQL
          * and should always start a new interpreter from the top of the expression*/
         protected override object InternalVisit(ParenthesisExpression node)
         {
-            return new SQLExpressionInterpreter(ds).InternalVisit(node);
+            return new SQLExpressionInterpreter(Database).InternalVisit(node);
         }
 
         protected override object InternalVisit(WhereClause node)
         {
             //TODO: node.Cursor
-            return new SQLExpressionInterpreter(ds).Visit<object>(node);
+            return new SQLExpressionInterpreter(Database).Visit<object>(node);
         }
 
         protected override object InternalVisit(BooleanBinaryExpression node)
         {
             //TODO: node.Cursor
-            return new SQLExpressionInterpreter(ds).Visit<object>(node);
+            return new SQLExpressionInterpreter(Database).Visit<object>(node);
         }
 
         protected override object InternalVisit(BooleanNotExpression node)
         {
             //TODO: node.Cursor
-            return new SQLExpressionInterpreter(ds).Visit<object>(node);
+            return new SQLExpressionInterpreter(Database).Visit<object>(node);
         }
     }
 }
