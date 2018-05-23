@@ -55,6 +55,7 @@
     <Compile Include="CreationTests.cs" />
     <Compile Include="DeletionTests.cs" />
     <Compile Include="InsertionTests.cs" />
+    <Compile Include="ModificationTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

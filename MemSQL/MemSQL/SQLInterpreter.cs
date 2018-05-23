@@ -56,5 +56,11 @@ namespace MemSQL
             var rows = interpreter.Visit<DataRow[]>(node);
             return new SQLExecutionResult(rows.Length, rows);
         }
+        protected override object InternalVisit(UpdateStatement node)
+        {
+            var interpreter = new SQLUpdateInterpreter(ds);
+            var rows = interpreter.Visit<DataRow[]>(node);
+            return new SQLExecutionResult(rows.Length, rows); 
+        }
     }
 }
