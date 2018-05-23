@@ -26,22 +26,7 @@ namespace MemSQL
             //TODO:node.OutputIntoClause 
 
             var table = Visit<DataTable>(node.Target);
-
-            int size = table.Rows.Count;
-            //TODO: if the table is infinite this will freeze everything. it should be lazy, maybe
-            //TODO: i think that the With Ties hint has an effect on the update that we are not reproducing correctly
-            int top = size;
-            if (node.TopRowFilter != null)
-            {
-                var t = Visit<TopResult>(node.TopRowFilter);
-                double amount = t.Amount;
-                if (t.Percent)
-                {
-                    amount = amount * size / 100;
-                    amount = Math.Round(amount);
-                }
-                top = (int)amount;
-            }
+            TopResult top = Visit<TopResult>(node.TopRowFilter);
 
             //TODO:This environment should be kind of global
             Environment env = new Environment();
@@ -59,16 +44,10 @@ namespace MemSQL
             Action<DataRow> setClause = CreateSetClause(node.SetClauses, env);
 
             List<DataRow> result = new List<DataRow>();
-            int index = 0;
-            while (index < size && result.Count < top)
+            result.AddRange(Filter.From(table.Rows.AsEnumerable(), predicate, top));
+            foreach (var item in result)
             {
-                int i = index++;
-                var row = table.Rows[i];
-                if (predicate(row))
-                {
-                    setClause(row);
-                    result.Add(row);
-                }
+                setClause(item);
             }
             table.AcceptChanges();
             return result.ToArray();
