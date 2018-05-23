@@ -8,7 +8,7 @@ namespace MemSQL
 {
     internal class SQLDeleteInterpreter : SQLBaseInterpreter
     {
-        public SQLDeleteInterpreter(DataSet ds) : base(ds) {}
+        public SQLDeleteInterpreter(DataSet ds) : base(ds) { }
 
         protected override object InternalVisit(DeleteStatement node)
         {
@@ -22,9 +22,7 @@ namespace MemSQL
             //TODO:node.OutputIntoClause; 
 
             var table = Visit<DataTable>(node.Target);
-
-             //TODO: if the table is infinite this will freeze everything. it should be lazy, maybe
-            TopResult top   = Visit<TopResult>(node.TopRowFilter);  
+            TopResult top = Visit<TopResult>(node.TopRowFilter);
 
             //TODO:This environment should be kind of global
             Environment env = new Environment();
@@ -34,12 +32,13 @@ namespace MemSQL
             {
                 predicate = new Func<DataRow, bool>((row) => true);
             }
-            else {
+            else
+            {
                 predicate = Visit<Func<Environment, Func<DataRow, bool>>>(node.WhereClause)(env);
             }
 
             List<DataRow> result = new List<DataRow>();
-             
+
             result.AddRange(Filter.From(table.Rows.AsEnumerable(), predicate, top));
             foreach (DataRow item in result)
             {
