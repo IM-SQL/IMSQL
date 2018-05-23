@@ -73,16 +73,49 @@ namespace MemSQL
         protected override object InternalVisit(AssignmentSetClause node)
         {
             //TODO: node.AssignmentKind
+            Func<dynamic, dynamic, object> operation=null;
+            switch (node.AssignmentKind)
+            {
+                case AssignmentKind.Equals:
+                    operation = new Func<dynamic, dynamic, object>((a, b) => b);
+                    break;
+                case AssignmentKind.AddEquals:
+                    operation = new Func<dynamic, dynamic, object>((a, b) => a + b);
+                    break;
+                case AssignmentKind.SubtractEquals:
+                    operation = new Func<dynamic, dynamic, object>((a, b) => a - b);
+                    break;
+                case AssignmentKind.MultiplyEquals:
+                    operation = new Func<dynamic, dynamic, object>((a, b) => a * b);
+                    break;
+                case AssignmentKind.DivideEquals:
+                    operation = new Func<dynamic, dynamic, object>((a, b) => a / b);
+                    break;
+                case AssignmentKind.ModEquals:
+                    operation = new Func<dynamic, dynamic, object>((a, b) => a % b);
+                    break;
+                //TODO: bitwise operations may not be equivalent to the Sql ones. We should check this out later.
+                case AssignmentKind.BitwiseAndEquals:
+                    operation = new Func<dynamic, dynamic, object>((a, b) => a & b);
+                    break;
+                case AssignmentKind.BitwiseOrEquals:
+                    operation = new Func<dynamic, dynamic, object>((a, b) => a | b);
+                    break;
+                case AssignmentKind.BitwiseXorEquals:
+                    operation = new Func<dynamic, dynamic, object>((a, b) => a ^ b);
+                    break;
+                default:
+                    //just in case they add something here in the future
+                    throw new NotImplementedException();
 
+            }
             return new Func<Environment, Action<DataRow>>((env) =>
             {
-
                 string columnName = Visit<string>(node.Column);
-
                 return new Action<DataRow>((row) =>
                 {
-                    object value = Visit<Func<Environment, object>>(node.NewValue)(env);
-                    row[columnName] = value;
+                    object providedValue = Visit<Func<Environment, object>>(node.NewValue)(env);
+                    row[columnName] = operation(row[columnName], providedValue);
                 });
             });
         }

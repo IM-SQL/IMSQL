@@ -30,7 +30,7 @@ namespace MemSQL.Test
             Assert.AreEqual(1, affected, "There should be one row affected");
             Assert.AreEqual(2, table.Rows[0]["ID"], "The updated value was not present on the Table");
         }
-
+     
         [TestMethod]
         public void BatchUpdateTest()
         {
@@ -53,6 +53,164 @@ namespace MemSQL.Test
             {
                 Assert.AreEqual(2, table.Rows[i]["ID"], "The updated value was not present on All the rows of the Table");
             } 
+        }
+
+
+        [TestMethod]
+        public void AddAssignmentUpdateTest()
+        {
+            DataSet ds = new DataSet();
+            DataTable table = ds.Tables.Add("TBL");
+            table.Columns.Add(new DataColumn("ID", typeof(int)));
+
+            var row = table.NewRow();
+            row["ID"] = 3;
+            table.Rows.Add(row);
+
+            string query = "Update [TBL] set ID +=2";
+            SQLInterpreter interpreter = new SQLInterpreter(ds);
+
+            var result = interpreter.Execute(query);
+            int affected = result.RowsAffected;
+            Assert.AreEqual(1, affected, "There should be one row affected");
+            Assert.AreEqual(5, table.Rows[0]["ID"], "The updated value was not present on the Table");
+        }
+        [TestMethod]
+        public void SubAssignmentUpdateTest()
+        {
+            DataSet ds = new DataSet();
+            DataTable table = ds.Tables.Add("TBL");
+            table.Columns.Add(new DataColumn("ID", typeof(int)));
+
+            var row = table.NewRow();
+            row["ID"] = 3;
+            table.Rows.Add(row);
+
+            string query = "Update [TBL] set ID -=2";
+            SQLInterpreter interpreter = new SQLInterpreter(ds);
+
+            var result = interpreter.Execute(query);
+            int affected = result.RowsAffected;
+            Assert.AreEqual(1, affected, "There should be one row affected");
+            Assert.AreEqual(1, table.Rows[0]["ID"], "The updated value was not present on the Table");
+        }
+
+        [TestMethod]
+        public void MulAssignmentUpdateTest()
+        {
+            DataSet ds = new DataSet();
+            DataTable table = ds.Tables.Add("TBL");
+            table.Columns.Add(new DataColumn("ID", typeof(int)));
+
+            var row = table.NewRow();
+            row["ID"] = 3;
+            table.Rows.Add(row);
+
+            string query = "Update [TBL] set ID *=2";
+            SQLInterpreter interpreter = new SQLInterpreter(ds);
+
+            var result = interpreter.Execute(query);
+            int affected = result.RowsAffected;
+            Assert.AreEqual(1, affected, "There should be one row affected");
+            Assert.AreEqual(6, table.Rows[0]["ID"], "The updated value was not present on the Table");
+        }
+        [TestMethod]
+        public void DivAssignmentUpdateTest()
+        {
+            DataSet ds = new DataSet();
+            DataTable table = ds.Tables.Add("TBL");
+            table.Columns.Add(new DataColumn("ID", typeof(int)));
+
+            var row = table.NewRow();
+            row["ID"] = 10;
+            table.Rows.Add(row);
+
+            string query = "Update [TBL] set ID /=2";
+            SQLInterpreter interpreter = new SQLInterpreter(ds);
+
+            var result = interpreter.Execute(query);
+            int affected = result.RowsAffected;
+            Assert.AreEqual(1, affected, "There should be one row affected");
+            Assert.AreEqual(5, table.Rows[0]["ID"], "The updated value was not present on the Table");
+        }
+
+        [TestMethod]
+        public void ModAssignmentUpdateTest()
+        {
+            DataSet ds = new DataSet();
+            DataTable table = ds.Tables.Add("TBL");
+            table.Columns.Add(new DataColumn("ID", typeof(int)));
+
+            var row = table.NewRow();
+            row["ID"] = 10;
+            table.Rows.Add(row);
+
+            string query = "Update [TBL] set ID %=2";
+            SQLInterpreter interpreter = new SQLInterpreter(ds);
+
+            var result = interpreter.Execute(query);
+            int affected = result.RowsAffected;
+            Assert.AreEqual(1, affected, "There should be one row affected");
+            Assert.AreEqual(0, table.Rows[0]["ID"], "The updated value was not present on the Table");
+        }
+
+        [TestMethod]
+        public void AndAssignmentUpdateTest()
+        {
+            DataSet ds = new DataSet();
+            DataTable table = ds.Tables.Add("TBL");
+            table.Columns.Add(new DataColumn("ID", typeof(int)));
+
+            var row = table.NewRow();
+            row["ID"] = 5;
+            table.Rows.Add(row);
+
+            string query = "Update [TBL] set ID &=3";
+            SQLInterpreter interpreter = new SQLInterpreter(ds);
+
+            var result = interpreter.Execute(query);
+            int affected = result.RowsAffected;
+            Assert.AreEqual(1, affected, "There should be one row affected");
+            Assert.AreEqual(5&3, table.Rows[0]["ID"], "The updated value was not present on the Table");
+        }
+        [TestMethod]
+        public void OrAssignmentUpdateTest()
+        {
+            DataSet ds = new DataSet();
+            DataTable table = ds.Tables.Add("TBL");
+            table.Columns.Add(new DataColumn("ID", typeof(int)));
+
+            var row = table.NewRow();
+            row["ID"] = 4;
+            table.Rows.Add(row);
+
+            string query = "Update [TBL] set ID |=2";
+            SQLInterpreter interpreter = new SQLInterpreter(ds);
+
+            var result = interpreter.Execute(query);
+            int affected = result.RowsAffected;
+            Assert.AreEqual(1, affected, "There should be one row affected");
+            Assert.AreEqual(4|2, table.Rows[0]["ID"], "The updated value was not present on the Table");
+        }
+
+        [TestMethod]
+        public void XorAssignmentUpdateTest()
+        {
+            DataSet ds = new DataSet();
+            DataTable table = ds.Tables.Add("TBL");
+            table.Columns.Add(new DataColumn("ID", typeof(int)));
+
+            var row = table.NewRow();
+            row["ID"] = 7;
+            table.Rows.Add(row);
+
+            string query = "Update [TBL] set ID ^=5";
+            SQLInterpreter interpreter = new SQLInterpreter(ds);
+
+            var result = interpreter.Execute(query);
+            int affected = result.RowsAffected;
+            Assert.AreEqual(1, affected, "There should be one row affected");
+            Assert.AreEqual(7^5, table.Rows[0]["ID"], "The updated value was not present on the Table");
         }
 
 
@@ -113,6 +271,10 @@ namespace MemSQL.Test
             Assert.AreEqual(100, affected, "There was suposed to be 100 rows with the updated ID");
 
         }
+
+
+
+
         [TestMethod]
         public void UpdateWhereEquals()
         {
