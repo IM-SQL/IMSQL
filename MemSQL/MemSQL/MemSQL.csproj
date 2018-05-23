@@ -56,6 +56,7 @@
     <Compile Include="SQLExpressionInterpreter.cs" />
     <Compile Include="SQLInsertInterpreter.cs" />
     <Compile Include="SQLInterpreter.cs" />
+    <Compile Include="SQLSelectInterpreter.cs" />
     <Compile Include="SQLUpdateInterpreter.cs" />
     <Compile Include="SQLVisitor.cs" />
     <Compile Include="TopResult.cs" />
