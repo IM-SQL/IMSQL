@@ -213,21 +213,38 @@ namespace MemSQL
             {
                 Result = outer.InternalVisit(node);
             }
+
             public override void ExplicitVisit(UpdateStatement node)
             {
                 Result = outer.InternalVisit(node);
             }
+
             public override void ExplicitVisit(UpdateSpecification node)
             {
                 Result = outer.InternalVisit(node);
             }
-            public override void ExplicitVisit(AssignmentSetClause node) { Result = outer.InternalVisit(node); }
-            public override void ExplicitVisit(SelectStatement node) { Result = outer.InternalVisit(node); }
-            public override void ExplicitVisit(QuerySpecification node) { Result = outer.InternalVisit(node); }
-            public override void ExplicitVisit(FromClause node) { Result = outer.InternalVisit(node); }
+
+            public override void ExplicitVisit(AssignmentSetClause node)
+            {
+                Result = outer.InternalVisit(node);
+            }
+
+            public override void ExplicitVisit(SelectStatement node)
+            {
+                Result = outer.InternalVisit(node);
+            }
+
+            public override void ExplicitVisit(QuerySpecification node)
+            {
+                Result = outer.InternalVisit(node);
+            }
+
+            public override void ExplicitVisit(FromClause node)
+            {
+                Result = outer.InternalVisit(node);
+            }
 
             public override void ExplicitVisit(QueryExpression node) { throw new NotImplementedException(); }
-
             public override void ExplicitVisit(AutomaticTuningDropIndexOption node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(AutomaticTuningCreateIndexOption node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(AutomaticTuningForceLastGoodPlanOption node) { throw new NotImplementedException(); }

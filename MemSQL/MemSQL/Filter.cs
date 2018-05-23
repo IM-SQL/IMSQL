@@ -8,31 +8,33 @@ namespace MemSQL
 {
     static class Filter
     {
-        public static IEnumerable<T> From<T>(IEnumerable<T> Source, Func<T, bool> Predicate, TopResult Top = null)
+        public static IEnumerable<T> From<T>(IEnumerable<T> source, Func<T, bool> predicate, TopResult topResult = null)
         {
-            if (Top == null)
+            if (topResult == null)
             {
-                foreach (var item in Source)
+                foreach (var item in source)
                 {
-                    if (Predicate(item))
-                    { yield return item; }
+                    if (predicate(item))
+                    {
+                        yield return item;
+                    }
                 }
             }
             else
             {
-                double top  = Top.Amount;
-                if (Top.Percent)
+                double top  = topResult.Amount;
+                if (topResult.Percent)
                 {
-                    int size = Source.Count();
+                    int size = source.Count();
                     top = top * size / 100;
                     top = Math.Round(top);
                 } 
                 int returned = 0;
-                foreach (var item in Source)
+                foreach (var item in source)
                 {
-                    if (returned >= top)
-                        break;
-                    if (Predicate(item))
+                    if (returned >= top) break;
+
+                    if (predicate(item))
                     {
                         returned++;
                         yield return item;

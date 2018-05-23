@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MemSQL
 {
-    static  class Extensions
+    static class Extensions
     {
         public static IEnumerable<DataRow> AsEnumerable(this DataRowCollection rows)
         {

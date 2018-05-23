@@ -12,9 +12,11 @@ namespace MemSQL
     public class SQLInterpreter : SQLBaseInterpreter
     {
         public SQLInterpreter() : this(new Database()) {}
-        public SQLInterpreter(DataSet ds) : this(new Database(ds)) {}
         public SQLInterpreter(Database db) : base(db) {}
-        
+
+        // TODO(Richo): I kept this contructor because I didn't want to fix all the tests...
+        public SQLInterpreter(DataSet ds) : this(new Database(ds)) {}
+
         public SQLExecutionResult Execute(TextReader script)
         {
             var parser = new TSql140Parser(false);
@@ -50,18 +52,21 @@ namespace MemSQL
             // INFO(Richo): Do nothing
             return new SQLExecutionResult(0, null);
         }
+
         protected override object InternalVisit(SelectStatement node)
         {
             var interpreter = new SQLSelectInterpreter(Database);
             var rows = interpreter.Visit<DataRow[]>(node);
             return new SQLExecutionResult(rows.Length, rows);
         }
+
         protected override object InternalVisit(DeleteStatement node)
         {
             var interpreter = new SQLDeleteInterpreter(Database);
             var rows = interpreter.Visit<DataRow[]>(node);
             return new SQLExecutionResult(rows.Length, rows);
         }
+
         protected override object InternalVisit(UpdateStatement node)
         {
             var interpreter = new SQLUpdateInterpreter(Database);

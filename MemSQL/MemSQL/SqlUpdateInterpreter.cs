@@ -8,8 +8,7 @@ namespace MemSQL
 {
     internal class SQLUpdateInterpreter : SQLBaseInterpreter
     {
-        public SQLUpdateInterpreter(Database db) : base(db) { }
-
+        public SQLUpdateInterpreter(Database db) : base(db) {}
 
         protected override object InternalVisit(UpdateStatement node)
         {
@@ -52,6 +51,7 @@ namespace MemSQL
             table.AcceptChanges();
             return result.ToArray();
         }
+
         private Action<DataRow> CreateSetClause(IList<SetClause> clauses, Environment env)
         {
             var sets = Visit<Func<Environment, Action<DataRow>>>(clauses).Select(f => f(env)).ToArray();
@@ -63,13 +63,13 @@ namespace MemSQL
                 }
             });
         }
+
         //TODO: this may be useful in the parent class.
         public IEnumerable<T> Visit<T>(IEnumerable<TSqlFragment> nodes, T defaultValue = default(T))
         {
             return nodes.Select(n => Visit<T>(n, defaultValue)).ToArray();
         }
-
-
+        
         protected override object InternalVisit(AssignmentSetClause node)
         {
             //TODO: node.AssignmentKind
@@ -107,8 +107,8 @@ namespace MemSQL
                 default:
                     //just in case they add something here in the future
                     throw new NotImplementedException();
-
             }
+
             return new Func<Environment, Action<DataRow>>((env) =>
             {
                 string columnName = Visit<string>(node.Column);

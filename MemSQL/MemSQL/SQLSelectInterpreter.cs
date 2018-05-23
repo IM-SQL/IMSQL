@@ -19,7 +19,6 @@ namespace MemSQL
             //TODO:node.QueryExpression
             //TODO:node.WithCtesAndXmlNamespaces
             return Visit<DataRow[]>(node.QueryExpression);
-
         }
 
         protected override object InternalVisit(QuerySpecification node)
@@ -57,10 +56,10 @@ namespace MemSQL
             result.AddRange(Filter.From(table.Rows.AsEnumerable(), predicate, top));
             return result.ToArray(); 
         }
+
         protected override object InternalVisit(FromClause node)
         {
             return node.TableReferences.Select(t => Visit<Tuple<string,DataTable>>(t).Item2).ToArray();
-
         }
     }
 }
