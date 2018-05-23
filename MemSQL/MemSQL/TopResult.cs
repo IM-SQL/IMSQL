@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MemSQL
 {
-    struct TopResult
+    class TopResult
     {
         public TopResult(int amount) : this(amount, false, false) {}
 

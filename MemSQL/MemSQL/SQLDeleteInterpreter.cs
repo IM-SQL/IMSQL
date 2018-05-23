@@ -23,20 +23,9 @@ namespace MemSQL
 
             var table = Visit<DataTable>(node.Target);
 
-            int size = table.Rows.Count;
-            //TODO: if the table is infinite this will freeze everything. it should be lazy, maybe
-            int top = size;
-            if (node.TopRowFilter != null)
-            {
-                var t = Visit<TopResult>(node.TopRowFilter);
-                double amount = t.Amount;
-                if (t.Percent)
-                {
-                    amount = amount * size / 100;
-                    amount = Math.Round(amount);
-                }
-                top = (int)amount;
-            }
+             //TODO: if the table is infinite this will freeze everything. it should be lazy, maybe
+            TopResult top   = Visit<TopResult>(node.TopRowFilter);  
+
             //TODO:This environment should be kind of global
             Environment env = new Environment();
 
@@ -48,15 +37,10 @@ namespace MemSQL
             else {
                 predicate = Visit<Func<Environment, Func<DataRow, bool>>>(node.WhereClause)(env);
             }
-         
+
             List<DataRow> result = new List<DataRow>();
-            int index = 0;
-            while (index < size && result.Count < top)
-            {
-                int i = index++;
-                var row = table.Rows[i];
-                if (predicate(row)) { result.Add(row); }
-            }
+             
+            result.AddRange(Filter.From(table.Rows.AsEnumerable(), predicate, top));
             foreach (DataRow item in result)
             {
                 // TODO(Richo): What happens if one of these throws an error?
