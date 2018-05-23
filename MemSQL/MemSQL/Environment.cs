@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MemSQL
 {
-    internal class Environment : IDictionary<string, object>
+    public class Environment : IDictionary<string, object>
     {
         private Dictionary<string, object> values;
         private Environment parent;

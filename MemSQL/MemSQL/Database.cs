@@ -10,10 +10,18 @@ namespace MemSQL
 {
     public class Database
     {
-        DataSet dataSet;
-        public Database() {
-            dataSet = new DataSet();
+        public Database() : this(new DataSet()) { }
+
+        public Database(DataSet ds)
+        {
+            DataSet = ds;
+            GlobalEnvironment = new Environment();
         }
+
+        public DataSet DataSet { get; }
+        public Environment GlobalEnvironment { get; }
+
+        public DataTableCollection Tables { get { return DataSet.Tables; } }
 
         public int ExecuteNonQuery(string command, Dictionary<string,object> parameters) { throw new NotImplementedException(); }
         public DbDataReader ExecuteReader(string command, Dictionary<string, object> parameters) { throw new NotImplementedException(); }
