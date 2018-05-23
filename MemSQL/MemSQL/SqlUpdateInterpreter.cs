@@ -8,7 +8,7 @@ namespace MemSQL
 {
     internal class SQLUpdateInterpreter : SQLBaseInterpreter
     {
-        public SQLUpdateInterpreter(DataSet ds) : base(ds) { }
+        public SQLUpdateInterpreter(Database db) : base(db) { }
 
 
         protected override object InternalVisit(UpdateStatement node)

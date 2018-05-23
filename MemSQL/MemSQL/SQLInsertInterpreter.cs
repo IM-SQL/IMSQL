@@ -10,7 +10,7 @@ namespace MemSQL
 {
     internal class SQLInsertInterpreter : SQLBaseInterpreter
     {
-        public SQLInsertInterpreter(DataSet ds) : base(ds) { }
+        public SQLInsertInterpreter(Database db) : base(db) { }
 
         protected override object InternalVisit(InsertStatement node)
         {

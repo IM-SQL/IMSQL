@@ -11,8 +11,9 @@ namespace MemSQL
 { 
     public class SQLInterpreter : SQLBaseInterpreter
     {
-        public SQLInterpreter() : this(new DataSet()) {}
-        public SQLInterpreter(DataSet ds) : base(ds) {}
+        public SQLInterpreter() : this(new Database()) {}
+        public SQLInterpreter(DataSet ds) : this(new Database(ds)) {}
+        public SQLInterpreter(Database db) : base(db) {}
         
         public SQLExecutionResult Execute(TextReader script)
         {
@@ -32,14 +33,14 @@ namespace MemSQL
 
         protected override object InternalVisit(CreateTableStatement node)
         {
-            var interpreter = new SQLCreateInterpreter(ds);
+            var interpreter = new SQLCreateInterpreter(Database);
             var table = interpreter.Visit<DataTable>(node);
             return new SQLExecutionResult(0, table);
         }
 
         protected override object InternalVisit(InsertStatement node)
         {
-            var interpreter = new SQLInsertInterpreter(ds);
+            var interpreter = new SQLInsertInterpreter(Database);
             var rows = interpreter.Visit<DataRow[]>(node);
             return new SQLExecutionResult(rows.Length, rows);
         }
@@ -51,19 +52,19 @@ namespace MemSQL
         }
         protected override object InternalVisit(SelectStatement node)
         {
-            var interpreter = new SQLSelectInterpreter(ds);
+            var interpreter = new SQLSelectInterpreter(Database);
             var rows = interpreter.Visit<DataRow[]>(node);
             return new SQLExecutionResult(rows.Length, rows);
         }
         protected override object InternalVisit(DeleteStatement node)
         {
-            var interpreter = new SQLDeleteInterpreter(ds);
+            var interpreter = new SQLDeleteInterpreter(Database);
             var rows = interpreter.Visit<DataRow[]>(node);
             return new SQLExecutionResult(rows.Length, rows);
         }
         protected override object InternalVisit(UpdateStatement node)
         {
-            var interpreter = new SQLUpdateInterpreter(ds);
+            var interpreter = new SQLUpdateInterpreter(Database);
             var rows = interpreter.Visit<DataRow[]>(node);
             return new SQLExecutionResult(rows.Length, rows); 
         }

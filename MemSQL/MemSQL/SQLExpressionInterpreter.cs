@@ -11,7 +11,7 @@ namespace MemSQL
 {
     internal class SQLExpressionInterpreter : SQLBaseInterpreter
     {
-        public SQLExpressionInterpreter(DataSet ds) : base(ds) { }
+        public SQLExpressionInterpreter(Database db) : base(db) { }
 
         protected override object InternalVisit(ParenthesisExpression node)
         {

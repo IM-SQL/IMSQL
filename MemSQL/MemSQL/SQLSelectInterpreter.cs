@@ -8,9 +8,8 @@ namespace MemSQL
 {
     internal class SQLSelectInterpreter : SQLBaseInterpreter
     {
-        public SQLSelectInterpreter(DataSet ds) : base(ds)
-        {
-        }
+        public SQLSelectInterpreter(Database db) : base(db) {}
+
         protected override object InternalVisit(SelectStatement node)
         {
             //TODO:node.ComputeClauses

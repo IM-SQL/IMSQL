@@ -8,7 +8,7 @@ namespace MemSQL
 {
     internal class SQLDeleteInterpreter : SQLBaseInterpreter
     {
-        public SQLDeleteInterpreter(DataSet ds) : base(ds) { }
+        public SQLDeleteInterpreter(Database db) : base(db) { }
 
         protected override object InternalVisit(DeleteStatement node)
         {
