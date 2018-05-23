@@ -19,8 +19,7 @@ namespace MemSQL
         {
             //TODO:node.FromClause;
             //TODO:node.OutputClause;
-            //TODO:node.OutputIntoClause;
-            //TODO:node.Target;
+            //TODO:node.OutputIntoClause; 
 
             var table = Visit<DataTable>(node.Target);
 
@@ -38,28 +37,26 @@ namespace MemSQL
                 }
                 top = (int)amount;
             }
-            
-            // TODO(Richo): Hack to make sure all rows are deleted when no WHERE is specified
+            //TODO:This environment should be kind of global
+            Environment env = new Environment();
+
+            Func<DataRow, bool> predicate = null;
             if (node.WhereClause == null)
             {
-                node.WhereClause = new WhereClause()
-                {
-                    SearchCondition=new BooleanComparisonExpression()
-                    {
-                        ComparisonType = BooleanComparisonType.Equals,
-                        FirstExpression = new StringLiteral() { Value = "" },
-                        SecondExpression = new StringLiteral() { Value = "" }
-                    }
-                };
+                predicate = new Func<DataRow, bool>((row) => true);
             }
-            var filter = Visit<Func<Environment, IEnumerable<DataRow>>>(node.WhereClause);
-
+            else {
+                predicate = Visit<Func<Environment, Func<DataRow, bool>>>(node.WhereClause)(env);
+            }
+         
             List<DataRow> result = new List<DataRow>();
-            Environment env = new Environment();
-            env.Add("Top", top);
-            env.Add("Target", table);
-            result.AddRange(filter(env.NewChild()));
-
+            int index = 0;
+            while (index < size && result.Count < top)
+            {
+                int i = index++;
+                var row = table.Rows[i];
+                if (predicate(row)) { result.Add(row); }
+            }
             foreach (DataRow item in result)
             {
                 // TODO(Richo): What happens if one of these throws an error?

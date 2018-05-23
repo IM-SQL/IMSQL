@@ -11,7 +11,7 @@ namespace MemSQL
 {
     internal class SQLExpressionInterpreter : SQLBaseInterpreter
     {
-        public SQLExpressionInterpreter(DataSet ds) : base(ds) {}
+        public SQLExpressionInterpreter(DataSet ds) : base(ds) { }
 
         protected override object InternalVisit(ParenthesisExpression node)
         {
@@ -21,24 +21,16 @@ namespace MemSQL
         protected override object InternalVisit(WhereClause node)
         {
             //TODO: node.Cursor
-            return new Func<Environment, IEnumerable<DataRow>>((env) =>
-            {
-                DataTable table = env.At<DataTable>("Target");
-                int top = env.At<int>("Top");
-                int size = table.Rows.Count;
-                int index = 0;
-                
-                env.Add("currentRow", null);
-                var filter = Visit<Func<Environment, bool>>(node.SearchCondition);
-                List<DataRow> result = new List<DataRow>();
-                while (index < size && result.Count < top)
-                {
-                    int i = index++;
-                    env["currentRow"] = table.Rows[i];
-                    if (filter(env)) { result.Add(table.Rows[i]); }
-                }
-                return result;
-            });
+            return new Func<Environment, Func<DataRow, bool>>((env) =>
+             {
+                 var filter = Visit<Func<Environment, bool>>(node.SearchCondition);
+                 var subEnv = env.NewChild();
+                 return new Func<DataRow, bool>((row) =>
+                 {
+                     subEnv.Add("currentRow", row);
+                     return filter(subEnv);
+                 });
+             });
         }
 
         protected override object InternalVisit(BooleanComparisonExpression node)
