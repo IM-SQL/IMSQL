@@ -76,6 +76,44 @@ namespace MemSQL.Test
             Assert.AreEqual(5, table.Rows[0]["ID"], "The updated value was not present on the Table");
         }
         [TestMethod]
+        public void AddAssignmentStringUpdateTest()
+        {
+            DataSet ds = new DataSet();
+            DataTable table = ds.Tables.Add("TBL");
+            table.Columns.Add(new DataColumn("ID", typeof(string)));
+
+            var row = table.NewRow();
+            row["ID"] = "hola";
+            table.Rows.Add(row);
+
+            string query = "Update [TBL] set ID +='-chau'";
+            SQLInterpreter interpreter = new SQLInterpreter(ds);
+
+            var result = interpreter.Execute(query);
+            int affected = result.RowsAffected;
+            Assert.AreEqual(1, affected, "There should be one row affected");
+            Assert.AreEqual("hola-chau", table.Rows[0]["ID"], "The updated value was not present on the Table");
+        }
+        [TestMethod]
+        public void AddAssignmentMixedTypesUpdateTest()
+        {
+            DataSet ds = new DataSet();
+            DataTable table = ds.Tables.Add("TBL");
+            table.Columns.Add(new DataColumn("ID", typeof(string)));
+
+            var row = table.NewRow();
+            row["ID"] = "hola";
+            table.Rows.Add(row);
+
+            string query = "Update [TBL] set ID +=3";
+            SQLInterpreter interpreter = new SQLInterpreter(ds);
+
+            var result = interpreter.Execute(query);
+            int affected = result.RowsAffected;
+            Assert.AreEqual(1, affected, "There should be one row affected");
+            Assert.AreEqual("hola3", table.Rows[0]["ID"], "The updated value was not present on the Table");
+        }
+        [TestMethod]
         public void SubAssignmentUpdateTest()
         {
             DataSet ds = new DataSet();
