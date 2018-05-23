@@ -32,16 +32,14 @@ namespace MemSQL
             //TODO:node.SelectElements 
             //TODO:node.UniqueRowFilter 
 
-
-            //TODO:This environment should be kind of global
-            Environment env = new Environment();
+            var env = Database.GlobalEnvironment.NewChild();
 
             //this returns multiple tables because of the joins and whatever
             IEnumerable<DataTable> tables = Visit<IEnumerable<DataTable>>(node.FromClause);
-
             DataTable table = tables.First();
 
-            TopResult top = Visit<TopResult>(node.TopRowFilter);
+            var top = EvaluateExpression<TopResult>(node.TopRowFilter, env);
+
             Func<DataRow, bool> predicate = null;
             if (node.WhereClause == null)
             {

@@ -17,6 +17,20 @@ namespace MemSQL
 
         protected Database Database { get; }
 
+        protected Func<Environment, T> VisitExpression<T>(TSqlFragment node)
+        {
+            var func = Visit<Func<Environment, object>>(node);
+            if (func == null) return null;
+            return new Func<Environment, T>(env => (T)func(env));
+        }
+
+        protected T EvaluateExpression<T>(TSqlFragment node, Environment env, T defaultValue = default(T))
+        {
+            var func = VisitExpression<T>(node);
+            if (func == null) return defaultValue;
+            return func(env);
+        }
+
         protected override object InternalVisit(MultiPartIdentifier node)
         {
             return node.Identifiers.Select(each => each.Value).ToArray();
@@ -138,14 +152,13 @@ namespace MemSQL
 
         protected override object InternalVisit(TopRowFilter node)
         {
-            return new TopResult(
-                /*
-                 * TODO(Richo): The amount should probably be stored as a function so that when we need it we can
-                 * invoke it and supply the current environment
-                 */
-                amount: (int)Visit<Func<Environment, object>>(node.Expression)(null), 
-                percent: node.Percent, 
-                ties: node.WithTies);
+            return new Func<Environment, object>(env =>
+            {
+                return new TopResult(
+                    amount: (int)Visit<Func<Environment, object>>(node.Expression)(env), 
+                    percent: node.Percent, 
+                    ties: node.WithTies);
+            });
         }
 
         /*INFO(Tera):i believe the expressions should be habdled differently,

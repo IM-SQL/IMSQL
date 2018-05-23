@@ -21,11 +21,10 @@ namespace MemSQL
             //TODO:node.OutputClause;
             //TODO:node.OutputIntoClause; 
 
-            var table = Visit<Tuple<string, DataTable>>(node.Target).Item2;
-            TopResult top = Visit<TopResult>(node.TopRowFilter);
+            var env = Database.GlobalEnvironment.NewChild();
 
-            //TODO:This environment should be kind of global
-            Environment env = new Environment();
+            var table = Visit<Tuple<string, DataTable>>(node.Target).Item2;
+            var top = EvaluateExpression<TopResult>(node.TopRowFilter, env);
 
             Func<DataRow, bool> predicate = null;
             if (node.WhereClause == null)

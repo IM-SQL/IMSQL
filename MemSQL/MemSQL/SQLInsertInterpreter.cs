@@ -70,8 +70,7 @@ namespace MemSQL
 
         protected override object InternalVisit(RowValue node)
         {
-            // TODO(Richo): Use the global environment here or what? For now, I'm using null...
-            return node.ColumnValues.Select(cv => Visit<Func<Environment, object>>(cv)(null)).ToArray();
+            return node.ColumnValues.Select(cv => Visit<Func<Environment, object>>(cv)(Database.GlobalEnvironment)).ToArray();
         }
     }
 }
