@@ -17,6 +17,11 @@ namespace MemSQL
 
         protected Database Database { get; }
 
+        protected IEnumerable<Func<Environment, T>> VisitExpressions<T>(IEnumerable<TSqlFragment> nodes)
+        {
+            return nodes.Select(VisitExpression<T>).ToArray();
+        }
+
         protected Func<Environment, T> VisitExpression<T>(TSqlFragment node)
         {
             var func = Visit<Func<Environment, object>>(node);

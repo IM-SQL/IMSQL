@@ -27,17 +27,8 @@ namespace MemSQL
             var env = Database.GlobalEnvironment.NewChild();
 
             var table = Visit<Tuple<string, DataTable>>(node.Target).Item2;
-            var top = EvaluateExpression<TopResult>(node.TopRowFilter, env);
-
-            Func<DataRow, bool> predicate = null;
-            if (node.WhereClause == null)
-            {
-                predicate = new Func<DataRow, bool>((row) => true);
-            }
-            else
-            {
-                predicate = Visit<Func<Environment, Func<DataRow, bool>>>(node.WhereClause)(env);
-            }
+            var top = EvaluateExpression<TopResult>(node.TopRowFilter, env);            
+            var predicate = EvaluateExpression<Func<DataRow, bool>>(node.WhereClause, env, row => true);
 
             Action<DataRow> setClause = CreateSetClause(node.SetClauses, env);
 
@@ -53,8 +44,11 @@ namespace MemSQL
 
         private Action<DataRow> CreateSetClause(IList<SetClause> clauses, Environment env)
         {
-            var sets = Visit<Func<Environment, Action<DataRow>>>(clauses).Select(f => f(env)).ToArray();
-            return new Action<DataRow>((row) =>
+            var sets = VisitExpressions<Action<DataRow>>(clauses)
+                .Select(f => f(env))
+                .ToArray();
+
+            return new Action<DataRow>(row =>
             {
                 foreach (var item in sets)
                 {
@@ -113,7 +107,7 @@ namespace MemSQL
                 string columnName = Visit<string>(node.Column);
                 return new Action<DataRow>((row) =>
                 {
-                    object providedValue = Visit<Func<Environment, object>>(node.NewValue)(env);
+                    object providedValue = EvaluateExpression<object>(node.NewValue, env);
                     row[columnName] = operation(row[columnName], providedValue);
                 });
             });
