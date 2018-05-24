@@ -23,12 +23,12 @@ namespace MemSQL
             //TODO: node.Cursor
             return new Func<Environment, Func<DataRow, bool>>((env) =>
             {
-                var filter = Visit<Func<Environment, bool>>(node.SearchCondition);
+                var filter = Visit<Func<Environment, object>>(node.SearchCondition);
                 var subEnv = env.NewChild();
                 return new Func<DataRow, bool>((row) =>
                 {
                     subEnv.Add("currentRow", row);
-                    return filter(subEnv);
+                    return (bool)filter(subEnv);
                 });
             });
         }
@@ -73,7 +73,7 @@ namespace MemSQL
                     throw new NotImplementedException();
             }
 
-            return new Func<Environment, bool>((env) =>
+            return new Func<Environment, object>((env) =>
             {
                 var first = EvaluateExpression<object>(node.FirstExpression, env);
                 var second = EvaluateExpression<object>(node.SecondExpression, env);
@@ -103,20 +103,20 @@ namespace MemSQL
                     func = (first, second) => first || second;
                     break;
             }
-            return new Func<Environment, bool>(env =>
+            return new Func<Environment, object>(env =>
             {
                 // INFO(Richo): We don't need to implement short-circuit because it's not a requirement for SQL
-                var first = Visit<Func<Environment, bool>>(node.FirstExpression)(env);
-                var second = Visit<Func<Environment, bool>>(node.SecondExpression)(env);
+                bool first = (bool)Visit<Func<Environment, object>>(node.FirstExpression)(env);
+                bool second = (bool)Visit<Func<Environment, object>>(node.SecondExpression)(env);
                 return func(first, second);
             });
         }
 
         protected override object InternalVisit(BooleanNotExpression node)
         {
-            return new Func<Environment, bool>(env =>
+            return new Func<Environment, object>(env =>
             {
-                return !(Visit<Func<Environment, bool>>(node.Expression)(env));
+                return !((bool)Visit<Func<Environment, object>>(node.Expression)(env));
             });
         }
     }
