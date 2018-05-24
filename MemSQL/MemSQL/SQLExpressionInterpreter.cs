@@ -23,12 +23,12 @@ namespace MemSQL
             //TODO: node.Cursor
             return new Func<Environment, Func<DataRow, bool>>((env) =>
             {
-                var filter = Visit<Func<Environment, object>>(node.SearchCondition);
+                var filter = VisitExpression<bool>(node.SearchCondition);
                 var subEnv = env.NewChild();
                 return new Func<DataRow, bool>((row) =>
                 {
                     subEnv.Add("currentRow", row);
-                    return (bool)filter(subEnv);
+                    return filter(subEnv);
                 });
             });
         }
@@ -106,8 +106,8 @@ namespace MemSQL
             return new Func<Environment, object>(env =>
             {
                 // INFO(Richo): We don't need to implement short-circuit because it's not a requirement for SQL
-                bool first = (bool)Visit<Func<Environment, object>>(node.FirstExpression)(env);
-                bool second = (bool)Visit<Func<Environment, object>>(node.SecondExpression)(env);
+                bool first = EvaluateExpression<bool>(node.FirstExpression, env);
+                bool second = EvaluateExpression<bool>(node.SecondExpression, env);
                 return func(first, second);
             });
         }
@@ -116,7 +116,7 @@ namespace MemSQL
         {
             return new Func<Environment, object>(env =>
             {
-                return !((bool)Visit<Func<Environment, object>>(node.Expression)(env));
+                return !EvaluateExpression<bool>(node.Expression, env);
             });
         }
     }
