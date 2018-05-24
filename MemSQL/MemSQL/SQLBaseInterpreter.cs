@@ -30,7 +30,7 @@ namespace MemSQL
             if (func == null) return defaultValue;
             return func(env);
         }
-
+        
         protected override object InternalVisit(MultiPartIdentifier node)
         {
             return node.Identifiers.Select(each => each.Value).ToArray();
@@ -155,7 +155,7 @@ namespace MemSQL
             return new Func<Environment, object>(env =>
             {
                 return new TopResult(
-                    amount: (int)Visit<Func<Environment, object>>(node.Expression)(env), 
+                    amount: EvaluateExpression<int>(node.Expression, env), 
                     percent: node.Percent, 
                     ties: node.WithTies);
             });

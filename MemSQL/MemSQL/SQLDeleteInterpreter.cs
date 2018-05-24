@@ -25,27 +25,16 @@ namespace MemSQL
 
             var table = Visit<Tuple<string, DataTable>>(node.Target).Item2;
             var top = EvaluateExpression<TopResult>(node.TopRowFilter, env);
+            var predicate = EvaluateExpression<Func<DataRow, bool>>(node.WhereClause, env, row => true);
 
-            Func<DataRow, bool> predicate = null;
-            if (node.WhereClause == null)
-            {
-                predicate = new Func<DataRow, bool>((row) => true);
-            }
-            else
-            {
-                predicate = Visit<Func<Environment, Func<DataRow, bool>>>(node.WhereClause)(env);
-            }
-
-            List<DataRow> result = new List<DataRow>();
-
-            result.AddRange(Filter.From(table.Rows.AsEnumerable(), predicate, top));
+            var result = Filter.From(table.Rows.AsEnumerable(), predicate, top).ToArray();
             foreach (DataRow item in result)
             {
                 // TODO(Richo): What happens if one of these throws an error?
                 item.Delete();
             }
             table.AcceptChanges();
-            return result.ToArray();
+            return result;
         }
     }
 }

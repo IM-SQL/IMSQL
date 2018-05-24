@@ -65,12 +65,16 @@ namespace MemSQL
 
         protected override object InternalVisit(ValuesInsertSource node)
         {
-            return node.RowValues.Select(rv => Visit<object[]>(rv)).ToArray();
+            return node.RowValues
+                .Select(rv => Visit<object[]>(rv))
+                .ToArray();
         }
 
         protected override object InternalVisit(RowValue node)
         {
-            return node.ColumnValues.Select(cv => Visit<Func<Environment, object>>(cv)(Database.GlobalEnvironment)).ToArray();
+            return node.ColumnValues
+                .Select(cv => EvaluateExpression<object>(cv, Database.GlobalEnvironment))
+                .ToArray();
         }
     }
 }

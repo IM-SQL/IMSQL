@@ -81,8 +81,8 @@ namespace MemSQL
         {
             Action<DataColumn> applier = column =>
             {
-                column.AutoIncrementSeed = (int)Visit<Func<Environment, object>>(node.IdentitySeed, env => 1)(Database.GlobalEnvironment);
-                column.AutoIncrementStep = (int)Visit<Func<Environment, object>>(node.IdentityIncrement, env => 1)(Database.GlobalEnvironment);
+                column.AutoIncrementSeed = EvaluateExpression(node.IdentitySeed, Database.GlobalEnvironment, 1);
+                column.AutoIncrementStep = EvaluateExpression(node.IdentityIncrement, Database.GlobalEnvironment, 1);
                 column.AutoIncrement = true;
             };
             return applier;
@@ -92,7 +92,7 @@ namespace MemSQL
         {
             Action<DataColumn> applier = (column) =>
             {
-                column.DefaultValue = Visit<Func<Environment, object>>(node.Expression)(Database.GlobalEnvironment);
+                column.DefaultValue = EvaluateExpression<object>(node.Expression, Database.GlobalEnvironment);
             };
             return applier;
         }

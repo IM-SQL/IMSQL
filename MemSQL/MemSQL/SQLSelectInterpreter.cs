@@ -37,22 +37,10 @@ namespace MemSQL
             //this returns multiple tables because of the joins and whatever
             IEnumerable<DataTable> tables = Visit<IEnumerable<DataTable>>(node.FromClause);
             DataTable table = tables.First();
-
             var top = EvaluateExpression<TopResult>(node.TopRowFilter, env);
+            var predicate = EvaluateExpression<Func<DataRow, bool>>(node.WhereClause, env, row => true);
 
-            Func<DataRow, bool> predicate = null;
-            if (node.WhereClause == null)
-            {
-                predicate = new Func<DataRow, bool>((row) => true);
-            }
-            else
-            {
-                predicate = Visit<Func<Environment, Func<DataRow, bool>>>(node.WhereClause)(env);
-            }
-
-            List<DataRow> result = new List<DataRow>();
-            result.AddRange(Filter.From(table.Rows.AsEnumerable(), predicate, top));
-            return result.ToArray(); 
+            return Filter.From(table.Rows.AsEnumerable(), predicate, top).ToArray();
         }
 
         protected override object InternalVisit(FromClause node)

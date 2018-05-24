@@ -22,15 +22,15 @@ namespace MemSQL
         {
             //TODO: node.Cursor
             return new Func<Environment, Func<DataRow, bool>>((env) =>
-             {
-                 var filter = Visit<Func<Environment, bool>>(node.SearchCondition);
-                 var subEnv = env.NewChild();
-                 return new Func<DataRow, bool>((row) =>
-                 {
-                     subEnv.Add("currentRow", row);
-                     return filter(subEnv);
-                 });
-             });
+            {
+                var filter = Visit<Func<Environment, bool>>(node.SearchCondition);
+                var subEnv = env.NewChild();
+                return new Func<DataRow, bool>((row) =>
+                {
+                    subEnv.Add("currentRow", row);
+                    return filter(subEnv);
+                });
+            });
         }
 
         protected override object InternalVisit(BooleanComparisonExpression node)
@@ -75,8 +75,8 @@ namespace MemSQL
 
             return new Func<Environment, bool>((env) =>
             {
-                var first = Visit<Func<Environment, object>>(node.FirstExpression)(env);
-                var second = Visit<Func<Environment, object>>(node.SecondExpression)(env);
+                var first = EvaluateExpression<object>(node.FirstExpression, env);
+                var second = EvaluateExpression<object>(node.SecondExpression, env);
                 return func(first, second);
             });
         }
