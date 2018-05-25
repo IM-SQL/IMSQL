@@ -22,6 +22,11 @@ namespace MemSQL
             node.Accept(inner);
             return (T)inner.Result;
         }
+        
+        public IEnumerable<T> Visit<T>(IEnumerable<TSqlFragment> nodes, T defaultValue = default(T))
+        {
+            return nodes.Select(n => Visit(n, defaultValue)).ToArray();
+        }
 
         protected virtual object InternalVisit(SchemaObjectName node) { throw new NotImplementedException(); }
         protected virtual object InternalVisit(SqlDataTypeReference node) { throw new NotImplementedException(); }

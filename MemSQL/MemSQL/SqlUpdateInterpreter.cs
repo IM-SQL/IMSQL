@@ -56,12 +56,6 @@ namespace MemSQL
                 }
             });
         }
-
-        //TODO: this may be useful in the parent class.
-        public IEnumerable<T> Visit<T>(IEnumerable<TSqlFragment> nodes, T defaultValue = default(T))
-        {
-            return nodes.Select(n => Visit<T>(n, defaultValue)).ToArray();
-        }
         
         protected override object InternalVisit(AssignmentSetClause node)
         {
