@@ -52,7 +52,7 @@ namespace MemSQL
         protected override object InternalVisit(TableDefinition node)
         {
             //TODO: indexes
-            var result = new DataTable();
+            var result = new DataTable(Database);
             var columns = node.ColumnDefinitions
                     .Select(cd => Visit<DataColumn>(cd))
                     .ToArray();
@@ -154,14 +154,18 @@ namespace MemSQL
                     else
                     {
                         table.PrimaryKey = columns;
-                        table.Constraints.OfType<UniqueConstraint>()
+                        Database.Constraints
+                            .OfType<UniqueConstraint>()
+                            .Where(c => Equals(table, c.Table))
                             .First(c => c.Columns.SequenceEqual(columns))
                             .ConstraintName = name;
                     }
                 }
                 else
                 {
-                    var existing = table.Constraints.OfType<UniqueConstraint>()
+                    var existing = Database.Constraints
+                        .OfType<UniqueConstraint>()
+                        .Where(c => Equals(table, c.Table))
                         .FirstOrDefault(c => c.Columns.SequenceEqual(columns));
                     if (existing != null)
                     {
@@ -169,7 +173,7 @@ namespace MemSQL
                     }
                     else
                     {
-                        table.Constraints.Add(new UniqueConstraint(name, columns, isPK));
+                        Database.Constraints.Add(new UniqueConstraint(name, columns, isPK));
                     }
                 }
             };
@@ -207,7 +211,7 @@ namespace MemSQL
                     })
                     .ToArray();
 
-                DataColumn[] childs = node.Columns
+                DataColumn[] children = node.Columns
                     .Select(c =>
                     {
                         var dc = table.Columns[c.Value];
@@ -221,24 +225,24 @@ namespace MemSQL
                     })
                     .ToArray();
 
-                var fk = new ForeignKeyConstraint(constraintName, parents, childs);
+                var fk = new ForeignKeyConstraint(constraintName, parents, children);
                 fk.DeleteRule = GetDeleteUpdateRule(node.DeleteAction);
                 fk.UpdateRule = GetDeleteUpdateRule(node.UpdateAction);
                 if ((fk.DeleteRule == Rule.SetNull || fk.UpdateRule == Rule.SetNull)
-                    && childs.Any(c => !c.AllowDBNull))
+                    && children.Any(c => !c.AllowDBNull))
                 {
                     var msg = string.Format("Cannot create the foreign key \"{0}\" with the SET NULL referential action, " +
                                             "because one or more referencing columns are not nullable.", constraintName);
-                    throw new InvalidConstraintException(msg);
+                    throw new ConstraintException(msg);
                 }
                 else if ((fk.DeleteRule == Rule.SetDefault || fk.UpdateRule == Rule.SetDefault)
-                    && childs.Any(c => !c.AllowDBNull && c.DefaultValue == DBNull.Value))
+                    && children.Any(c => !c.AllowDBNull && (c.DefaultValue == null || c.DefaultValue == DBNull.Value)))
                 {
                     var msg = string.Format("Cannot create the foreign key \"{0}\" with the SET DEFAULT referential action, " +
                                             "because one or more referencing not-nullable columns lack a default constraint.", constraintName);
-                    throw new InvalidConstraintException(msg);
+                    throw new ConstraintException(msg);
                 }
-                table.Constraints.Add(fk);
+                Database.Constraints.Add(fk);
             };
             return applier;
         }

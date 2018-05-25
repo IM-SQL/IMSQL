@@ -43,9 +43,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Constraint.cs" />
+    <Compile Include="ConstraintCollection.cs" />
+    <Compile Include="ConstraintException.cs" />
     <Compile Include="Database.cs" />
+    <Compile Include="DataColumn.cs" />
+    <Compile Include="DataColumnCollection.cs" />
+    <Compile Include="DataRow.cs" />
+    <Compile Include="DataRowCollection.cs" />
+    <Compile Include="DataTable.cs" />
+    <Compile Include="DataTableCollection.cs" />
     <Compile Include="Environment.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="ForeignKeyConstraint.cs" />
     <Compile Include="ParseException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Filter.cs" />
@@ -60,6 +70,7 @@
     <Compile Include="SQLUpdateInterpreter.cs" />
     <Compile Include="SQLVisitor.cs" />
     <Compile Include="TopResult.cs" />
+    <Compile Include="UniqueConstraint.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

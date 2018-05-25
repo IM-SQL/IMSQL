@@ -210,11 +210,11 @@ namespace MemSQL.Test.Structural
             Assert.AreEqual(typeof(int), table2.Columns["col2"].DataType);
             Assert.IsTrue(table2.PrimaryKey.Length == 1, "The Primary Key is missing!");
             Assert.AreEqual(table2.Columns["col2"], table2.PrimaryKey[0]);
-
-
-            Assert.IsTrue(table2.Constraints.Count == 2, "Either the PK or the FK are missing");
-            Assert.IsTrue(table2.Constraints.Contains("FK_tbl"), "The FK was not found by name");
-            var fk = table2.Constraints["FK_tbl"] as ForeignKeyConstraint;
+            
+            Assert.AreEqual(2, db.Constraints.Count(c => Equals(table2, c.Table)), 
+                "Either the PK or the FK are missing");
+            Assert.IsTrue(db.Constraints.Contains("FK_tbl"), "The FK was not found by name");
+            var fk = db.Constraints["FK_tbl"] as ForeignKeyConstraint;
             Assert.IsTrue(fk.Columns.Length == 1);
             Assert.AreEqual("col2", fk.Columns[0].ColumnName);
             Assert.AreEqual(table2, fk.Table, "The child table is not the correct one");
@@ -454,7 +454,7 @@ namespace MemSQL.Test.Structural
                 table.PrimaryKey.Select(c => c.ColumnName).ToArray(),
                 "The PK should be configured correctly");
 
-            Assert.IsTrue(table.Constraints.Contains("FK_LogException_ToLogException"));
+            Assert.IsTrue(db.Constraints.Contains("FK_LogException_ToLogException"));
         }
 
         [TestMethod]
@@ -482,7 +482,7 @@ namespace MemSQL.Test.Structural
                 table.PrimaryKey.Select(c => c.ColumnName).ToArray(),
                 "The PK should be configured correctly");
 
-            Assert.IsTrue(table.Constraints.Contains("FK_LogException_ToLogException"));
+            Assert.IsTrue(db.Constraints.Contains("FK_LogException_ToLogException"));
         }
 
         [TestMethod]
@@ -546,7 +546,7 @@ namespace MemSQL.Test.Structural
             Assert.IsTrue(table.Columns["id"].Unique, "Column should be unique");
             CollectionAssert.AreEqual(new[] { table.Columns["id"] }, table.PrimaryKey,
                 "PK should be valid");
-            Assert.IsTrue(table.Constraints.OfType<UniqueConstraint>()
+            Assert.IsTrue(db.Constraints.OfType<UniqueConstraint>()
                 .Where(c => c.Columns.SequenceEqual(new[] { table.Columns["id"], table.Columns["foo"] })).Any(),
                 "Composite unique key should exist");
         }
@@ -654,17 +654,17 @@ namespace MemSQL.Test.Structural
             t2_insert("C", 3);
             t2_insert("D", null);
 
-            Assert.ThrowsException<InvalidConstraintException>(() =>
+            Assert.ThrowsException<ConstraintException>(() =>
             {
                 t2_insert("E", 4);
             });
 
-            Assert.ThrowsException<InvalidConstraintException>(() =>
+            Assert.ThrowsException<ConstraintException>(() =>
             {
                 t1.Rows.Find(1).Delete();
             });
 
-            Assert.ThrowsException<InvalidConstraintException>(() =>
+            Assert.ThrowsException<ConstraintException>(() =>
             {
                 var row = t1.Rows.Find(1);
                 row["Id"] = 4;
@@ -711,17 +711,17 @@ namespace MemSQL.Test.Structural
             t2_insert("C", 3);
             t2_insert("D", null);
 
-            Assert.ThrowsException<InvalidConstraintException>(() =>
+            Assert.ThrowsException<ConstraintException>(() =>
             {
                 t2_insert("E", 4);
             });
 
-            Assert.ThrowsException<InvalidConstraintException>(() =>
+            Assert.ThrowsException<ConstraintException>(() =>
             {
                 t1.Rows.Find(1).Delete();
             });
 
-            Assert.ThrowsException<InvalidConstraintException>(() =>
+            Assert.ThrowsException<ConstraintException>(() =>
             {
                 var row = t1.Rows.Find(1);
                 row["Id"] = 4;
@@ -768,7 +768,7 @@ namespace MemSQL.Test.Structural
             t2_insert("C", 3);
             t2_insert("D", null);
 
-            Assert.ThrowsException<InvalidConstraintException>(() =>
+            Assert.ThrowsException<ConstraintException>(() =>
             {
                 t2_insert("E", 4);
             });
@@ -825,7 +825,7 @@ namespace MemSQL.Test.Structural
             t2_insert("C", 3);
             t2_insert("D", null);
 
-            Assert.ThrowsException<InvalidConstraintException>(() =>
+            Assert.ThrowsException<ConstraintException>(() =>
             {
                 t2_insert("E", 4);
             });
@@ -885,7 +885,7 @@ namespace MemSQL.Test.Structural
             t2_insert("D", null);
             Assert.AreEqual(3, t2.Rows.Find(4)["T1"]);
 
-            Assert.ThrowsException<InvalidConstraintException>(() =>
+            Assert.ThrowsException<ConstraintException>(() =>
             {
                 t2_insert("E", 4);
             });
@@ -945,7 +945,7 @@ namespace MemSQL.Test.Structural
             t2_insert("D", null);
             Assert.AreEqual(DBNull.Value, t2.Rows.Find(4)["T1"]);
 
-            Assert.ThrowsException<InvalidConstraintException>(() =>
+            Assert.ThrowsException<ConstraintException>(() =>
             {
                 t2_insert("E", 4);
             });
@@ -970,7 +970,7 @@ namespace MemSQL.Test.Structural
             var visitor = new SQLInterpreter(db);
             visitor.Execute(@"CREATE TABLE T1 (Id INT PRIMARY KEY NOT NULL);");
 
-            Assert.ThrowsException<InvalidConstraintException>(() =>
+            Assert.ThrowsException<ConstraintException>(() =>
             {
                 string script = @"
                     CREATE TABLE T2
@@ -993,7 +993,7 @@ namespace MemSQL.Test.Structural
             var visitor = new SQLInterpreter(db);
             visitor.Execute(@"CREATE TABLE T1 (Id INT PRIMARY KEY NOT NULL);");
 
-            Assert.ThrowsException<InvalidConstraintException>(() =>
+            Assert.ThrowsException<ConstraintException>(() =>
             {
                 string script = @"
                     CREATE TABLE T2
@@ -1016,7 +1016,7 @@ namespace MemSQL.Test.Structural
             var visitor = new SQLInterpreter(db);
             visitor.Execute(@"CREATE TABLE T1 (Id INT PRIMARY KEY NOT NULL);");
 
-            Assert.ThrowsException<InvalidConstraintException>(() =>
+            Assert.ThrowsException<ConstraintException>(() =>
             {
                 string script = @"
                     CREATE TABLE T2
@@ -1039,7 +1039,7 @@ namespace MemSQL.Test.Structural
             var visitor = new SQLInterpreter(db);
             visitor.Execute(@"CREATE TABLE T1 (Id INT PRIMARY KEY NOT NULL);");
 
-            Assert.ThrowsException<InvalidConstraintException>(() =>
+            Assert.ThrowsException<ConstraintException>(() =>
             {
                 string script = @"
                     CREATE TABLE T2
