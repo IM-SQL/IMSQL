@@ -14,12 +14,12 @@ namespace MemSQL.Test
         [TestMethod]
         public void BasicInsertTest()
         {
-            DataSet ds = new DataSet();
-            DataTable table = ds.Tables.Add("TBL");
+            var db = new Database();
+            DataTable table = db.Tables.Add("TBL");
             table.Columns.Add(new DataColumn("ID", typeof(int)));
             string query = "Insert into [TBL] values(3)";
 
-            SQLInterpreter interpreter = new SQLInterpreter(ds);
+            SQLInterpreter interpreter = new SQLInterpreter(db);
             var result = interpreter.Execute(query);
             int affected = result.RowsAffected;
 
@@ -31,13 +31,13 @@ namespace MemSQL.Test
         [TestMethod]
         public void MultivaluedInsertTest()
         {
-            DataSet ds = new DataSet();
-            DataTable table = ds.Tables.Add("TBL");
+            var db = new Database();
+            DataTable table = db.Tables.Add("TBL");
             table.Columns.Add(new DataColumn("A", typeof(int)));
             table.Columns.Add(new DataColumn("B", typeof(string)));
             string query = "Insert into [TBL] values(3,'asd')";
 
-            SQLInterpreter interpreter = new SQLInterpreter(ds);
+            SQLInterpreter interpreter = new SQLInterpreter(db);
             var result = interpreter.Execute(query);
             int affected = result.RowsAffected;
 
@@ -50,8 +50,8 @@ namespace MemSQL.Test
         [TestMethod]
         public void InsertIdentityShouldFail()
         {
-            DataSet ds = new DataSet();
-            DataTable table = ds.Tables.Add("TBL");
+            var db = new Database();
+            DataTable table = db.Tables.Add("TBL");
             table.Columns.Add(new DataColumn("A", typeof(int)));
 
             table.Columns["A"].AutoIncrement = true;
@@ -59,7 +59,7 @@ namespace MemSQL.Test
             table.Columns["A"].AutoIncrementStep = 1;
             string query = "Insert into [TBL](A) values(3)";
 
-            SQLInterpreter interpreter = new SQLInterpreter(ds);
+            SQLInterpreter interpreter = new SQLInterpreter(db);
             Assert.ThrowsException<InvalidOperationException>(() =>
             {
                 /*
@@ -74,14 +74,14 @@ namespace MemSQL.Test
         [TestMethod]
         public void DefaultValueInsertTest()
         {
-            DataSet ds = new DataSet();
-            DataTable table = ds.Tables.Add("TBL");
+            var db = new Database();
+            DataTable table = db.Tables.Add("TBL");
             table.Columns.Add(new DataColumn("A", typeof(int)));
             table.Columns.Add(new DataColumn("B", typeof(int)));
             table.Columns["B"].DefaultValue = 5;
             string query = "Insert into [TBL](A) values(3)";
 
-            SQLInterpreter interpreter = new SQLInterpreter(ds);
+            SQLInterpreter interpreter = new SQLInterpreter(db);
             var result = interpreter.Execute(query);
             int affected = result.RowsAffected;
             Assert.AreEqual(1, affected, "There should be one row affected");
@@ -93,13 +93,13 @@ namespace MemSQL.Test
         [TestMethod]
         public void DBNULLInsertTest()
         {
-            DataSet ds = new DataSet();
-            DataTable table = ds.Tables.Add("TBL");
+            var db = new Database();
+            DataTable table = db.Tables.Add("TBL");
             table.Columns.Add(new DataColumn("A", typeof(int)));
             table.Columns[0].AllowDBNull = true;
             string query = "Insert into [TBL] values(NULL)";
 
-            SQLInterpreter interpreter = new SQLInterpreter(ds);
+            SQLInterpreter interpreter = new SQLInterpreter(db);
             var result = interpreter.Execute(query);
             int affected = result.RowsAffected;
 
@@ -111,13 +111,13 @@ namespace MemSQL.Test
         [TestMethod]
         public void UnorderedValuesTest()
         {
-            DataSet ds = new DataSet();
-            DataTable table = ds.Tables.Add("TBL");
+            var db = new Database();
+            DataTable table = db.Tables.Add("TBL");
             table.Columns.Add(new DataColumn("A", typeof(int)));
             table.Columns.Add(new DataColumn("B", typeof(int)));
             string query = "Insert into [TBL](B,A) values(2,1)";
 
-            SQLInterpreter interpreter = new SQLInterpreter(ds);
+            SQLInterpreter interpreter = new SQLInterpreter(db);
             var result = interpreter.Execute(query);
             int affected = result.RowsAffected;
 
@@ -130,15 +130,15 @@ namespace MemSQL.Test
         [TestMethod]
         public void SelectedValuesTest()
         {
-            DataSet ds = new DataSet();
-            DataTable table = ds.Tables.Add("TBL");
+            var db = new Database();
+            DataTable table = db.Tables.Add("TBL");
             table.Columns.Add(new DataColumn("A", typeof(int)));
             table.Columns.Add(new DataColumn("B", typeof(int)));
             table.Columns.Add(new DataColumn("C", typeof(int)));
             table.Columns["C"].AllowDBNull = true;
             string query = "Insert into [TBL](B,A) values(2,1)";
 
-            SQLInterpreter interpreter = new SQLInterpreter(ds);
+            SQLInterpreter interpreter = new SQLInterpreter(db);
             var result = interpreter.Execute(query);
             int affected = result.RowsAffected;
 
@@ -162,8 +162,8 @@ namespace MemSQL.Test
             }
             Func<Tuple<int, int>, string> printTuple = (t) => string.Format("( {0} , {1} )", t.Item1, t.Item2);
 
-            DataSet ds = new DataSet();
-            DataTable table = ds.Tables.Add("TBL");
+            var db = new Database();
+            DataTable table = db.Tables.Add("TBL");
             table.Columns.Add(new DataColumn("A", typeof(int)));
             table.Columns.Add(new DataColumn("B", typeof(int)));
 
@@ -171,7 +171,7 @@ namespace MemSQL.Test
                 string.Format(
                 "Insert into [TBL] values {0}", string.Join(", ", testData.Select(t => printTuple(t))));
 
-            SQLInterpreter interpreter = new SQLInterpreter(ds);
+            SQLInterpreter interpreter = new SQLInterpreter(db);
             var result = interpreter.Execute(query);
             int affected = result.RowsAffected;
 
@@ -187,13 +187,13 @@ namespace MemSQL.Test
         [TestMethod]
         public void InsufficientParametersWithoutFieldNameShouldFail()
         {
-            DataSet ds = new DataSet();
-            DataTable table = ds.Tables.Add("TBL");
+            var db = new Database();
+            DataTable table = db.Tables.Add("TBL");
             table.Columns.Add(new DataColumn("A", typeof(int)));
             table.Columns.Add(new DataColumn("B", typeof(int)));
             string query = "Insert into [TBL] values(3)";
 
-            SQLInterpreter interpreter = new SQLInterpreter(ds);
+            SQLInterpreter interpreter = new SQLInterpreter(db);
             Assert.ThrowsException<ArgumentException>(() =>
             {
                 /*
@@ -208,14 +208,14 @@ namespace MemSQL.Test
         [TestMethod]
         public void InsufficientParametersWithoutFieldNameEvenWithDefaultValuesShouldFail()
         {
-            DataSet ds = new DataSet();
-            DataTable table = ds.Tables.Add("TBL");
+            var db = new Database();
+            DataTable table = db.Tables.Add("TBL");
             table.Columns.Add(new DataColumn("A", typeof(int)));
             table.Columns.Add(new DataColumn("B", typeof(int)));
             table.Columns["A"].DefaultValue = 5;
             string query = "Insert into [TBL] values(3)";
 
-            SQLInterpreter interpreter = new SQLInterpreter(ds);
+            SQLInterpreter interpreter = new SQLInterpreter(db);
             Assert.ThrowsException<ArgumentException>(() =>
             {
                 /*
@@ -230,8 +230,8 @@ namespace MemSQL.Test
         [TestMethod]
         public void InsufficientParametersWithoutNameShouldNotConsiderIdentityColumns()
         {
-            DataSet ds = new DataSet();
-            DataTable table = ds.Tables.Add("TBL");
+            var db = new Database();
+            DataTable table = db.Tables.Add("TBL");
             table.Columns.Add(new DataColumn("A", typeof(int)));
             table.Columns.Add(new DataColumn("B", typeof(string)));
             table.Columns["A"].AutoIncrement = true;
@@ -240,7 +240,7 @@ namespace MemSQL.Test
 
             string query = "Insert into [TBL] values('asd')";
 
-            SQLInterpreter interpreter = new SQLInterpreter(ds);
+            SQLInterpreter interpreter = new SQLInterpreter(db);
             var result = interpreter.Execute(query);
             Assert.AreEqual(1, result.RowsAffected, "There should be one row affected");
             Assert.AreEqual(1, table.Rows.Count, "There should be one row on the table");

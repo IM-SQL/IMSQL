@@ -14,9 +14,6 @@ namespace MemSQL
         public SQLInterpreter() : this(new Database()) {}
         public SQLInterpreter(Database db) : base(db) {}
 
-        // TODO(Richo): I kept this contructor because I didn't want to fix all the tests...
-        public SQLInterpreter(DataSet ds) : this(new Database(ds)) {}
-
         public SQLExecutionResult Execute(TextReader script)
         {
             var parser = new TSql140Parser(false);

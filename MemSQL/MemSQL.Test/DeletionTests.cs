@@ -14,8 +14,8 @@ namespace MemSQL.Test
         [TestMethod]
         public void BasicDeleteTest()
         {
-            DataSet ds = new DataSet();
-            DataTable table = ds.Tables.Add("TBL");
+            var db = new Database();
+            DataTable table = db.Tables.Add("TBL");
             table.Columns.Add(new DataColumn("ID", typeof(int)));
 
             var row = table.NewRow();
@@ -23,7 +23,7 @@ namespace MemSQL.Test
             table.Rows.Add(row);
 
             string query = "Delete from [TBL]";
-            SQLInterpreter interpreter = new SQLInterpreter(ds);
+            SQLInterpreter interpreter = new SQLInterpreter(db);
 
             var result = interpreter.Execute(query);
             int affected = result.RowsAffected;
@@ -35,8 +35,8 @@ namespace MemSQL.Test
         [TestMethod]
         public void BatchDeleteTest()
         {
-            DataSet ds = new DataSet();
-            DataTable table = ds.Tables.Add("TBL");
+            var db = new Database();
+            DataTable table = db.Tables.Add("TBL");
             table.Columns.Add(new DataColumn("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
@@ -45,7 +45,7 @@ namespace MemSQL.Test
                 table.Rows.Add(row);
             }
             string query = "Delete from [TBL]";
-            SQLInterpreter interpreter = new SQLInterpreter(ds);
+            SQLInterpreter interpreter = new SQLInterpreter(db);
 
             var result = interpreter.Execute(query);
             int affected = result.RowsAffected;
@@ -56,8 +56,8 @@ namespace MemSQL.Test
         [TestMethod]
         public void TopDeleteTest()
         {
-            DataSet ds = new DataSet();
-            DataTable table = ds.Tables.Add("TBL");
+            var db = new Database();
+            DataTable table = db.Tables.Add("TBL");
             table.Columns.Add(new DataColumn("ID", typeof(int)));
             for (int i = 0; i < 200; i++)
             {
@@ -66,7 +66,7 @@ namespace MemSQL.Test
                 table.Rows.Add(row);
             }
             string query = "Delete TOP(50) from [TBL]";
-            SQLInterpreter interpreter = new SQLInterpreter(ds);
+            SQLInterpreter interpreter = new SQLInterpreter(db);
 
             var result = interpreter.Execute(query);
             int affected = result.RowsAffected;
@@ -77,8 +77,8 @@ namespace MemSQL.Test
         [TestMethod]
         public void TopDeleteWithTiesShouldFail()
         {
-            DataSet ds = new DataSet();
-            DataTable table = ds.Tables.Add("TBL");
+            var db = new Database();
+            DataTable table = db.Tables.Add("TBL");
             table.Columns.Add(new DataColumn("ID", typeof(int)));
             for (int i = 0; i < 200; i++)
             {
@@ -87,8 +87,8 @@ namespace MemSQL.Test
                 table.Rows.Add(row);
             }
             string query = "Delete TOP(50) with ties from [TBL]";
-            SQLInterpreter interpreter = new SQLInterpreter(ds);
-            Assert.ThrowsException<ParseException>(() => 
+            SQLInterpreter interpreter = new SQLInterpreter(db);
+            Assert.ThrowsException<ParseException>(() =>
             {
                 interpreter.Execute(query);
             });
@@ -97,8 +97,8 @@ namespace MemSQL.Test
         [TestMethod]
         public void TopPercentDeleteTest()
         {
-            DataSet ds = new DataSet();
-            DataTable table = ds.Tables.Add("TBL");
+            var db = new Database();
+            DataTable table = db.Tables.Add("TBL");
             table.Columns.Add(new DataColumn("ID", typeof(int)));
             for (int i = 0; i < 200; i++)
             {
@@ -107,7 +107,7 @@ namespace MemSQL.Test
                 table.Rows.Add(row);
             }
             string query = "Delete TOP (50) PERCENT from [TBL]";
-            SQLInterpreter interpreter = new SQLInterpreter(ds);
+            SQLInterpreter interpreter = new SQLInterpreter(db);
 
             var result = interpreter.Execute(query);
             int affected = result.RowsAffected;
@@ -118,8 +118,8 @@ namespace MemSQL.Test
         [TestMethod]
         public void DeleteWhereEquals()
         {
-            DataSet ds = new DataSet();
-            DataTable table = ds.Tables.Add("TBL");
+            var db = new Database();
+            DataTable table = db.Tables.Add("TBL");
             table.Columns.Add(new DataColumn("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
@@ -128,7 +128,7 @@ namespace MemSQL.Test
                 table.Rows.Add(row);
             }
             string query = "Delete from [TBL] where [ID] = 1";
-            SQLInterpreter interpreter = new SQLInterpreter(ds);
+            SQLInterpreter interpreter = new SQLInterpreter(db);
 
             var result = interpreter.Execute(query);
             int affected = result.RowsAffected;
@@ -139,8 +139,8 @@ namespace MemSQL.Test
         [TestMethod]
         public void DeleteWhereNotEqualsE()
         {
-            DataSet ds = new DataSet();
-            DataTable table = ds.Tables.Add("TBL");
+            var db = new Database();
+            DataTable table = db.Tables.Add("TBL");
             table.Columns.Add(new DataColumn("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
@@ -149,7 +149,7 @@ namespace MemSQL.Test
                 table.Rows.Add(row);
             }
             string query = "Delete from [TBL] where [ID] != 1";
-            SQLInterpreter interpreter = new SQLInterpreter(ds);
+            SQLInterpreter interpreter = new SQLInterpreter(db);
 
             var result = interpreter.Execute(query);
             int affected = result.RowsAffected;
@@ -160,8 +160,8 @@ namespace MemSQL.Test
         [TestMethod]
         public void DeleteWhereNotEqualsB()
         {
-            DataSet ds = new DataSet();
-            DataTable table = ds.Tables.Add("TBL");
+            var db = new Database();
+            DataTable table = db.Tables.Add("TBL");
             table.Columns.Add(new DataColumn("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
@@ -170,7 +170,7 @@ namespace MemSQL.Test
                 table.Rows.Add(row);
             }
             string query = "Delete from [TBL] where [ID] <> 1";
-            SQLInterpreter interpreter = new SQLInterpreter(ds);
+            SQLInterpreter interpreter = new SQLInterpreter(db);
 
             var result = interpreter.Execute(query);
             int affected = result.RowsAffected;
@@ -181,8 +181,8 @@ namespace MemSQL.Test
         [TestMethod]
         public void DeleteWhereLT()
         {
-            DataSet ds = new DataSet();
-            DataTable table = ds.Tables.Add("TBL");
+            var db = new Database();
+            DataTable table = db.Tables.Add("TBL");
             table.Columns.Add(new DataColumn("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
@@ -191,7 +191,7 @@ namespace MemSQL.Test
                 table.Rows.Add(row);
             }
             string query = "Delete from [TBL] where [ID] < 2";
-            SQLInterpreter interpreter = new SQLInterpreter(ds);
+            SQLInterpreter interpreter = new SQLInterpreter(db);
 
             var result = interpreter.Execute(query);
             int affected = result.RowsAffected;
@@ -202,8 +202,8 @@ namespace MemSQL.Test
         [TestMethod]
         public void DeleteWhereGT()
         {
-            DataSet ds = new DataSet();
-            DataTable table = ds.Tables.Add("TBL");
+            var db = new Database();
+            DataTable table = db.Tables.Add("TBL");
             table.Columns.Add(new DataColumn("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
@@ -212,7 +212,7 @@ namespace MemSQL.Test
                 table.Rows.Add(row);
             }
             string query = "Delete from [TBL] where [ID] > 97";
-            SQLInterpreter interpreter = new SQLInterpreter(ds);
+            SQLInterpreter interpreter = new SQLInterpreter(db);
 
             var result = interpreter.Execute(query);
             int affected = result.RowsAffected;
@@ -223,8 +223,8 @@ namespace MemSQL.Test
         [TestMethod]
         public void DeleteWhereLTE()
         {
-            DataSet ds = new DataSet();
-            DataTable table = ds.Tables.Add("TBL");
+            var db = new Database();
+            DataTable table = db.Tables.Add("TBL");
             table.Columns.Add(new DataColumn("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
@@ -233,7 +233,7 @@ namespace MemSQL.Test
                 table.Rows.Add(row);
             }
             string query = "Delete from [TBL] where [ID] <= 2";
-            SQLInterpreter interpreter = new SQLInterpreter(ds);
+            SQLInterpreter interpreter = new SQLInterpreter(db);
 
             var result = interpreter.Execute(query);
             int affected = result.RowsAffected;
@@ -244,8 +244,8 @@ namespace MemSQL.Test
         [TestMethod]
         public void DeleteWhereNLT()
         {
-            DataSet ds = new DataSet();
-            DataTable table = ds.Tables.Add("TBL");
+            var db = new Database();
+            DataTable table = db.Tables.Add("TBL");
             table.Columns.Add(new DataColumn("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
@@ -254,7 +254,7 @@ namespace MemSQL.Test
                 table.Rows.Add(row);
             }
             string query = "Delete from [TBL] where [ID] !< 97";
-            SQLInterpreter interpreter = new SQLInterpreter(ds);
+            SQLInterpreter interpreter = new SQLInterpreter(db);
 
             var result = interpreter.Execute(query);
             int affected = result.RowsAffected;
@@ -265,8 +265,8 @@ namespace MemSQL.Test
         [TestMethod]
         public void DeleteWhereNGT()
         {
-            DataSet ds = new DataSet();
-            DataTable table = ds.Tables.Add("TBL");
+            var db = new Database();
+            DataTable table = db.Tables.Add("TBL");
             table.Columns.Add(new DataColumn("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
@@ -275,7 +275,7 @@ namespace MemSQL.Test
                 table.Rows.Add(row);
             }
             string query = "Delete from [TBL] where [ID] !> 2";
-            SQLInterpreter interpreter = new SQLInterpreter(ds);
+            SQLInterpreter interpreter = new SQLInterpreter(db);
 
             var result = interpreter.Execute(query);
             int affected = result.RowsAffected;
@@ -286,8 +286,8 @@ namespace MemSQL.Test
         [TestMethod]
         public void DeleteWhereGTE()
         {
-            DataSet ds = new DataSet();
-            DataTable table = ds.Tables.Add("TBL");
+            var db = new Database();
+            DataTable table = db.Tables.Add("TBL");
             table.Columns.Add(new DataColumn("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
@@ -296,7 +296,7 @@ namespace MemSQL.Test
                 table.Rows.Add(row);
             }
             string query = "Delete from [TBL] where [ID] >= 97";
-            SQLInterpreter interpreter = new SQLInterpreter(ds);
+            SQLInterpreter interpreter = new SQLInterpreter(db);
 
             var result = interpreter.Execute(query);
             int affected = result.RowsAffected;
@@ -307,8 +307,8 @@ namespace MemSQL.Test
         [TestMethod]
         public void DeleteWhereNot()
         {
-            DataSet ds = new DataSet();
-            DataTable table = ds.Tables.Add("TBL");
+            var db = new Database();
+            DataTable table = db.Tables.Add("TBL");
             table.Columns.Add(new DataColumn("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
@@ -317,7 +317,7 @@ namespace MemSQL.Test
                 table.Rows.Add(row);
             }
             string query = "Delete from [TBL] where not [ID] = 1";
-            SQLInterpreter interpreter = new SQLInterpreter(ds);
+            SQLInterpreter interpreter = new SQLInterpreter(db);
 
             var result = interpreter.Execute(query);
             int affected = result.RowsAffected;
@@ -328,8 +328,8 @@ namespace MemSQL.Test
         [TestMethod]
         public void DeleteWhereAnd()
         {
-            DataSet ds = new DataSet();
-            DataTable table = ds.Tables.Add("TBL");
+            var db = new Database();
+            DataTable table = db.Tables.Add("TBL");
             table.Columns.Add(new DataColumn("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
@@ -338,7 +338,7 @@ namespace MemSQL.Test
                 table.Rows.Add(row);
             }
             string query = "Delete from [TBL] where [ID] > 1 AND [ID] < 5";
-            SQLInterpreter interpreter = new SQLInterpreter(ds);
+            SQLInterpreter interpreter = new SQLInterpreter(db);
 
             var result = interpreter.Execute(query);
             int affected = result.RowsAffected;
@@ -349,8 +349,8 @@ namespace MemSQL.Test
         [TestMethod]
         public void DeleteWhereOr()
         {
-            DataSet ds = new DataSet();
-            DataTable table = ds.Tables.Add("TBL");
+            var db = new Database();
+            DataTable table = db.Tables.Add("TBL");
             table.Columns.Add(new DataColumn("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
@@ -359,7 +359,7 @@ namespace MemSQL.Test
                 table.Rows.Add(row);
             }
             string query = "Delete from [TBL] where [ID] < 1 OR [ID] > 98";
-            SQLInterpreter interpreter = new SQLInterpreter(ds);
+            SQLInterpreter interpreter = new SQLInterpreter(db);
 
             var result = interpreter.Execute(query);
             int affected = result.RowsAffected;

@@ -14,8 +14,8 @@ namespace MemSQL.Test
         [TestMethod]
         public void BasicSelectTest()
         {
-            DataSet ds = new DataSet();
-            DataTable table = ds.Tables.Add("TBL");
+            var db = new Database();
+            DataTable table = db.Tables.Add("TBL");
             table.Columns.Add(new DataColumn("ID", typeof(int)));
 
             var row = table.NewRow();
@@ -23,7 +23,7 @@ namespace MemSQL.Test
             table.Rows.Add(row);
 
             string query = "Select * from [TBL]";
-            SQLInterpreter interpreter = new SQLInterpreter(ds);
+            SQLInterpreter interpreter = new SQLInterpreter(db);
 
             var result = interpreter.Execute(query);
             int affected = result.RowsAffected;
