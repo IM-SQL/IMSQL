@@ -40,8 +40,10 @@ namespace MemSQL
                 var relatedColumn = RelatedColumns[i];
                 if (!RelatedTable.Rows.Any(relatedRow => Equals(value, relatedRow[relatedColumn.ColumnName])))
                 {
-                    // TODO(Richo): Message?
-                    throw new ConstraintException("");
+                    var msg = string.Format("The INSERT statement conflicted with the FOREIGN KEY constraint '{0}'." +
+                        " The conflict occurred in table '{1}', column '{2}'.", 
+                        ConstraintName, RelatedTable.TableName, relatedColumn.ColumnName);
+                    throw new ConstraintException(msg);
                 }
             }
         }
@@ -60,8 +62,10 @@ namespace MemSQL
                 {
                     if (Table.Rows.Any(row => Equals(value, row[column.ColumnName])))
                     {
-                        // TODO(Richo): Message?
-                        throw new ConstraintException("");
+                        var msg = string.Format("The DELETE statement conflicted with the REFERENCE constraint '{0}'." +
+                            " The conflict occurred in table '{1}', column '{2}'.", 
+                            ConstraintName, Table.TableName, column.ColumnName);
+                        throw new ConstraintException(msg);
                     }
                 }
                 else if (DeleteRule == Rule.Cascade)
@@ -101,8 +105,10 @@ namespace MemSQL
             {
                 if (Table.Rows.Any(row => Equals(oldValue, row[column.ColumnName])))
                 {
-                    // TODO(Richo): Message?
-                    throw new ConstraintException("");
+                    var msg = string.Format("The UPDATE statement conflicted with the REFERENCE constraint '{0}'." +
+                        " The conflict occurred in table '{1}', column '{2}'.",
+                        ConstraintName, Table.TableName, column.ColumnName);
+                    throw new ConstraintException(msg);
                 }
             }
             else if(UpdateRule == Rule.Cascade)

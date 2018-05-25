@@ -26,11 +26,14 @@ namespace MemSQL
         {
             if (!Equals(Table, row.Table)) return;
 
-            var cols = Columns.Select(col => row[col.ColumnName]);
+            var cols = Columns.Select(col => row[col.ColumnName]).ToArray();
             if (Table.Rows.Any(each => cols.SequenceEqual(Columns.Select(col => each[col.ColumnName]))))
             {
-                // TODO(Richo): Message?
-                throw new ConstraintException("");
+                var msg = string.Format("Violation of UNIQUE KEY constraint '{0}'." +
+                    " Cannot insert duplicate key in object '{1}'." +
+                    " The duplicate key value is ({2}).", 
+                    ConstraintName, Table.TableName, string.Join(", ", cols));
+                throw new ConstraintException(msg);
             }
         }
 
@@ -43,11 +46,14 @@ namespace MemSQL
         {
             if (!Equals(Table, row.Table)) return;
 
-            var cols = Columns.Select(col => row[col.ColumnName]);
+            var cols = Columns.Select(col => row[col.ColumnName]).ToArray();
             if (Table.Rows.Except(new[] { row }).Any(each => cols.SequenceEqual(Columns.Select(col => each[col.ColumnName]))))
             {
-                // TODO(Richo): Message?
-                throw new ConstraintException("");
+                var msg = string.Format("Violation of UNIQUE KEY constraint '{0}'." +
+                    " Cannot insert duplicate key in object '{1}'." +
+                    " The duplicate key value is ({2}).",
+                    ConstraintName, Table.TableName, string.Join(", ", cols));
+                throw new ConstraintException(msg);
             }
         }
     }
