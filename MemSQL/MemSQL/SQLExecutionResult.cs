@@ -40,6 +40,7 @@ namespace MemSQL
                         {
                             if (item == null || item == DBNull.Value) return "NULL";
                             if (item is string) return "'" + item + "'";
+                            if (item is DateTime) return string.Format("'{0}'", ((DateTime)item).ToString("o"));
 
                             return item.ToString();
                         });
