@@ -33,7 +33,7 @@ namespace MemSQL
             Action<DataRow> setClause = CreateSetClause(node.SetClauses, env);
 
             List<DataRow> result = new List<DataRow>();
-            result.AddRange(Filter.From(table.Rows.AsEnumerable(), predicate, top));
+            result.AddRange(Filter.From(table.Rows, predicate, top));
             foreach (var item in result)
             {
                 setClause(item);

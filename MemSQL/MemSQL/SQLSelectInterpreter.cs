@@ -40,7 +40,7 @@ namespace MemSQL
             var top = EvaluateExpression<TopResult>(node.TopRowFilter, env);
             var predicate = EvaluateExpression<Func<DataRow, bool>>(node.WhereClause, env, row => true);
 
-            return Filter.From(table.Rows.AsEnumerable(), predicate, top).ToArray();
+            return Filter.From(table.Rows, predicate, top).ToArray();
         }
 
         protected override object InternalVisit(FromClause node)

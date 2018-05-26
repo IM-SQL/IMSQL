@@ -27,7 +27,7 @@ namespace MemSQL
             var top = EvaluateExpression<TopResult>(node.TopRowFilter, env);
             var predicate = EvaluateExpression<Func<DataRow, bool>>(node.WhereClause, env, row => true);
 
-            var result = Filter.From(table.Rows.AsEnumerable(), predicate, top).ToArray();
+            var result = Filter.From(table.Rows, predicate, top).ToArray();
             foreach (DataRow item in result)
             {
                 // TODO(Richo): What happens if one of these throws an error?
