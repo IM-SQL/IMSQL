@@ -33,12 +33,16 @@ namespace MemSQL
             get { return Database.Constraints.Where(c => Equals(this, c.Table)); }
         }
 
+        public IEnumerable<UniqueConstraint> UniqueConstraints
+        {
+            get { return Constraints.OfType<UniqueConstraint>(); }
+        }
+
         public DataColumn[] PrimaryKey
         {
             get
             {
-                return Constraints
-                    .OfType<UniqueConstraint>()
+                return UniqueConstraints
                     .Where(constraint => constraint.IsPrimaryKey)
                     .SelectMany(constraint => constraint.Columns)
                     .Distinct()

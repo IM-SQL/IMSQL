@@ -29,9 +29,7 @@ namespace MemSQL
             get
             {
                 var cols = new[] { this };
-                return Table.Constraints
-                    .OfType<UniqueConstraint>()
-                    .Any(constraint => cols.SequenceEqual(constraint.Columns));
+                return Table.UniqueConstraints.Any(c => cols.SequenceEqual(c.Columns));
             }
         }
 
