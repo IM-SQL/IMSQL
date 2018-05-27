@@ -30,45 +30,58 @@ namespace MemSQL
             }
         }
 
+        protected override object InternalVisit(TSqlScript node)
+        {
+            var results = VisitCollection<Tuple<int, object>[]>(node.Batches).SelectMany(each => each);
+            return new SQLExecutionResult(
+                rowsAffected: results.Sum(tuple => tuple.Item1),
+                values: results.Select(tuple => tuple.Item2).ToArray());
+        }
+
+        protected override object InternalVisit(TSqlBatch node)
+        {
+            return VisitCollection<Tuple<int, object>>(node.Statements).ToArray();
+        }
+
         protected override object InternalVisit(CreateTableStatement node)
         {
             var interpreter = new SQLCreateInterpreter(Database);
             var table = interpreter.Visit<DataTable>(node);
-            return new SQLExecutionResult(0, table);
+            return new Tuple<int, object>(0, table);
         }
 
         protected override object InternalVisit(InsertStatement node)
         {
             var interpreter = new SQLInsertInterpreter(Database);
             var rows = interpreter.Visit<DataRow[]>(node);
-            return new SQLExecutionResult(rows.Length, rows);
+            return new Tuple<int, object>(rows.Length, rows);
         }
 
         protected override object InternalVisit(CreateIndexStatement node)
         {
             // INFO(Richo): Do nothing
-            return new SQLExecutionResult(0, null);
+            return null;
         }
 
         protected override object InternalVisit(SelectStatement node)
         {
             var interpreter = new SQLSelectInterpreter(Database);
             var rows = interpreter.Visit<DataRow[]>(node);
-            return new SQLExecutionResult(rows.Length, rows);
+            return new Tuple<int, object>(rows.Length, rows);
         }
 
         protected override object InternalVisit(DeleteStatement node)
         {
             var interpreter = new SQLDeleteInterpreter(Database);
             var rows = interpreter.Visit<DataRow[]>(node);
-            return new SQLExecutionResult(rows.Length, rows);
+            return new Tuple<int, object>(rows.Length, rows);
         }
 
         protected override object InternalVisit(UpdateStatement node)
         {
             var interpreter = new SQLUpdateInterpreter(Database);
             var rows = interpreter.Visit<DataRow[]>(node);
-            return new SQLExecutionResult(rows.Length, rows); 
+            return new Tuple<int, object>(rows.Length, rows); 
         }
     }
 }

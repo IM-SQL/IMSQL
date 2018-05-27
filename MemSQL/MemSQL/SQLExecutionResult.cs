@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -9,48 +10,79 @@ namespace MemSQL
 {
     public class SQLExecutionResult
     {
-        public SQLExecutionResult(int rowsAffected, object value)
+        public SQLExecutionResult(int rowsAffected, object[] values)
         {
             RowsAffected = rowsAffected;
-            Value = value;
+            Values = values;
         }
 
         public int RowsAffected { get; }
-        public object Value { get; }
+        public object[] Values { get; }
 
         public override string ToString()
         {
-            return string.Format("Rows affected: {0}\r\n{1}", RowsAffected, FormattedValue);
+            var sb = new StringBuilder();
+            sb.Append("Rows affected: ");
+            sb.Append(RowsAffected);
+            sb.AppendLine();
+            for (int i = 0; i < Values.Length; i++)
+            {
+                if (i > 0) { sb.AppendLine(); }
+                sb.AppendLine();
+                Printer.Print(Values[i], sb);
+            }
+            return sb.ToString();
         }
 
-        private string FormattedValue
+        /// <summary>
+        /// TODO(Richo): HACK! This class is just a temporary hack in order to show the execution results a 
+        /// little nicer. We might be able to get rid of it when we implement printing in our own data model.
+        /// </summary>
+        private static class Printer
         {
-            get
+            public static void Print(object value, StringBuilder sb)
             {
-                // TODO(Richo): HACK!
-                if (Value is DataRow[])
+                if (value is DataRow)
                 {
-                    StringBuilder sb = new StringBuilder();
-                    var rows = Value as DataRow[];
-                    for (int i = 0; i < rows.Length; i++)
+                    var items = (value as DataRow).ItemArray;
+                    sb.Append("(");
+                    for (int i = 0; i < items.Length; i++)
                     {
-                        var row = rows[i];
-                        if (i > 0) { sb.AppendLine(); }
-                        var items = row.ItemArray.Select(item =>
-                        {
-                            if (item == null || item == DBNull.Value) return "NULL";
-                            if (item is string) return "'" + item + "'";
-                            if (item is DateTime) return string.Format("'{0}'", ((DateTime)item).ToString("o"));
-
-                            return item.ToString();
-                        });
-                        sb.AppendFormat("({0})", string.Join(", ", items));
+                        if (i > 0) { sb.Append(", "); }
+                        Print(items[i], sb);
                     }
-                    return sb.ToString();
+                    sb.Append(")");
+                }
+                else if (value == null || value == DBNull.Value)
+                {
+                    sb.Append("NULL");
+                }
+                else if (value is string)
+                {
+                    sb.Append("'");
+                    sb.Append(value);
+                    sb.Append("'");
+                }
+                else if (value is DateTime)
+                {
+                    sb.Append("'");
+                    sb.Append(((DateTime)value).ToString("o"));
+                    sb.Append("'");
+                }
+                else if (value is IEnumerable)
+                {
+                    var items = value as IEnumerable;
+                    int i = 0;
+                    foreach (var item in items)
+                    {
+                        if (i > 0) { sb.AppendLine(); }
+                        Print(item, sb);
+                        i++;
+                    }
                 }
                 else
                 {
-                    return Value.ToString();
+                    sb.Append(value);
                 }
             }
         }

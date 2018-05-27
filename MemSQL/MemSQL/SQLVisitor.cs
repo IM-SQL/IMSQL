@@ -23,7 +23,7 @@ namespace MemSQL
             return (T)inner.Result;
         }
         
-        public IEnumerable<T> Visit<T>(IEnumerable<TSqlFragment> nodes, T defaultValue = default(T))
+        public IEnumerable<T> VisitCollection<T>(IEnumerable<TSqlFragment> nodes, T defaultValue = default(T))
         {
             return nodes.Select(n => Visit(n, defaultValue)).ToArray();
         }
@@ -63,6 +63,8 @@ namespace MemSQL
         protected virtual object InternalVisit(SelectStatement node) { throw new NotImplementedException(); }
         protected virtual object InternalVisit(QuerySpecification node) { throw new NotImplementedException(); }
         protected virtual object InternalVisit(FromClause node) { throw new NotImplementedException(); }
+        protected virtual object InternalVisit(TSqlScript node) { throw new NotImplementedException(); }
+        protected virtual object InternalVisit(TSqlBatch node) { throw new NotImplementedException(); }
 
         class SQLInternalVisitor : TSqlFragmentVisitor
         {
@@ -245,6 +247,16 @@ namespace MemSQL
             }
 
             public override void ExplicitVisit(FromClause node)
+            {
+                Result = outer.InternalVisit(node);
+            }
+
+            public override void ExplicitVisit(TSqlScript node)
+            {
+                Result = outer.InternalVisit(node);
+            }
+
+            public override void ExplicitVisit(TSqlBatch node)
             {
                 Result = outer.InternalVisit(node);
             }
@@ -1181,6 +1193,5 @@ namespace MemSQL
             public override void ExplicitVisit(ExecuteOption node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(AlterTableStatement node) { throw new NotImplementedException(); }
         }
-
     }
 }
