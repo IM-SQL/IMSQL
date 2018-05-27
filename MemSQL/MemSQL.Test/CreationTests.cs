@@ -211,8 +211,7 @@ namespace MemSQL.Test.Structural
             Assert.IsTrue(table2.PrimaryKey.Length == 1, "The Primary Key is missing!");
             Assert.AreEqual(table2.GetColumn("col2"), table2.PrimaryKey[0]);
             
-            Assert.AreEqual(2, db.Constraints.Count(c => Equals(table2, c.Table)), 
-                "Either the PK or the FK are missing");
+            Assert.AreEqual(2, table2.Constraints.Count(), "Either the PK or the FK are missing");
             Assert.IsTrue(db.ContainsConstraint("FK_tbl"), "The FK was not found by name");
             var fk = db.GetConstraint("FK_tbl") as ForeignKeyConstraint;
             Assert.IsTrue(fk.Columns.Length == 1);

@@ -28,13 +28,17 @@ namespace MemSQL
         public IEnumerable<DataRow> Rows { get { return rows; } }
         public IEnumerable<DataColumn> Columns { get { return columns; } }
 
+        public IEnumerable<Constraint> Constraints
+        {
+            get { return Database.Constraints.Where(c => Equals(this, c.Table)); }
+        }
+
         public DataColumn[] PrimaryKey
         {
             get
             {
-                return Database.Constraints
+                return Constraints
                     .OfType<UniqueConstraint>()
-                    .Where(constraint => Equals(this, constraint.Table))
                     .Where(constraint => constraint.IsPrimaryKey)
                     .SelectMany(constraint => constraint.Columns)
                     .Distinct()
