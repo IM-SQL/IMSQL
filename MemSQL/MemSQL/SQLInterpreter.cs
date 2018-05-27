@@ -46,14 +46,14 @@ namespace MemSQL
         protected override object InternalVisit(CreateTableStatement node)
         {
             var interpreter = new SQLCreateInterpreter(Database);
-            var table = interpreter.Visit<DataTable>(node);
+            var table = interpreter.Visit<Table>(node);
             return new Tuple<int, object>(0, table);
         }
 
         protected override object InternalVisit(InsertStatement node)
         {
             var interpreter = new SQLInsertInterpreter(Database);
-            var rows = interpreter.Visit<DataRow[]>(node);
+            var rows = interpreter.Visit<Row[]>(node);
             return new Tuple<int, object>(rows.Length, rows);
         }
 
@@ -66,21 +66,21 @@ namespace MemSQL
         protected override object InternalVisit(SelectStatement node)
         {
             var interpreter = new SQLSelectInterpreter(Database);
-            var rows = interpreter.Visit<DataRow[]>(node);
+            var rows = interpreter.Visit<Row[]>(node);
             return new Tuple<int, object>(rows.Length, rows);
         }
 
         protected override object InternalVisit(DeleteStatement node)
         {
             var interpreter = new SQLDeleteInterpreter(Database);
-            var rows = interpreter.Visit<DataRow[]>(node);
+            var rows = interpreter.Visit<Row[]>(node);
             return new Tuple<int, object>(rows.Length, rows);
         }
 
         protected override object InternalVisit(UpdateStatement node)
         {
             var interpreter = new SQLUpdateInterpreter(Database);
-            var rows = interpreter.Visit<DataRow[]>(node);
+            var rows = interpreter.Visit<Row[]>(node);
             return new Tuple<int, object>(rows.Length, rows); 
         }
     }

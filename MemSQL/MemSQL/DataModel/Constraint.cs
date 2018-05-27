@@ -8,18 +8,18 @@ namespace MemSQL
 {
     public abstract class Constraint
     {
-        public Constraint(string constraintName, DataTable table)
+        public Constraint(string constraintName, Table table)
         {
             ConstraintName = constraintName;
             Table = table;
         }
 
         public string ConstraintName { get; set; }
-        public DataTable Table { get; }
+        public Table Table { get; }
 
-        public abstract void OnInsert(DataRow row);
-        public abstract void OnDelete(DataRow row);
-        public abstract void OnUpdate(DataRow row, int columnIndex, object oldValue);
+        public abstract void OnInsert(Row row);
+        public abstract void OnDelete(Row row);
+        public abstract void OnUpdate(Row row, int columnIndex, object oldValue);
 
         public override string ToString()
         {

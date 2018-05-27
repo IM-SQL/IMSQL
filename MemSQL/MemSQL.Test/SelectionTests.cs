@@ -15,8 +15,8 @@ namespace MemSQL.Test
         public void BasicSelectTest()
         {
             var db = new Database();
-            DataTable table = db.AddTable("TBL");
-            table.AddColumn(new DataColumn("ID", typeof(int)));
+            Table table = db.AddTable("TBL");
+            table.AddColumn(new Column("ID", typeof(int)));
 
             var row = table.NewRow();
             row["ID"] = 3;

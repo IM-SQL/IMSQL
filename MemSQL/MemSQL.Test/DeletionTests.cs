@@ -15,8 +15,8 @@ namespace MemSQL.Test
         public void BasicDeleteTest()
         {
             var db = new Database();
-            DataTable table = db.AddTable("TBL");
-            table.AddColumn(new DataColumn("ID", typeof(int)));
+            Table table = db.AddTable("TBL");
+            table.AddColumn(new Column("ID", typeof(int)));
 
             var row = table.NewRow();
             row["ID"] = 3;
@@ -36,8 +36,8 @@ namespace MemSQL.Test
         public void BatchDeleteTest()
         {
             var db = new Database();
-            DataTable table = db.AddTable("TBL");
-            table.AddColumn(new DataColumn("ID", typeof(int)));
+            Table table = db.AddTable("TBL");
+            table.AddColumn(new Column("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
                 var row = table.NewRow();
@@ -57,8 +57,8 @@ namespace MemSQL.Test
         public void TopDeleteTest()
         {
             var db = new Database();
-            DataTable table = db.AddTable("TBL");
-            table.AddColumn(new DataColumn("ID", typeof(int)));
+            Table table = db.AddTable("TBL");
+            table.AddColumn(new Column("ID", typeof(int)));
             for (int i = 0; i < 200; i++)
             {
                 var row = table.NewRow();
@@ -78,8 +78,8 @@ namespace MemSQL.Test
         public void TopDeleteWithTiesShouldFail()
         {
             var db = new Database();
-            DataTable table = db.AddTable("TBL");
-            table.AddColumn(new DataColumn("ID", typeof(int)));
+            Table table = db.AddTable("TBL");
+            table.AddColumn(new Column("ID", typeof(int)));
             for (int i = 0; i < 200; i++)
             {
                 var row = table.NewRow();
@@ -98,8 +98,8 @@ namespace MemSQL.Test
         public void TopPercentDeleteTest()
         {
             var db = new Database();
-            DataTable table = db.AddTable("TBL");
-            table.AddColumn(new DataColumn("ID", typeof(int)));
+            Table table = db.AddTable("TBL");
+            table.AddColumn(new Column("ID", typeof(int)));
             for (int i = 0; i < 200; i++)
             {
                 var row = table.NewRow();
@@ -119,8 +119,8 @@ namespace MemSQL.Test
         public void DeleteWhereEquals()
         {
             var db = new Database();
-            DataTable table = db.AddTable("TBL");
-            table.AddColumn(new DataColumn("ID", typeof(int)));
+            Table table = db.AddTable("TBL");
+            table.AddColumn(new Column("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
                 var row = table.NewRow();
@@ -140,8 +140,8 @@ namespace MemSQL.Test
         public void DeleteWhereNotEqualsE()
         {
             var db = new Database();
-            DataTable table = db.AddTable("TBL");
-            table.AddColumn(new DataColumn("ID", typeof(int)));
+            Table table = db.AddTable("TBL");
+            table.AddColumn(new Column("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
                 var row = table.NewRow();
@@ -161,8 +161,8 @@ namespace MemSQL.Test
         public void DeleteWhereNotEqualsB()
         {
             var db = new Database();
-            DataTable table = db.AddTable("TBL");
-            table.AddColumn(new DataColumn("ID", typeof(int)));
+            Table table = db.AddTable("TBL");
+            table.AddColumn(new Column("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
                 var row = table.NewRow();
@@ -182,8 +182,8 @@ namespace MemSQL.Test
         public void DeleteWhereLT()
         {
             var db = new Database();
-            DataTable table = db.AddTable("TBL");
-            table.AddColumn(new DataColumn("ID", typeof(int)));
+            Table table = db.AddTable("TBL");
+            table.AddColumn(new Column("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
                 var row = table.NewRow();
@@ -203,8 +203,8 @@ namespace MemSQL.Test
         public void DeleteWhereGT()
         {
             var db = new Database();
-            DataTable table = db.AddTable("TBL");
-            table.AddColumn(new DataColumn("ID", typeof(int)));
+            Table table = db.AddTable("TBL");
+            table.AddColumn(new Column("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
                 var row = table.NewRow();
@@ -224,8 +224,8 @@ namespace MemSQL.Test
         public void DeleteWhereLTE()
         {
             var db = new Database();
-            DataTable table = db.AddTable("TBL");
-            table.AddColumn(new DataColumn("ID", typeof(int)));
+            Table table = db.AddTable("TBL");
+            table.AddColumn(new Column("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
                 var row = table.NewRow();
@@ -245,8 +245,8 @@ namespace MemSQL.Test
         public void DeleteWhereNLT()
         {
             var db = new Database();
-            DataTable table = db.AddTable("TBL");
-            table.AddColumn(new DataColumn("ID", typeof(int)));
+            Table table = db.AddTable("TBL");
+            table.AddColumn(new Column("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
                 var row = table.NewRow();
@@ -266,8 +266,8 @@ namespace MemSQL.Test
         public void DeleteWhereNGT()
         {
             var db = new Database();
-            DataTable table = db.AddTable("TBL");
-            table.AddColumn(new DataColumn("ID", typeof(int)));
+            Table table = db.AddTable("TBL");
+            table.AddColumn(new Column("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
                 var row = table.NewRow();
@@ -287,8 +287,8 @@ namespace MemSQL.Test
         public void DeleteWhereGTE()
         {
             var db = new Database();
-            DataTable table = db.AddTable("TBL");
-            table.AddColumn(new DataColumn("ID", typeof(int)));
+            Table table = db.AddTable("TBL");
+            table.AddColumn(new Column("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
                 var row = table.NewRow();
@@ -308,8 +308,8 @@ namespace MemSQL.Test
         public void DeleteWhereNot()
         {
             var db = new Database();
-            DataTable table = db.AddTable("TBL");
-            table.AddColumn(new DataColumn("ID", typeof(int)));
+            Table table = db.AddTable("TBL");
+            table.AddColumn(new Column("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
                 var row = table.NewRow();
@@ -329,8 +329,8 @@ namespace MemSQL.Test
         public void DeleteWhereAnd()
         {
             var db = new Database();
-            DataTable table = db.AddTable("TBL");
-            table.AddColumn(new DataColumn("ID", typeof(int)));
+            Table table = db.AddTable("TBL");
+            table.AddColumn(new Column("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
                 var row = table.NewRow();
@@ -350,8 +350,8 @@ namespace MemSQL.Test
         public void DeleteWhereOr()
         {
             var db = new Database();
-            DataTable table = db.AddTable("TBL");
-            table.AddColumn(new DataColumn("ID", typeof(int)));
+            Table table = db.AddTable("TBL");
+            table.AddColumn(new Column("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
                 var row = table.NewRow();

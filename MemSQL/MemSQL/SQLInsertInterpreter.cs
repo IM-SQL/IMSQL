@@ -14,12 +14,12 @@ namespace MemSQL
 
         protected override object InternalVisit(InsertStatement node)
         {
-            return Visit<DataRow[]>(node.InsertSpecification);
+            return Visit<Row[]>(node.InsertSpecification);
         }
 
         protected override object InternalVisit(InsertSpecification node)
         {
-            var table = Visit<Tuple<string, DataTable>>(node.Target).Item2;
+            var table = Visit<Tuple<string, Table>>(node.Target).Item2;
             List<string> providedColumns = node.Columns
                 .Select(columnReference => Visit<string>(columnReference))
                 .ToList();
@@ -53,7 +53,7 @@ namespace MemSQL
 
             return rows.Select(row =>
             {
-                DataRow dr = table.NewRow();
+                Row dr = table.NewRow();
                 for (int i = 0; i < providedColumns.Count; i++)
                 {
                     dr[providedColumns[i]] = row[i];

@@ -9,7 +9,7 @@ namespace MemSQL
 {
     public class ForeignKeyConstraint : Constraint
     {
-        public ForeignKeyConstraint(string constraintName, DataColumn[] parents, DataColumn[] children)
+        public ForeignKeyConstraint(string constraintName, Column[] parents, Column[] children)
             : base(constraintName, children.FirstOrDefault()?.Table)
         {
             Columns = children;
@@ -18,13 +18,13 @@ namespace MemSQL
             RelatedTable = RelatedColumns.FirstOrDefault()?.Table;
         }
 
-        public DataColumn[] Columns { get; }
-        public DataColumn[] RelatedColumns { get; }
-        public DataTable RelatedTable { get; }
+        public Column[] Columns { get; }
+        public Column[] RelatedColumns { get; }
+        public Table RelatedTable { get; }
         public Rule DeleteRule { get; set; }
         public Rule UpdateRule { get; set; }
 
-        public override void OnInsert(DataRow row)
+        public override void OnInsert(Row row)
         {
             if (!Equals(Table, row.Table)) return;
 
@@ -48,7 +48,7 @@ namespace MemSQL
             }
         }
 
-        public override void OnDelete(DataRow relatedRow)
+        public override void OnDelete(Row relatedRow)
         {
             if (!Equals(RelatedTable, relatedRow.Table)) return;
             
@@ -92,7 +92,7 @@ namespace MemSQL
             }
         }
 
-        public override void OnUpdate(DataRow relatedRow, int columnIndex, object oldValue)
+        public override void OnUpdate(Row relatedRow, int columnIndex, object oldValue)
         {
             if (!Equals(RelatedTable, relatedRow.Table)) return;
 

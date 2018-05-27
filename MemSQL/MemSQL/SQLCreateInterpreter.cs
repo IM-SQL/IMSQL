@@ -17,7 +17,7 @@ namespace MemSQL
 
         protected override object InternalVisit(CreateTableStatement node)
         {
-            var table = Visit<DataTable>(node.Definition);
+            var table = Visit<Table>(node.Definition);
             table.TableName = Visit<string>(node.SchemaObjectName);
             if (Database.ContainsTable(table.TableName))
             {
@@ -33,12 +33,12 @@ namespace MemSQL
                     foreach (var constraint in cd.Constraints)
                     {
                         var column = table.GetColumn(cd.ColumnIdentifier.Value);
-                        Visit<Action<DataTable, DataColumn>>(constraint)?.Invoke(table, column);
+                        Visit<Action<Table, Column>>(constraint)?.Invoke(table, column);
                     }
                 }
                 foreach (var constraint in node.Definition.TableConstraints)
                 {
-                    Visit<Action<DataTable, DataColumn>>(constraint)?.Invoke(table, null);
+                    Visit<Action<Table, Column>>(constraint)?.Invoke(table, null);
                 }
             }
             catch
@@ -52,9 +52,9 @@ namespace MemSQL
         protected override object InternalVisit(TableDefinition node)
         {
             //TODO: indexes
-            var result = new DataTable(Database);
+            var result = new Table(Database);
             var columns = node.ColumnDefinitions
-                    .Select(cd => Visit<DataColumn>(cd))
+                    .Select(cd => Visit<Column>(cd))
                     .ToArray();
             if (columns.Count(col => col.AutoIncrement) > 1)
             {
@@ -71,15 +71,15 @@ namespace MemSQL
              * the data type has to be extracted from the computed expression.
              */
             var type = Visit<Type>(node.DataType);
-            var column = new DataColumn(node.ColumnIdentifier.Value, type);
-            Visit<Action<DataColumn>>(node.IdentityOptions)?.Invoke(column);
-            Visit<Action<DataColumn>>(node.DefaultConstraint)?.Invoke(column);
+            var column = new Column(node.ColumnIdentifier.Value, type);
+            Visit<Action<Column>>(node.IdentityOptions)?.Invoke(column);
+            Visit<Action<Column>>(node.DefaultConstraint)?.Invoke(column);
             return column;
         }
 
         protected override object InternalVisit(IdentityOptions node)
         {
-            Action<DataColumn> applier = column =>
+            Action<Column> applier = column =>
             {
                 column.AutoIncrementSeed = EvaluateExpression(node.IdentitySeed, Database.GlobalEnvironment, 1);
                 column.AutoIncrementStep = EvaluateExpression(node.IdentityIncrement, Database.GlobalEnvironment, 1);
@@ -90,7 +90,7 @@ namespace MemSQL
 
         protected override object InternalVisit(DefaultConstraintDefinition node)
         {
-            Action<DataColumn> applier = (column) =>
+            Action<Column> applier = (column) =>
             {
                 column.DefaultValue = EvaluateExpression<object>(node.Expression, Database.GlobalEnvironment);
             };
@@ -99,7 +99,7 @@ namespace MemSQL
 
         protected override object InternalVisit(NullableConstraintDefinition node)
         {
-            Action<DataTable, DataColumn> applier = (ign, column) =>
+            Action<Table, Column> applier = (ign, column) =>
             {
                 column.AllowDBNull = node.Nullable;
             };
@@ -108,7 +108,7 @@ namespace MemSQL
 
         protected override object InternalVisit(UniqueConstraintDefinition node)
         {
-            Action<DataTable, DataColumn> applier = (table, column) =>
+            Action<Table, Column> applier = (table, column) =>
             {
                 var isPK = node.IsPrimaryKey;
 
@@ -117,7 +117,7 @@ namespace MemSQL
                  * The node's property takes precedence, but it could come empty if the constraint was specified inline.
                  * In those cases we rely on the "column" argument.
                  */
-                DataColumn[] columns;
+                Column[] columns;
                 if (node.Columns == null || node.Columns.Count() == 0)
                 {
                     columns = new[] { column };
@@ -157,11 +157,11 @@ namespace MemSQL
 
         protected override object InternalVisit(ForeignKeyConstraintDefinition node)
         {
-            Action<DataTable, DataColumn> applier = (table, ignored) =>
+            Action<Table, Column> applier = (table, ignored) =>
             {
                 var constraintName = node.ConstraintIdentifier.Value;
 
-                DataTable refTable;
+                Table refTable;
                 {
                     var refTableName = Visit<string>(node.ReferenceTableName);
                     refTable = Database.GetTable(refTableName);
@@ -172,7 +172,7 @@ namespace MemSQL
                     }
                 }
 
-                DataColumn[] parents = node.ReferencedTableColumns
+                Column[] parents = node.ReferencedTableColumns
                     .Select(c =>
                     {
                         var dc = refTable.GetColumn(c.Value);
@@ -186,7 +186,7 @@ namespace MemSQL
                     })
                     .ToArray();
 
-                DataColumn[] children = node.Columns
+                Column[] children = node.Columns
                     .Select(c =>
                     {
                         var dc = table.GetColumn(c.Value);

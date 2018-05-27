@@ -12,7 +12,7 @@ namespace MemSQL
 
         protected override object InternalVisit(DeleteStatement node)
         {
-            return Visit<DataRow[]>(node.DeleteSpecification);
+            return Visit<Row[]>(node.DeleteSpecification);
         }
 
         protected override object InternalVisit(DeleteSpecification node)
@@ -23,12 +23,12 @@ namespace MemSQL
 
             var env = Database.GlobalEnvironment.NewChild();
 
-            var table = Visit<Tuple<string, DataTable>>(node.Target).Item2;
+            var table = Visit<Tuple<string, Table>>(node.Target).Item2;
             var top = EvaluateExpression<TopResult>(node.TopRowFilter, env);
-            var predicate = EvaluateExpression<Func<DataRow, bool>>(node.WhereClause, env, row => true);
+            var predicate = EvaluateExpression<Func<Row, bool>>(node.WhereClause, env, row => true);
 
             var result = Filter.From(table.Rows, predicate, top).ToArray();
-            foreach (DataRow item in result)
+            foreach (Row item in result)
             {
                 // TODO(Richo): What happens if one of these throws an error?
                 item.Delete();

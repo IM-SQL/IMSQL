@@ -15,7 +15,7 @@ namespace MemSQL
             //TODO:node.OptimizerHints
             //TODO:node.WithCtesAndXmlNamespaces
 
-            return Visit<DataRow[]>(node.UpdateSpecification);
+            return Visit<Row[]>(node.UpdateSpecification);
         }
 
         protected override object InternalVisit(UpdateSpecification node)
@@ -26,13 +26,13 @@ namespace MemSQL
 
             var env = Database.GlobalEnvironment.NewChild();
 
-            var table = Visit<Tuple<string, DataTable>>(node.Target).Item2;
+            var table = Visit<Tuple<string, Table>>(node.Target).Item2;
             var top = EvaluateExpression<TopResult>(node.TopRowFilter, env);            
-            var predicate = EvaluateExpression<Func<DataRow, bool>>(node.WhereClause, env, row => true);
+            var predicate = EvaluateExpression<Func<Row, bool>>(node.WhereClause, env, row => true);
 
-            Action<DataRow> setClause = CreateSetClause(node.SetClauses, env);
+            Action<Row> setClause = CreateSetClause(node.SetClauses, env);
 
-            List<DataRow> result = new List<DataRow>();
+            List<Row> result = new List<Row>();
             result.AddRange(Filter.From(table.Rows, predicate, top));
             foreach (var item in result)
             {
@@ -42,13 +42,13 @@ namespace MemSQL
             return result.ToArray();
         }
 
-        private Action<DataRow> CreateSetClause(IList<SetClause> clauses, Environment env)
+        private Action<Row> CreateSetClause(IList<SetClause> clauses, Environment env)
         {
-            var sets = VisitExpressions<Action<DataRow>>(clauses)
+            var sets = VisitExpressions<Action<Row>>(clauses)
                 .Select(f => f(env))
                 .ToArray();
 
-            return new Action<DataRow>(row =>
+            return new Action<Row>(row =>
             {
                 foreach (var item in sets)
                 {
@@ -96,10 +96,10 @@ namespace MemSQL
                     throw new NotImplementedException();
             }
 
-            return new Func<Environment, Action<DataRow>>((env) =>
+            return new Func<Environment, Action<Row>>((env) =>
             {
                 string columnName = Visit<string>(node.Column);
-                return new Action<DataRow>((row) =>
+                return new Action<Row>((row) =>
                 {
                     object providedValue = EvaluateExpression<object>(node.NewValue, env);
                     row[columnName] = operation(row[columnName], providedValue);

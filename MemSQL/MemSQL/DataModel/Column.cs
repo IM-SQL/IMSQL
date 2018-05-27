@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace MemSQL
 {
-    public class DataColumn
+    public class Column
     {
-        public DataColumn(string columnName, Type dataType)
+        public Column(string columnName, Type dataType)
         {
             ColumnName = columnName;
             DataType = dataType;
@@ -18,7 +18,7 @@ namespace MemSQL
             AutoIncrementStep = 0;
         }
 
-        public DataTable Table { get; set; }
+        public Table Table { get; set; }
         public string ColumnName { get; }
         public Type DataType { get; }
         public bool AllowDBNull { get; set; }

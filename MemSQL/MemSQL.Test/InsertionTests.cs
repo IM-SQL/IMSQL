@@ -15,8 +15,8 @@ namespace MemSQL.Test
         public void BasicInsertTest()
         {
             var db = new Database();
-            DataTable table = db.AddTable("TBL");
-            table.AddColumn(new DataColumn("ID", typeof(int)));
+            Table table = db.AddTable("TBL");
+            table.AddColumn(new Column("ID", typeof(int)));
             string query = "Insert into [TBL] values(3)";
 
             SQLInterpreter interpreter = new SQLInterpreter(db);
@@ -32,9 +32,9 @@ namespace MemSQL.Test
         public void MultivaluedInsertTest()
         {
             var db = new Database();
-            DataTable table = db.AddTable("TBL");
-            table.AddColumn(new DataColumn("A", typeof(int)));
-            table.AddColumn(new DataColumn("B", typeof(string)));
+            Table table = db.AddTable("TBL");
+            table.AddColumn(new Column("A", typeof(int)));
+            table.AddColumn(new Column("B", typeof(string)));
             string query = "Insert into [TBL] values(3,'asd')";
 
             SQLInterpreter interpreter = new SQLInterpreter(db);
@@ -51,8 +51,8 @@ namespace MemSQL.Test
         public void InsertIdentityShouldFail()
         {
             var db = new Database();
-            DataTable table = db.AddTable("TBL");
-            table.AddColumn(new DataColumn("A", typeof(int)));
+            Table table = db.AddTable("TBL");
+            table.AddColumn(new Column("A", typeof(int)));
 
             table.GetColumn("A").AutoIncrement = true;
             table.GetColumn("A").AutoIncrementSeed = 1;
@@ -75,9 +75,9 @@ namespace MemSQL.Test
         public void DefaultValueInsertTest()
         {
             var db = new Database();
-            DataTable table = db.AddTable("TBL");
-            table.AddColumn(new DataColumn("A", typeof(int)));
-            table.AddColumn(new DataColumn("B", typeof(int)));
+            Table table = db.AddTable("TBL");
+            table.AddColumn(new Column("A", typeof(int)));
+            table.AddColumn(new Column("B", typeof(int)));
             table.GetColumn("B").DefaultValue = 5;
             string query = "Insert into [TBL](A) values(3)";
 
@@ -94,8 +94,8 @@ namespace MemSQL.Test
         public void DBNULLInsertTest()
         {
             var db = new Database();
-            DataTable table = db.AddTable("TBL");
-            table.AddColumn(new DataColumn("A", typeof(int)));
+            Table table = db.AddTable("TBL");
+            table.AddColumn(new Column("A", typeof(int)));
             table.GetColumn(0).AllowDBNull = true;
             string query = "Insert into [TBL] values(NULL)";
 
@@ -112,9 +112,9 @@ namespace MemSQL.Test
         public void UnorderedValuesTest()
         {
             var db = new Database();
-            DataTable table = db.AddTable("TBL");
-            table.AddColumn(new DataColumn("A", typeof(int)));
-            table.AddColumn(new DataColumn("B", typeof(int)));
+            Table table = db.AddTable("TBL");
+            table.AddColumn(new Column("A", typeof(int)));
+            table.AddColumn(new Column("B", typeof(int)));
             string query = "Insert into [TBL](B,A) values(2,1)";
 
             SQLInterpreter interpreter = new SQLInterpreter(db);
@@ -131,10 +131,10 @@ namespace MemSQL.Test
         public void SelectedValuesTest()
         {
             var db = new Database();
-            DataTable table = db.AddTable("TBL");
-            table.AddColumn(new DataColumn("A", typeof(int)));
-            table.AddColumn(new DataColumn("B", typeof(int)));
-            table.AddColumn(new DataColumn("C", typeof(int)));
+            Table table = db.AddTable("TBL");
+            table.AddColumn(new Column("A", typeof(int)));
+            table.AddColumn(new Column("B", typeof(int)));
+            table.AddColumn(new Column("C", typeof(int)));
             table.GetColumn("C").AllowDBNull = true;
             string query = "Insert into [TBL](B,A) values(2,1)";
 
@@ -163,9 +163,9 @@ namespace MemSQL.Test
             Func<Tuple<int, int>, string> printTuple = (t) => string.Format("( {0} , {1} )", t.Item1, t.Item2);
 
             var db = new Database();
-            DataTable table = db.AddTable("TBL");
-            table.AddColumn(new DataColumn("A", typeof(int)));
-            table.AddColumn(new DataColumn("B", typeof(int)));
+            Table table = db.AddTable("TBL");
+            table.AddColumn(new Column("A", typeof(int)));
+            table.AddColumn(new Column("B", typeof(int)));
 
             string query =
                 string.Format(
@@ -188,9 +188,9 @@ namespace MemSQL.Test
         public void InsufficientParametersWithoutFieldNameShouldFail()
         {
             var db = new Database();
-            DataTable table = db.AddTable("TBL");
-            table.AddColumn(new DataColumn("A", typeof(int)));
-            table.AddColumn(new DataColumn("B", typeof(int)));
+            Table table = db.AddTable("TBL");
+            table.AddColumn(new Column("A", typeof(int)));
+            table.AddColumn(new Column("B", typeof(int)));
             string query = "Insert into [TBL] values(3)";
 
             SQLInterpreter interpreter = new SQLInterpreter(db);
@@ -209,9 +209,9 @@ namespace MemSQL.Test
         public void InsufficientParametersWithoutFieldNameEvenWithDefaultValuesShouldFail()
         {
             var db = new Database();
-            DataTable table = db.AddTable("TBL");
-            table.AddColumn(new DataColumn("A", typeof(int)));
-            table.AddColumn(new DataColumn("B", typeof(int)));
+            Table table = db.AddTable("TBL");
+            table.AddColumn(new Column("A", typeof(int)));
+            table.AddColumn(new Column("B", typeof(int)));
             table.GetColumn("A").DefaultValue = 5;
             string query = "Insert into [TBL] values(3)";
 
@@ -231,9 +231,9 @@ namespace MemSQL.Test
         public void InsufficientParametersWithoutNameShouldNotConsiderIdentityColumns()
         {
             var db = new Database();
-            DataTable table = db.AddTable("TBL");
-            table.AddColumn(new DataColumn("A", typeof(int)));
-            table.AddColumn(new DataColumn("B", typeof(string)));
+            Table table = db.AddTable("TBL");
+            table.AddColumn(new Column("A", typeof(int)));
+            table.AddColumn(new Column("B", typeof(string)));
             table.GetColumn("A").AutoIncrement = true;
             table.GetColumn("A").AutoIncrementSeed = 1;
             table.GetColumn("A").AutoIncrementStep = 1;

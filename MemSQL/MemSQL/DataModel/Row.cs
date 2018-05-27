@@ -7,17 +7,17 @@ using System.Threading.Tasks;
 
 namespace MemSQL
 {
-    public class DataRow
+    public class Row
     {
         private object[] values;
 
-        public DataRow(DataTable table)
+        public Row(Table table)
         {
             Table = table;
             values = new object[table.Columns.Count()];
         }
 
-        public DataTable Table { get; }
+        public Table Table { get; }
 
         public object this[string name]
         {

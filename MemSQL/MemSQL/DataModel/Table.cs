@@ -7,15 +7,15 @@ using System.Threading.Tasks;
 
 namespace MemSQL
 {
-    public class DataTable
+    public class Table
     {
         private long? identity = null;
-        private List<DataRow> rows = new List<DataRow>();
-        private List<DataColumn> columns = new List<DataColumn>();
+        private List<Row> rows = new List<Row>();
+        private List<Column> columns = new List<Column>();
 
-        public DataTable(Database database) : this(null, database) {}
+        public Table(Database database) : this(null, database) {}
 
-        public DataTable(string tableName, Database database)
+        public Table(string tableName, Database database)
         {
             TableName = tableName;
             Database = database;
@@ -25,8 +25,8 @@ namespace MemSQL
         public string TableName { get; set; }
 
         public Database Database { get; }
-        public IEnumerable<DataRow> Rows { get { return rows; } }
-        public IEnumerable<DataColumn> Columns { get { return columns; } }
+        public IEnumerable<Row> Rows { get { return rows; } }
+        public IEnumerable<Column> Columns { get { return columns; } }
 
         public IEnumerable<Constraint> Constraints
         {
@@ -38,7 +38,7 @@ namespace MemSQL
             get { return Constraints.OfType<UniqueConstraint>(); }
         }
 
-        public DataColumn[] PrimaryKey
+        public Column[] PrimaryKey
         {
             get
             {
@@ -51,12 +51,12 @@ namespace MemSQL
             }
         }
 
-        public DataColumn GetColumn(int columnIndex)
+        public Column GetColumn(int columnIndex)
         {
             return columns[columnIndex];
         }
 
-        public DataColumn GetColumn(string columnName)
+        public Column GetColumn(string columnName)
         {
             return columns.FirstOrDefault(col => Equals(columnName, col.ColumnName));
         }
@@ -71,7 +71,7 @@ namespace MemSQL
             return columns.Any(col => Equals(columnName, col.ColumnName));
         }
 
-        public void AddColumns(IEnumerable<DataColumn> cols)
+        public void AddColumns(IEnumerable<Column> cols)
         {
             foreach (var col in cols)
             {
@@ -79,20 +79,20 @@ namespace MemSQL
             }
         }
 
-        public void AddColumn(DataColumn col)
+        public void AddColumn(Column col)
         {
             col.Table = this;
             columns.Add(col);
         }
 
-        public DataRow GetRow(int index)
+        public Row GetRow(int index)
         {
             return rows[index];
         }
 
-        public DataRow NewRow()
+        public Row NewRow()
         {
-            var row = new DataRow(this);
+            var row = new Row(this);
             foreach (var col in Columns)
             {
                 if (col.AutoIncrement)
@@ -119,7 +119,7 @@ namespace MemSQL
             AddRow(row);
         }
 
-        public void AddRow(DataRow row)
+        public void AddRow(Row row)
         {
             foreach (var constraint in Database.Constraints)
             {
@@ -128,7 +128,7 @@ namespace MemSQL
             rows.Add(row);
         }
 
-        public void RemoveRow(DataRow row)
+        public void RemoveRow(Row row)
         {
             foreach (var constraint in Database.Constraints)
             {
@@ -137,12 +137,12 @@ namespace MemSQL
             rows.Remove(row);
         }
 
-        public DataRow FindRow(object key)
+        public Row FindRow(object key)
         {
             return FindRow(new[] { key });
         }
 
-        public DataRow FindRow(object[] keys)
+        public Row FindRow(object[] keys)
         {
             // TODO(Richo): Should we throw an exception if keys.Length doesn't match PrimaryKeys.Length?
             var pk = PrimaryKey;

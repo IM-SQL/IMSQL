@@ -21,11 +21,11 @@ namespace MemSQL
         protected override object InternalVisit(WhereClause node)
         {
             //TODO: node.Cursor
-            return new Func<Environment, Func<DataRow, bool>>((env) =>
+            return new Func<Environment, Func<Row, bool>>((env) =>
             {
                 var filter = VisitExpression<bool>(node.SearchCondition);
                 var subEnv = env.NewChild();
-                return new Func<DataRow, bool>((row) =>
+                return new Func<Row, bool>((row) =>
                 {
                     subEnv.Add("currentRow", row);
                     return filter(subEnv);
@@ -86,7 +86,7 @@ namespace MemSQL
             //TODO(Tera): we should check what about the other parts of the identifier
             return new Func<Environment, object>((env) =>
             {
-                return env.At<DataRow>("currentRow")[Visit<string[]>(node.MultiPartIdentifier).Last()];
+                return env.At<Row>("currentRow")[Visit<string[]>(node.MultiPartIdentifier).Last()];
             });
         }
 

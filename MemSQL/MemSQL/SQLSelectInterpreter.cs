@@ -18,7 +18,7 @@ namespace MemSQL
             //TODO:node.OptimizerHints
             //TODO:node.QueryExpression
             //TODO:node.WithCtesAndXmlNamespaces
-            return Visit<DataRow[]>(node.QueryExpression);
+            return Visit<Row[]>(node.QueryExpression);
         }
 
         protected override object InternalVisit(QuerySpecification node)
@@ -35,17 +35,17 @@ namespace MemSQL
             var env = Database.GlobalEnvironment.NewChild();
 
             //this returns multiple tables because of the joins and whatever
-            IEnumerable<DataTable> tables = Visit<IEnumerable<DataTable>>(node.FromClause);
-            DataTable table = tables.First();
+            IEnumerable<Table> tables = Visit<IEnumerable<Table>>(node.FromClause);
+            Table table = tables.First();
             var top = EvaluateExpression<TopResult>(node.TopRowFilter, env);
-            var predicate = EvaluateExpression<Func<DataRow, bool>>(node.WhereClause, env, row => true);
+            var predicate = EvaluateExpression<Func<Row, bool>>(node.WhereClause, env, row => true);
 
             return Filter.From(table.Rows, predicate, top).ToArray();
         }
 
         protected override object InternalVisit(FromClause node)
         {
-            return node.TableReferences.Select(t => Visit<Tuple<string,DataTable>>(t).Item2).ToArray();
+            return node.TableReferences.Select(t => Visit<Tuple<string,Table>>(t).Item2).ToArray();
         }
     }
 }

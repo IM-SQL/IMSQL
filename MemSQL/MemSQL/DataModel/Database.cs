@@ -10,7 +10,7 @@ namespace MemSQL
 {
     public class Database
     {
-        private Dictionary<string, DataTable> tables = new Dictionary<string, DataTable>();
+        private Dictionary<string, Table> tables = new Dictionary<string, Table>();
         private List<Constraint> constraints = new List<Constraint>();
 
         public Database()
@@ -19,28 +19,28 @@ namespace MemSQL
         }
 
         public Environment GlobalEnvironment { get; }
-        public IEnumerable<DataTable> Tables { get { return tables.Values; } }
+        public IEnumerable<Table> Tables { get { return tables.Values; } }
         public IEnumerable<Constraint> Constraints { get { return constraints; } }
 
-        public DataTable GetTable(string tableName)
+        public Table GetTable(string tableName)
         {
-            if (tables.TryGetValue(tableName, out DataTable table)) return table;
+            if (tables.TryGetValue(tableName, out Table table)) return table;
             return null;
         }
         
-        public DataTable AddTable(string tableName)
+        public Table AddTable(string tableName)
         {
-            var table = new DataTable(tableName, this);
+            var table = new Table(tableName, this);
             AddTable(table);
             return table;
         }
 
-        public void AddTable(DataTable table)
+        public void AddTable(Table table)
         {
             tables.Add(table.TableName, table);
         }
 
-        public void RemoveTable(DataTable table)
+        public void RemoveTable(Table table)
         {
             tables.Remove(table.TableName);
         }
