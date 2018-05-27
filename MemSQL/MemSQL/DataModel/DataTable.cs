@@ -41,12 +41,6 @@ namespace MemSQL
                     .OrderBy(column => columns.IndexOf(column))
                     .ToArray();
             }
-            set
-            {
-                // TODO(Richo): Make unique name?
-                var constraint = new UniqueConstraint("", value, true);
-                Database.AddConstraint(constraint);
-            }
         }
 
         public DataColumn GetColumn(int columnIndex)
