@@ -9,28 +9,28 @@ namespace MemSQL
 {
     public class DataRow
     {
-        private object[] currentValues;
+        private object[] values;
 
         public DataRow(DataTable table)
         {
             Table = table;
-            currentValues = new object[table.Columns.Count()];
+            values = new object[table.Columns.Count()];
         }
 
         public DataTable Table { get; }
 
         public object this[string name]
         {
-            get { return currentValues[Table.IndexOfColumn(name)]; }
+            get { return values[Table.IndexOfColumn(name)]; }
             set
             {
-                var column = Table.GetColumn(name);
                 int index = Table.IndexOfColumn(name);
-                var oldValue = currentValues[index];
+                var column = Table.GetColumn(index);
+                var oldValue = values[index];
                 if (value == null) { value = DBNull.Value; }
                 try
                 {
-                    currentValues[index] = value == DBNull.Value ? value : Convert.ChangeType(value, column.DataType);
+                    values[index] = value == DBNull.Value ? value : Convert.ChangeType(value, column.DataType);
                     foreach (var constraint in Table.Database.Constraints)
                     {
                         constraint.OnUpdate(this, index, oldValue);
@@ -38,7 +38,7 @@ namespace MemSQL
                 }
                 catch
                 {
-                    currentValues[index] = oldValue;
+                    values[index] = oldValue;
                     throw;
                 }
             }
@@ -52,8 +52,8 @@ namespace MemSQL
 
         public object[] ItemArray
         {
-            get { return currentValues; }
-            set { currentValues = value; }
+            get { return values; }
+            set { values = value; }
         }
 
         public void Delete()
