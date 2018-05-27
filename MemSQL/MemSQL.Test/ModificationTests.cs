@@ -20,7 +20,7 @@ namespace MemSQL.Test
 
             var row = table.NewRow();
             row["ID"] = 3;
-            table.Rows.Add(row);
+            table.AddRow(row);
 
             string query = "Update [TBL] set ID=2";
             SQLInterpreter interpreter = new SQLInterpreter(db);
@@ -28,7 +28,7 @@ namespace MemSQL.Test
             var result = interpreter.Execute(query);
             int affected = result.RowsAffected;
             Assert.AreEqual(1, affected, "There should be one row affected");
-            Assert.AreEqual(2, table.Rows[0]["ID"], "The updated value was not present on the Table");
+            Assert.AreEqual(2, table.GetRow(0)["ID"], "The updated value was not present on the Table");
         }
 
         [TestMethod]
@@ -41,7 +41,7 @@ namespace MemSQL.Test
             {
                 var row = table.NewRow();
                 row["ID"] = i;
-                table.Rows.Add(row);
+                table.AddRow(row);
             }
             string query = "Update [TBL] set ID=2";
             SQLInterpreter interpreter = new SQLInterpreter(db);
@@ -51,7 +51,7 @@ namespace MemSQL.Test
             Assert.AreEqual(100, affected, "There should be 100 rows affected");
             for (int i = 0; i < 100; i++)
             {
-                Assert.AreEqual(2, table.Rows[i]["ID"], "The updated value was not present on All the rows of the Table");
+                Assert.AreEqual(2, table.GetRow(i)["ID"], "The updated value was not present on All the rows of the Table");
             }
         }
 
@@ -64,7 +64,7 @@ namespace MemSQL.Test
 
             var row = table.NewRow();
             row["ID"] = 3;
-            table.Rows.Add(row);
+            table.AddRow(row);
 
             string query = "Update [TBL] set ID +=2";
             SQLInterpreter interpreter = new SQLInterpreter(db);
@@ -72,7 +72,7 @@ namespace MemSQL.Test
             var result = interpreter.Execute(query);
             int affected = result.RowsAffected;
             Assert.AreEqual(1, affected, "There should be one row affected");
-            Assert.AreEqual(5, table.Rows[0]["ID"], "The updated value was not present on the Table");
+            Assert.AreEqual(5, table.GetRow(0)["ID"], "The updated value was not present on the Table");
         }
 
         [TestMethod]
@@ -84,7 +84,7 @@ namespace MemSQL.Test
 
             var row = table.NewRow();
             row["ID"] = "hola";
-            table.Rows.Add(row);
+            table.AddRow(row);
 
             string query = "Update [TBL] set ID +='-chau'";
             SQLInterpreter interpreter = new SQLInterpreter(db);
@@ -92,7 +92,7 @@ namespace MemSQL.Test
             var result = interpreter.Execute(query);
             int affected = result.RowsAffected;
             Assert.AreEqual(1, affected, "There should be one row affected");
-            Assert.AreEqual("hola-chau", table.Rows[0]["ID"], "The updated value was not present on the Table");
+            Assert.AreEqual("hola-chau", table.GetRow(0)["ID"], "The updated value was not present on the Table");
         }
 
         [TestMethod]
@@ -104,7 +104,7 @@ namespace MemSQL.Test
 
             var row = table.NewRow();
             row["ID"] = "hola";
-            table.Rows.Add(row);
+            table.AddRow(row);
 
             string query = "Update [TBL] set ID +=3";
             SQLInterpreter interpreter = new SQLInterpreter(db);
@@ -112,7 +112,7 @@ namespace MemSQL.Test
             var result = interpreter.Execute(query);
             int affected = result.RowsAffected;
             Assert.AreEqual(1, affected, "There should be one row affected");
-            Assert.AreEqual("hola3", table.Rows[0]["ID"], "The updated value was not present on the Table");
+            Assert.AreEqual("hola3", table.GetRow(0)["ID"], "The updated value was not present on the Table");
         }
 
         [TestMethod]
@@ -124,7 +124,7 @@ namespace MemSQL.Test
 
             var row = table.NewRow();
             row["ID"] = 3;
-            table.Rows.Add(row);
+            table.AddRow(row);
 
             string query = "Update [TBL] set ID -=2";
             SQLInterpreter interpreter = new SQLInterpreter(db);
@@ -132,7 +132,7 @@ namespace MemSQL.Test
             var result = interpreter.Execute(query);
             int affected = result.RowsAffected;
             Assert.AreEqual(1, affected, "There should be one row affected");
-            Assert.AreEqual(1, table.Rows[0]["ID"], "The updated value was not present on the Table");
+            Assert.AreEqual(1, table.GetRow(0)["ID"], "The updated value was not present on the Table");
         }
 
         [TestMethod]
@@ -144,7 +144,7 @@ namespace MemSQL.Test
 
             var row = table.NewRow();
             row["ID"] = 3;
-            table.Rows.Add(row);
+            table.AddRow(row);
 
             string query = "Update [TBL] set ID *=2";
             SQLInterpreter interpreter = new SQLInterpreter(db);
@@ -152,7 +152,7 @@ namespace MemSQL.Test
             var result = interpreter.Execute(query);
             int affected = result.RowsAffected;
             Assert.AreEqual(1, affected, "There should be one row affected");
-            Assert.AreEqual(6, table.Rows[0]["ID"], "The updated value was not present on the Table");
+            Assert.AreEqual(6, table.GetRow(0)["ID"], "The updated value was not present on the Table");
         }
 
         [TestMethod]
@@ -164,7 +164,7 @@ namespace MemSQL.Test
 
             var row = table.NewRow();
             row["ID"] = 10;
-            table.Rows.Add(row);
+            table.AddRow(row);
 
             string query = "Update [TBL] set ID /=2";
             SQLInterpreter interpreter = new SQLInterpreter(db);
@@ -172,7 +172,7 @@ namespace MemSQL.Test
             var result = interpreter.Execute(query);
             int affected = result.RowsAffected;
             Assert.AreEqual(1, affected, "There should be one row affected");
-            Assert.AreEqual(5, table.Rows[0]["ID"], "The updated value was not present on the Table");
+            Assert.AreEqual(5, table.GetRow(0)["ID"], "The updated value was not present on the Table");
         }
 
         [TestMethod]
@@ -184,7 +184,7 @@ namespace MemSQL.Test
 
             var row = table.NewRow();
             row["ID"] = 10;
-            table.Rows.Add(row);
+            table.AddRow(row);
 
             string query = "Update [TBL] set ID %=2";
             SQLInterpreter interpreter = new SQLInterpreter(db);
@@ -192,7 +192,7 @@ namespace MemSQL.Test
             var result = interpreter.Execute(query);
             int affected = result.RowsAffected;
             Assert.AreEqual(1, affected, "There should be one row affected");
-            Assert.AreEqual(0, table.Rows[0]["ID"], "The updated value was not present on the Table");
+            Assert.AreEqual(0, table.GetRow(0)["ID"], "The updated value was not present on the Table");
         }
 
         [TestMethod]
@@ -204,7 +204,7 @@ namespace MemSQL.Test
 
             var row = table.NewRow();
             row["ID"] = 5;
-            table.Rows.Add(row);
+            table.AddRow(row);
 
             string query = "Update [TBL] set ID &=3";
             SQLInterpreter interpreter = new SQLInterpreter(db);
@@ -212,7 +212,7 @@ namespace MemSQL.Test
             var result = interpreter.Execute(query);
             int affected = result.RowsAffected;
             Assert.AreEqual(1, affected, "There should be one row affected");
-            Assert.AreEqual(5 & 3, table.Rows[0]["ID"], "The updated value was not present on the Table");
+            Assert.AreEqual(5 & 3, table.GetRow(0)["ID"], "The updated value was not present on the Table");
         }
 
         [TestMethod]
@@ -224,7 +224,7 @@ namespace MemSQL.Test
 
             var row = table.NewRow();
             row["ID"] = 4;
-            table.Rows.Add(row);
+            table.AddRow(row);
 
             string query = "Update [TBL] set ID |=2";
             SQLInterpreter interpreter = new SQLInterpreter(db);
@@ -232,7 +232,7 @@ namespace MemSQL.Test
             var result = interpreter.Execute(query);
             int affected = result.RowsAffected;
             Assert.AreEqual(1, affected, "There should be one row affected");
-            Assert.AreEqual(4 | 2, table.Rows[0]["ID"], "The updated value was not present on the Table");
+            Assert.AreEqual(4 | 2, table.GetRow(0)["ID"], "The updated value was not present on the Table");
         }
 
         [TestMethod]
@@ -244,7 +244,7 @@ namespace MemSQL.Test
 
             var row = table.NewRow();
             row["ID"] = 7;
-            table.Rows.Add(row);
+            table.AddRow(row);
 
             string query = "Update [TBL] set ID ^=5";
             SQLInterpreter interpreter = new SQLInterpreter(db);
@@ -252,7 +252,7 @@ namespace MemSQL.Test
             var result = interpreter.Execute(query);
             int affected = result.RowsAffected;
             Assert.AreEqual(1, affected, "There should be one row affected");
-            Assert.AreEqual(7 ^ 5, table.Rows[0]["ID"], "The updated value was not present on the Table");
+            Assert.AreEqual(7 ^ 5, table.GetRow(0)["ID"], "The updated value was not present on the Table");
         }
 
         [TestMethod]
@@ -265,7 +265,7 @@ namespace MemSQL.Test
             {
                 var row = table.NewRow();
                 row["ID"] = i;
-                table.Rows.Add(row);
+                table.AddRow(row);
             }
             string query = "Update TOP(50)  [TBL] set ID=2";
             SQLInterpreter interpreter = new SQLInterpreter(db);
@@ -277,7 +277,7 @@ namespace MemSQL.Test
             int count = 0;
             for (int i = 0; i < 200; i++)
             {
-                if (table.Rows[i]["ID"].Equals(2))
+                if (table.GetRow(i)["ID"].Equals(2))
                     count++;
             }
             Assert.AreEqual(50, affected, "There was suposed to be 50 rows with the updated ID");
@@ -293,7 +293,7 @@ namespace MemSQL.Test
             {
                 var row = table.NewRow();
                 row["ID"] = i;
-                table.Rows.Add(row);
+                table.AddRow(row);
             }
             string query = "Update TOP(50) PERCENT [TBL] set ID=2";
             SQLInterpreter interpreter = new SQLInterpreter(db);
@@ -304,7 +304,7 @@ namespace MemSQL.Test
             int count = 0;
             for (int i = 0; i < 200; i++)
             {
-                if (table.Rows[i]["ID"].Equals(2))
+                if (table.GetRow(i)["ID"].Equals(2))
                     count++;
             }
             Assert.AreEqual(100, affected, "There was suposed to be 100 rows with the updated ID");
@@ -320,7 +320,7 @@ namespace MemSQL.Test
             {
                 var row = table.NewRow();
                 row["ID"] = i;
-                table.Rows.Add(row);
+                table.AddRow(row);
             }
             string query = "Update [TBL] set [ID]=5 where [ID] = 1";
             SQLInterpreter interpreter = new SQLInterpreter(db);
@@ -331,7 +331,7 @@ namespace MemSQL.Test
             int count = 0;
             for (int i = 0; i < 100; i++)
             {
-                if (table.Rows[i]["ID"].Equals(5))
+                if (table.GetRow(i)["ID"].Equals(5))
                     count++;
             }
             Assert.AreEqual(2, count, "There was suposed to be 2 rows with the updated ID");

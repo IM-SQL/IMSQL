@@ -48,7 +48,6 @@
     <Compile Include="DataModel\Database.cs" />
     <Compile Include="DataModel\DataColumn.cs" />
     <Compile Include="DataModel\DataRow.cs" />
-    <Compile Include="DataModel\DataRowCollection.cs" />
     <Compile Include="DataModel\DataTable.cs" />
     <Compile Include="DataModel\Environment.cs" />
     <Compile Include="DataModel\ForeignKeyConstraint.cs" />

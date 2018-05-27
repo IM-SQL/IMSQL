@@ -20,7 +20,7 @@ namespace MemSQL.Test
 
             var row = table.NewRow();
             row["ID"] = 3;
-            table.Rows.Add(row);
+            table.AddRow(row);
 
             string query = "Select * from [TBL]";
             SQLInterpreter interpreter = new SQLInterpreter(db);
@@ -28,7 +28,7 @@ namespace MemSQL.Test
             var result = interpreter.Execute(query);
             int affected = result.RowsAffected;
             Assert.AreEqual(1, affected, "There should be one row affected");
-            Assert.AreEqual(3, table.Rows[0]["ID"], "The selected value was not present on the Table");
+            Assert.AreEqual(3, table.GetRow(0)["ID"], "The selected value was not present on the Table");
         }
     }
 }

@@ -10,6 +10,7 @@ namespace MemSQL
     public class DataTable
     {
         private long? identity = null;
+        private List<DataRow> rows = new List<DataRow>();
         private List<DataColumn> columns = new List<DataColumn>();
 
         public DataTable(Database database) : this(null, database) {}
@@ -18,14 +19,13 @@ namespace MemSQL
         {
             TableName = tableName;
             Database = database;
-            Rows = new DataRowCollection(this);
         }
 
         // TODO(Richo): I would like to make TableName read-only.
         public string TableName { get; set; }
 
         public Database Database { get; }
-        public DataRowCollection Rows { get; }
+        public IEnumerable<DataRow> Rows { get { return rows; } }
         public IEnumerable<DataColumn> Columns { get { return columns; } }
 
         public DataColumn[] PrimaryKey
@@ -83,6 +83,11 @@ namespace MemSQL
             columns.Add(col);
         }
 
+        public DataRow GetRow(int index)
+        {
+            return rows[index];
+        }
+
         public DataRow NewRow()
         {
             var row = new DataRow(this);
@@ -105,9 +110,41 @@ namespace MemSQL
             return row;
         }
 
-        public void Add(DataRow row)
+        public void AddRow(params object[] items)
         {
-            Rows.Add(row);
+            var row = NewRow();
+            row.ItemArray = items;
+            AddRow(row);
+        }
+
+        public void AddRow(DataRow row)
+        {
+            foreach (var constraint in Database.Constraints)
+            {
+                constraint.OnInsert(row);
+            }
+            rows.Add(row);
+        }
+
+        public void RemoveRow(DataRow row)
+        {
+            foreach (var constraint in Database.Constraints)
+            {
+                constraint.OnDelete(row);
+            }
+            rows.Remove(row);
+        }
+
+        public DataRow FindRow(object key)
+        {
+            return FindRow(new[] { key });
+        }
+
+        public DataRow FindRow(object[] keys)
+        {
+            // TODO(Richo): Should we throw an exception if keys.Length doesn't match PrimaryKeys.Length?
+            var pk = PrimaryKey;
+            return rows.FirstOrDefault(row => keys.SequenceEqual(pk.Select(col => row[col.ColumnName])));
         }
 
         public void AcceptChanges()

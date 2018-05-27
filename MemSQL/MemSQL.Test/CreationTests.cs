@@ -509,13 +509,13 @@ namespace MemSQL.Test.Structural
                 var row = table.NewRow();
                 row["foo"] = "1";
                 row["bar"] = 1;
-                table.Rows.Add(row);
+                table.AddRow(row);
             }
             {
                 var row = table.NewRow();
                 row["foo"] = "1";
                 row["bar"] = 2;
-                table.Rows.Add(row);
+                table.AddRow(row);
             }
 
             Assert.ThrowsException<ConstraintException>(() =>
@@ -523,7 +523,7 @@ namespace MemSQL.Test.Structural
                 var row = table.NewRow();
                 row["foo"] = "2";
                 row["bar"] = 1;
-                table.Rows.Add(row);
+                table.AddRow(row);
             });
         }
 
@@ -639,7 +639,7 @@ namespace MemSQL.Test.Structural
             Assert.IsNotNull(t2, "Table T2 should exist");
 
             // Initialize T1
-            t1.Rows.Add(1); t1.Rows.Add(2); t1.Rows.Add(3);
+            t1.AddRow(1); t1.AddRow(2); t1.AddRow(3);
 
             // Initialize T2
             Action<string, int?> t2_insert = (f1, f2) =>
@@ -647,7 +647,7 @@ namespace MemSQL.Test.Structural
                 var row = t2.NewRow();
                 row["Name"] = f1;
                 row["T1"] = (object)f2 ?? DBNull.Value;
-                t2.Rows.Add(row);
+                t2.AddRow(row);
             };
             t2_insert("A", 1);
             t2_insert("B", 2);
@@ -661,12 +661,12 @@ namespace MemSQL.Test.Structural
 
             Assert.ThrowsException<ConstraintException>(() =>
             {
-                t1.Rows.Find(1).Delete();
+                t1.FindRow(1).Delete();
             });
 
             Assert.ThrowsException<ConstraintException>(() =>
             {
-                var row = t1.Rows.Find(1);
+                var row = t1.FindRow(1);
                 row["Id"] = 4;
             });
         }
@@ -696,7 +696,7 @@ namespace MemSQL.Test.Structural
             Assert.IsNotNull(t2, "Table T2 should exist");
 
             // Initialize T1
-            t1.Rows.Add(1); t1.Rows.Add(2); t1.Rows.Add(3);
+            t1.AddRow(1); t1.AddRow(2); t1.AddRow(3);
 
             // Initialize T2
             Action<string, int?> t2_insert = (f1, f2) =>
@@ -704,7 +704,7 @@ namespace MemSQL.Test.Structural
                 var row = t2.NewRow();
                 row["Name"] = f1;
                 row["T1"] = (object)f2 ?? DBNull.Value;
-                t2.Rows.Add(row);
+                t2.AddRow(row);
             };
             t2_insert("A", 1);
             t2_insert("B", 2);
@@ -718,12 +718,12 @@ namespace MemSQL.Test.Structural
 
             Assert.ThrowsException<ConstraintException>(() =>
             {
-                t1.Rows.Find(1).Delete();
+                t1.FindRow(1).Delete();
             });
 
             Assert.ThrowsException<ConstraintException>(() =>
             {
-                var row = t1.Rows.Find(1);
+                var row = t1.FindRow(1);
                 row["Id"] = 4;
             });
         }
@@ -753,7 +753,7 @@ namespace MemSQL.Test.Structural
             Assert.IsNotNull(t2, "Table T2 should exist");
 
             // Initialize T1
-            t1.Rows.Add(1); t1.Rows.Add(2); t1.Rows.Add(3);
+            t1.AddRow(1); t1.AddRow(2); t1.AddRow(3);
 
             // Initialize T2
             Action<string, int?> t2_insert = (f1, f2) =>
@@ -761,7 +761,7 @@ namespace MemSQL.Test.Structural
                 var row = t2.NewRow();
                 row["Name"] = f1;
                 row["T1"] = (object)f2 ?? DBNull.Value;
-                t2.Rows.Add(row);
+                t2.AddRow(row);
             };
             t2_insert("A", 1);
             t2_insert("B", 2);
@@ -773,16 +773,16 @@ namespace MemSQL.Test.Structural
                 t2_insert("E", 4);
             });
 
-            t1.Rows.Find(1).Delete();
-            Assert.IsNull(t1.Rows.Find(1), "The parent row should be removed");
-            Assert.IsNull(t2.Rows.Find(1), "The child row should be removed");
+            t1.FindRow(1).Delete();
+            Assert.IsNull(t1.FindRow(1), "The parent row should be removed");
+            Assert.IsNull(t2.FindRow(1), "The child row should be removed");
 
             {
-                var row = t1.Rows.Find(2);
+                var row = t1.FindRow(2);
                 row["Id"] = 4;
             }
-            Assert.IsNotNull(t1.Rows.Find(4), "The parent row should be updated");
-            Assert.AreEqual(4, t2.Rows.Find(2)["T1"], "The child row should be updated");
+            Assert.IsNotNull(t1.FindRow(4), "The parent row should be updated");
+            Assert.AreEqual(4, t2.FindRow(2)["T1"], "The child row should be updated");
         }
 
         [TestMethod]
@@ -810,7 +810,7 @@ namespace MemSQL.Test.Structural
             Assert.IsNotNull(t2, "Table T2 should exist");
 
             // Initialize T1
-            t1.Rows.Add(1); t1.Rows.Add(2); t1.Rows.Add(3);
+            t1.AddRow(1); t1.AddRow(2); t1.AddRow(3);
 
             // Initialize T2
             Action<string, int?> t2_insert = (f1, f2) =>
@@ -818,7 +818,7 @@ namespace MemSQL.Test.Structural
                 var row = t2.NewRow();
                 row["Name"] = f1;
                 row["T1"] = (object)f2 ?? DBNull.Value;
-                t2.Rows.Add(row);
+                t2.AddRow(row);
             };
             t2_insert("A", 1);
             t2_insert("B", 2);
@@ -830,17 +830,17 @@ namespace MemSQL.Test.Structural
                 t2_insert("E", 4);
             });
 
-            t1.Rows.Find(1).Delete();
-            Assert.IsNull(t1.Rows.Find(1), "The parent row should be removed");
-            Assert.IsNotNull(t2.Rows.Find(1), "The child row should not be removed");
-            Assert.AreEqual(DBNull.Value, t2.Rows.Find(1)["T1"], "The child row FK should be null");
+            t1.FindRow(1).Delete();
+            Assert.IsNull(t1.FindRow(1), "The parent row should be removed");
+            Assert.IsNotNull(t2.FindRow(1), "The child row should not be removed");
+            Assert.AreEqual(DBNull.Value, t2.FindRow(1)["T1"], "The child row FK should be null");
 
             {
-                var row = t1.Rows.Find(2);
+                var row = t1.FindRow(2);
                 row["Id"] = 4;
             }
-            Assert.IsNotNull(t1.Rows.Find(4), "The parent row should be updated");
-            Assert.AreEqual(DBNull.Value, t2.Rows.Find(2)["T1"], "The child row FK should be null");
+            Assert.IsNotNull(t1.FindRow(4), "The parent row should be updated");
+            Assert.AreEqual(DBNull.Value, t2.FindRow(2)["T1"], "The child row FK should be null");
         }
 
         [TestMethod]
@@ -868,7 +868,7 @@ namespace MemSQL.Test.Structural
             Assert.IsNotNull(t2, "Table T2 should exist");
 
             // Initialize T1
-            t1.Rows.Add(1); t1.Rows.Add(2); t1.Rows.Add(3);
+            t1.AddRow(1); t1.AddRow(2); t1.AddRow(3);
 
             // Initialize T2
             Action<string, int?> t2_insert = (f1, f2) =>
@@ -876,31 +876,31 @@ namespace MemSQL.Test.Structural
                 var row = t2.NewRow();
                 row["Name"] = f1;
                 if (f2.HasValue) { row["T1"] = f2; }
-                t2.Rows.Add(row);
+                t2.AddRow(row);
             };
             t2_insert("A", 1);
             t2_insert("B", 2);
             t2_insert("C", 3);
 
             t2_insert("D", null);
-            Assert.AreEqual(3, t2.Rows.Find(4)["T1"]);
+            Assert.AreEqual(3, t2.FindRow(4)["T1"]);
 
             Assert.ThrowsException<ConstraintException>(() =>
             {
                 t2_insert("E", 4);
             });
 
-            t1.Rows.Find(1).Delete();
-            Assert.IsNull(t1.Rows.Find(1), "The parent row should be removed");
-            Assert.IsNotNull(t2.Rows.Find(1), "The child row should not be removed");
-            Assert.AreEqual(3, t2.Rows.Find(1)["T1"], "The child row FK should be 3");
+            t1.FindRow(1).Delete();
+            Assert.IsNull(t1.FindRow(1), "The parent row should be removed");
+            Assert.IsNotNull(t2.FindRow(1), "The child row should not be removed");
+            Assert.AreEqual(3, t2.FindRow(1)["T1"], "The child row FK should be 3");
 
             {
-                var row = t1.Rows.Find(2);
+                var row = t1.FindRow(2);
                 row["Id"] = 4;
             }
-            Assert.IsNotNull(t1.Rows.Find(4), "The parent row should be updated");
-            Assert.AreEqual(3, t2.Rows.Find(2)["T1"], "The child row FK should be 3");
+            Assert.IsNotNull(t1.FindRow(4), "The parent row should be updated");
+            Assert.AreEqual(3, t2.FindRow(2)["T1"], "The child row FK should be 3");
         }
 
         [TestMethod]
@@ -928,7 +928,7 @@ namespace MemSQL.Test.Structural
             Assert.IsNotNull(t2, "Table T2 should exist");
 
             // Initialize T1
-            t1.Rows.Add(1); t1.Rows.Add(2); t1.Rows.Add(3);
+            t1.AddRow(1); t1.AddRow(2); t1.AddRow(3);
 
             // Initialize T2
             Action<string, int?> t2_insert = (f1, f2) =>
@@ -936,31 +936,31 @@ namespace MemSQL.Test.Structural
                 var row = t2.NewRow();
                 row["Name"] = f1;
                 if (f2.HasValue) { row["T1"] = f2; }
-                t2.Rows.Add(row);
+                t2.AddRow(row);
             };
             t2_insert("A", 1);
             t2_insert("B", 2);
             t2_insert("C", 3);
 
             t2_insert("D", null);
-            Assert.AreEqual(DBNull.Value, t2.Rows.Find(4)["T1"]);
+            Assert.AreEqual(DBNull.Value, t2.FindRow(4)["T1"]);
 
             Assert.ThrowsException<ConstraintException>(() =>
             {
                 t2_insert("E", 4);
             });
 
-            t1.Rows.Find(1).Delete();
-            Assert.IsNull(t1.Rows.Find(1), "The parent row should be removed");
-            Assert.IsNotNull(t2.Rows.Find(1), "The child row should not be removed");
-            Assert.AreEqual(DBNull.Value, t2.Rows.Find(1)["T1"], "The child row FK should be null");
+            t1.FindRow(1).Delete();
+            Assert.IsNull(t1.FindRow(1), "The parent row should be removed");
+            Assert.IsNotNull(t2.FindRow(1), "The child row should not be removed");
+            Assert.AreEqual(DBNull.Value, t2.FindRow(1)["T1"], "The child row FK should be null");
 
             {
-                var row = t1.Rows.Find(2);
+                var row = t1.FindRow(2);
                 row["Id"] = 4;
             }
-            Assert.IsNotNull(t1.Rows.Find(4), "The parent row should be updated");
-            Assert.AreEqual(DBNull.Value, t2.Rows.Find(2)["T1"], "The child row FK should be null");
+            Assert.IsNotNull(t1.FindRow(4), "The parent row should be updated");
+            Assert.AreEqual(DBNull.Value, t2.FindRow(2)["T1"], "The child row FK should be null");
         }
 
         [TestMethod]

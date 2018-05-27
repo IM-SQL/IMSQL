@@ -24,8 +24,8 @@ namespace MemSQL.Test
             int affected = result.RowsAffected;
 
             Assert.AreEqual(1, affected, "There should be one row affected");
-            Assert.AreEqual(1, table.Rows.Count, "There should be one row on the table");
-            Assert.AreEqual(3, table.Rows[0]["ID"], "The inserted value was not present on the table");
+            Assert.AreEqual(1, table.Rows.Count(), "There should be one row on the table");
+            Assert.AreEqual(3, table.GetRow(0)["ID"], "The inserted value was not present on the table");
         }
 
         [TestMethod]
@@ -42,9 +42,9 @@ namespace MemSQL.Test
             int affected = result.RowsAffected;
 
             Assert.AreEqual(1, affected, "There should be one row affected");
-            Assert.AreEqual(1, table.Rows.Count, "There should be one row on the table");
-            Assert.AreEqual(3, table.Rows[0]["A"], "The inserted value was not present on the table");
-            Assert.AreEqual("asd", table.Rows[0]["B"], "The inserted value was not present on the table");
+            Assert.AreEqual(1, table.Rows.Count(), "There should be one row on the table");
+            Assert.AreEqual(3, table.GetRow(0)["A"], "The inserted value was not present on the table");
+            Assert.AreEqual("asd", table.GetRow(0)["B"], "The inserted value was not present on the table");
         }
 
         [TestMethod]
@@ -85,9 +85,9 @@ namespace MemSQL.Test
             var result = interpreter.Execute(query);
             int affected = result.RowsAffected;
             Assert.AreEqual(1, affected, "There should be one row affected");
-            Assert.AreEqual(1, table.Rows.Count, "There should be one row on the table");
-            Assert.AreEqual(3, table.Rows[0]["A"], "The inserted value was not present on the table");
-            Assert.AreEqual(5, table.Rows[0]["B"], "The Default value was not present on the table");
+            Assert.AreEqual(1, table.Rows.Count(), "There should be one row on the table");
+            Assert.AreEqual(3, table.GetRow(0)["A"], "The inserted value was not present on the table");
+            Assert.AreEqual(5, table.GetRow(0)["B"], "The Default value was not present on the table");
         }
 
         [TestMethod]
@@ -104,8 +104,8 @@ namespace MemSQL.Test
             int affected = result.RowsAffected;
 
             Assert.AreEqual(1, affected, "There should be one row affected");
-            Assert.AreEqual(1, table.Rows.Count, "There should be one row on the table");
-            Assert.AreEqual(DBNull.Value, table.Rows[0]["A"], "The inserted value was not present on the table");
+            Assert.AreEqual(1, table.Rows.Count(), "There should be one row on the table");
+            Assert.AreEqual(DBNull.Value, table.GetRow(0)["A"], "The inserted value was not present on the table");
         }
 
         [TestMethod]
@@ -122,9 +122,9 @@ namespace MemSQL.Test
             int affected = result.RowsAffected;
 
             Assert.AreEqual(1, affected, "There should be one row affected");
-            Assert.AreEqual(1, table.Rows.Count, "There should be one row on the table");
-            Assert.AreEqual(1, table.Rows[0]["A"], "The inserted value was not present on the table");
-            Assert.AreEqual(2, table.Rows[0]["B"], "The inserted value was not present on the table");
+            Assert.AreEqual(1, table.Rows.Count(), "There should be one row on the table");
+            Assert.AreEqual(1, table.GetRow(0)["A"], "The inserted value was not present on the table");
+            Assert.AreEqual(2, table.GetRow(0)["B"], "The inserted value was not present on the table");
         }
 
         [TestMethod]
@@ -143,10 +143,10 @@ namespace MemSQL.Test
             int affected = result.RowsAffected;
 
             Assert.AreEqual(1, affected, "There should be one row affected");
-            Assert.AreEqual(1, table.Rows.Count, "There should be one row on the table");
-            Assert.AreEqual(1, table.Rows[0]["A"], "The inserted value was not present on the table");
-            Assert.AreEqual(2, table.Rows[0]["B"], "The inserted value was not present on the table");
-            Assert.AreEqual(DBNull.Value, table.Rows[0]["C"], "The default value was not present on the table");
+            Assert.AreEqual(1, table.Rows.Count(), "There should be one row on the table");
+            Assert.AreEqual(1, table.GetRow(0)["A"], "The inserted value was not present on the table");
+            Assert.AreEqual(2, table.GetRow(0)["B"], "The inserted value was not present on the table");
+            Assert.AreEqual(DBNull.Value, table.GetRow(0)["C"], "The default value was not present on the table");
         }
 
         [TestMethod]
@@ -176,11 +176,11 @@ namespace MemSQL.Test
             int affected = result.RowsAffected;
 
             Assert.AreEqual(testData.Count, affected, "The amount of rows affected is wrong");
-            Assert.AreEqual(testData.Count, table.Rows.Count, "All the test data should have been inserted");
+            Assert.AreEqual(testData.Count, table.Rows.Count(), "All the test data should have been inserted");
             for (int i = 0; i < testData.Count; i++)
             {
-                Assert.AreEqual(testData[i].Item1, table.Rows[i]["A"], "The inserted value was not present on the table");
-                Assert.AreEqual(testData[i].Item2, table.Rows[i]["B"], "The inserted value was not present on the table");
+                Assert.AreEqual(testData[i].Item1, table.GetRow(i)["A"], "The inserted value was not present on the table");
+                Assert.AreEqual(testData[i].Item2, table.GetRow(i)["B"], "The inserted value was not present on the table");
             }
         }
 
@@ -243,9 +243,9 @@ namespace MemSQL.Test
             SQLInterpreter interpreter = new SQLInterpreter(db);
             var result = interpreter.Execute(query);
             Assert.AreEqual(1, result.RowsAffected, "There should be one row affected");
-            Assert.AreEqual(1, table.Rows.Count, "There should be one row on the table");
-            Assert.AreEqual(1, table.Rows[0]["A"], "The inserted value was not present on the table");
-            Assert.AreEqual("asd", table.Rows[0]["B"], "The inserted value was not present on the table");
+            Assert.AreEqual(1, table.Rows.Count(), "There should be one row on the table");
+            Assert.AreEqual(1, table.GetRow(0)["A"], "The inserted value was not present on the table");
+            Assert.AreEqual("asd", table.GetRow(0)["B"], "The inserted value was not present on the table");
         }
     }
 }

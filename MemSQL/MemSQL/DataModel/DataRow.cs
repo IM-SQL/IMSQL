@@ -58,7 +58,7 @@ namespace MemSQL
 
         public void Delete()
         {
-            Table.Rows.Remove(this);
+            Table.RemoveRow(this);
         }
     }
 }

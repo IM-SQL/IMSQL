@@ -58,7 +58,7 @@ namespace MemSQL
                 {
                     dr[providedColumns[i]] = row[i];
                 }
-                table.Rows.Add(dr);
+                table.AddRow(dr);
                 return dr;
             }).ToArray();
         }
