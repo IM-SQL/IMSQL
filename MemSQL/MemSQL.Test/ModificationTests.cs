@@ -15,7 +15,7 @@ namespace MemSQL.Test
         public void BasicUpdateTest()
         {
             var db = new Database();
-            DataTable table = db.Tables.Add("TBL");
+            DataTable table = db.AddTable("TBL");
             table.Columns.Add(new DataColumn("ID", typeof(int)));
 
             var row = table.NewRow();
@@ -35,7 +35,7 @@ namespace MemSQL.Test
         public void BatchUpdateTest()
         {
             var db = new Database();
-            DataTable table = db.Tables.Add("TBL");
+            DataTable table = db.AddTable("TBL");
             table.Columns.Add(new DataColumn("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
@@ -59,7 +59,7 @@ namespace MemSQL.Test
         public void AddAssignmentUpdateTest()
         {
             var db = new Database();
-            DataTable table = db.Tables.Add("TBL");
+            DataTable table = db.AddTable("TBL");
             table.Columns.Add(new DataColumn("ID", typeof(int)));
 
             var row = table.NewRow();
@@ -79,7 +79,7 @@ namespace MemSQL.Test
         public void AddAssignmentStringUpdateTest()
         {
             var db = new Database();
-            DataTable table = db.Tables.Add("TBL");
+            DataTable table = db.AddTable("TBL");
             table.Columns.Add(new DataColumn("ID", typeof(string)));
 
             var row = table.NewRow();
@@ -99,7 +99,7 @@ namespace MemSQL.Test
         public void AddAssignmentMixedTypesUpdateTest()
         {
             var db = new Database();
-            DataTable table = db.Tables.Add("TBL");
+            DataTable table = db.AddTable("TBL");
             table.Columns.Add(new DataColumn("ID", typeof(string)));
 
             var row = table.NewRow();
@@ -119,7 +119,7 @@ namespace MemSQL.Test
         public void SubAssignmentUpdateTest()
         {
             var db = new Database();
-            DataTable table = db.Tables.Add("TBL");
+            DataTable table = db.AddTable("TBL");
             table.Columns.Add(new DataColumn("ID", typeof(int)));
 
             var row = table.NewRow();
@@ -139,7 +139,7 @@ namespace MemSQL.Test
         public void MulAssignmentUpdateTest()
         {
             var db = new Database();
-            DataTable table = db.Tables.Add("TBL");
+            DataTable table = db.AddTable("TBL");
             table.Columns.Add(new DataColumn("ID", typeof(int)));
 
             var row = table.NewRow();
@@ -159,7 +159,7 @@ namespace MemSQL.Test
         public void DivAssignmentUpdateTest()
         {
             var db = new Database();
-            DataTable table = db.Tables.Add("TBL");
+            DataTable table = db.AddTable("TBL");
             table.Columns.Add(new DataColumn("ID", typeof(int)));
 
             var row = table.NewRow();
@@ -179,7 +179,7 @@ namespace MemSQL.Test
         public void ModAssignmentUpdateTest()
         {
             var db = new Database();
-            DataTable table = db.Tables.Add("TBL");
+            DataTable table = db.AddTable("TBL");
             table.Columns.Add(new DataColumn("ID", typeof(int)));
 
             var row = table.NewRow();
@@ -199,7 +199,7 @@ namespace MemSQL.Test
         public void AndAssignmentUpdateTest()
         {
             var db = new Database();
-            DataTable table = db.Tables.Add("TBL");
+            DataTable table = db.AddTable("TBL");
             table.Columns.Add(new DataColumn("ID", typeof(int)));
 
             var row = table.NewRow();
@@ -219,7 +219,7 @@ namespace MemSQL.Test
         public void OrAssignmentUpdateTest()
         {
             var db = new Database();
-            DataTable table = db.Tables.Add("TBL");
+            DataTable table = db.AddTable("TBL");
             table.Columns.Add(new DataColumn("ID", typeof(int)));
 
             var row = table.NewRow();
@@ -239,7 +239,7 @@ namespace MemSQL.Test
         public void XorAssignmentUpdateTest()
         {
             var db = new Database();
-            DataTable table = db.Tables.Add("TBL");
+            DataTable table = db.AddTable("TBL");
             table.Columns.Add(new DataColumn("ID", typeof(int)));
 
             var row = table.NewRow();
@@ -259,7 +259,7 @@ namespace MemSQL.Test
         public void TopUpdateTest()
         {
             var db = new Database();
-            DataTable table = db.Tables.Add("TBL");
+            DataTable table = db.AddTable("TBL");
             table.Columns.Add(new DataColumn("ID", typeof(int)));
             for (int i = 0; i < 200; i++)
             {
@@ -287,7 +287,7 @@ namespace MemSQL.Test
         public void TopPercentUpdateTest()
         {
             var db = new Database();
-            DataTable table = db.Tables.Add("TBL");
+            DataTable table = db.AddTable("TBL");
             table.Columns.Add(new DataColumn("ID", typeof(int)));
             for (int i = 0; i < 200; i++)
             {
@@ -314,7 +314,7 @@ namespace MemSQL.Test
         public void UpdateWhereEquals()
         {
             var db = new Database();
-            DataTable table = db.Tables.Add("TBL");
+            DataTable table = db.AddTable("TBL");
             table.Columns.Add(new DataColumn("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {

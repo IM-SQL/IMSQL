@@ -45,7 +45,7 @@ namespace MemSQL
             {
                 // TODO(Richo): Make unique name?
                 var constraint = new UniqueConstraint("", value, true);
-                Database.Constraints.Add(constraint);
+                Database.AddConstraint(constraint);
             }
         }
 

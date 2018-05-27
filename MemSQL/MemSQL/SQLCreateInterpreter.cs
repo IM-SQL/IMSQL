@@ -19,12 +19,12 @@ namespace MemSQL
         {
             var table = Visit<DataTable>(node.Definition);
             table.TableName = Visit<string>(node.SchemaObjectName);
-            if (Database.Tables.Contains(table.TableName))
+            if (Database.ContainsTable(table.TableName))
             {
                 var msg = string.Format("There is already an object named '{0}' in the database", table.TableName);
                 throw new DuplicateNameException(msg);
             }
-            Database.Tables.Add(table);
+            Database.AddTable(table);
 
             try
             {
@@ -43,7 +43,7 @@ namespace MemSQL
             }
             catch
             {
-                Database.Tables.Remove(table);
+                Database.RemoveTable(table);
                 throw;
             }
             return table;
@@ -173,7 +173,7 @@ namespace MemSQL
                     }
                     else
                     {
-                        Database.Constraints.Add(new UniqueConstraint(name, columns, isPK));
+                        Database.AddConstraint(new UniqueConstraint(name, columns, isPK));
                     }
                 }
             };
@@ -189,7 +189,7 @@ namespace MemSQL
                 DataTable refTable;
                 {
                     var refTableName = Visit<string>(node.ReferenceTableName);
-                    refTable = Database.Tables[refTableName];
+                    refTable = Database.GetTable(refTableName);
                     if (refTable == null)
                     {
                         var msg = string.Format("Foreign key '{0}' references invalid table '{1}'", constraintName, refTableName);
@@ -242,7 +242,7 @@ namespace MemSQL
                                             "because one or more referencing not-nullable columns lack a default constraint.", constraintName);
                     throw new ConstraintException(msg);
                 }
-                Database.Constraints.Add(fk);
+                Database.AddConstraint(fk);
             };
             return applier;
         }

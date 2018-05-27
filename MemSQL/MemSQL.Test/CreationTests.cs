@@ -18,8 +18,8 @@ namespace MemSQL.Test.Structural
             var visitor = new SQLInterpreter(db);
             var result = visitor.Execute(script);
             Assert.AreEqual(0, result.RowsAffected);
-            Assert.IsTrue(db.Tables.Contains("TBL"), "The table must be created");
-            var table = db.Tables["TBL"];
+            Assert.IsTrue(db.ContainsTable("TBL"), "The table must be created");
+            var table = db.GetTable("TBL");
             Assert.IsTrue(table.Columns.Contains("col1"));
             Assert.AreEqual(typeof(int), table.Columns["col1"].DataType);
             Assert.IsTrue(table.Columns.Contains("col2"));
@@ -42,8 +42,8 @@ namespace MemSQL.Test.Structural
             var visitor = new SQLInterpreter(db);
             var result = visitor.Execute(script);
             Assert.AreEqual(0, result.RowsAffected);
-            Assert.IsTrue(db.Tables.Contains("CUSTOMERS"), "The table must be created");
-            var table = db.Tables["CUSTOMERS"];
+            Assert.IsTrue(db.ContainsTable("CUSTOMERS"), "The table must be created");
+            var table = db.GetTable("CUSTOMERS");
             Assert.IsTrue(table.Columns.Contains("ID"));
             Assert.AreEqual(typeof(int), table.Columns["ID"].DataType);
             Assert.IsTrue(table.Columns.Contains("NAME"));
@@ -69,8 +69,8 @@ namespace MemSQL.Test.Structural
             var visitor = new SQLInterpreter(db);
             var result = visitor.Execute(script);
             Assert.AreEqual(0, result.RowsAffected);
-            Assert.IsTrue(db.Tables.Contains("TBL"), "The table must be created");
-            var table = db.Tables["TBL"];
+            Assert.IsTrue(db.ContainsTable("TBL"), "The table must be created");
+            var table = db.GetTable("TBL");
             Assert.IsTrue(table.Columns.Contains("col1"));
             Assert.AreEqual(typeof(int), table.Columns["col1"].DataType);
             Assert.IsTrue(table.Columns.Contains("col2"));
@@ -92,8 +92,8 @@ namespace MemSQL.Test.Structural
             var visitor = new SQLInterpreter(db);
             var result = visitor.Execute(script);
             Assert.AreEqual(0, result.RowsAffected);
-            Assert.IsTrue(db.Tables.Contains("TBL"), "The table must be created");
-            var table = db.Tables["TBL"];
+            Assert.IsTrue(db.ContainsTable("TBL"), "The table must be created");
+            var table = db.GetTable("TBL");
             Assert.IsTrue(table.Columns.Contains("col1"));
             Assert.AreEqual(typeof(int), table.Columns["col1"].DataType);
             Assert.IsFalse(table.Columns["col1"].AllowDBNull, "This column should not allow nulls");
@@ -110,8 +110,8 @@ namespace MemSQL.Test.Structural
             var visitor = new SQLInterpreter(db);
             var result = visitor.Execute(script);
             Assert.AreEqual(0, result.RowsAffected);
-            Assert.IsTrue(db.Tables.Contains("TBL"), "The table must be created");
-            var table = db.Tables["TBL"];
+            Assert.IsTrue(db.ContainsTable("TBL"), "The table must be created");
+            var table = db.GetTable("TBL");
             Assert.IsTrue(table.Columns.Contains("ID"));
             Assert.AreEqual(typeof(int), table.Columns["ID"].DataType);
             Assert.IsTrue(table.PrimaryKey.Length == 1, "The Primary Key is missing!");
@@ -132,8 +132,8 @@ namespace MemSQL.Test.Structural
             var visitor = new SQLInterpreter(db);
             var result = visitor.Execute(script);
             Assert.AreEqual(0, result.RowsAffected);
-            Assert.IsTrue(db.Tables.Contains("TBL"), "The table must be created");
-            var table = db.Tables["TBL"];
+            Assert.IsTrue(db.ContainsTable("TBL"), "The table must be created");
+            var table = db.GetTable("TBL");
             Assert.IsTrue(table.Columns.Contains("ID"));
             Assert.AreEqual(typeof(int), table.Columns["ID"].DataType);
             Assert.IsTrue(table.PrimaryKey.Length == 1, "The Primary Key is missing!");
@@ -154,7 +154,7 @@ namespace MemSQL.Test.Structural
             {
                 visitor.Execute(script);
             });
-            Assert.IsNull(db.Tables["TBL"], "TBL should not exist");
+            Assert.IsNull(db.GetTable("TBL"), "TBL should not exist");
         }
 
         [TestMethod]
@@ -171,8 +171,8 @@ namespace MemSQL.Test.Structural
             var visitor = new SQLInterpreter(db);
             var result = visitor.Execute(script);
             Assert.AreEqual(0, result.RowsAffected);
-            Assert.IsTrue(db.Tables.Contains("TBL"), "The table must be created");
-            var table = db.Tables["TBL"];
+            Assert.IsTrue(db.ContainsTable("TBL"), "The table must be created");
+            var table = db.GetTable("TBL");
             Assert.IsTrue(table.Columns.Contains("ID1"));
             Assert.AreEqual(typeof(int), table.Columns["ID1"].DataType);
 
@@ -192,8 +192,8 @@ namespace MemSQL.Test.Structural
             var visitor = new SQLInterpreter(db);
             var result = visitor.Execute(script);
             Assert.AreEqual(0, result.RowsAffected);
-            Assert.IsTrue(db.Tables.Contains("TBL"), "The table must be created");
-            var table = db.Tables["TBL"];
+            Assert.IsTrue(db.ContainsTable("TBL"), "The table must be created");
+            var table = db.GetTable("TBL");
             Assert.IsTrue(table.Columns.Contains("col1"));
             Assert.AreEqual(typeof(int), table.Columns["col1"].DataType);
             Assert.IsTrue(table.PrimaryKey.Length == 1, "The Primary Key is missing!");
@@ -204,8 +204,8 @@ namespace MemSQL.Test.Structural
                 "CONSTRAINT FK_tbl FOREIGN KEY (col2)     REFERENCES TBL(col1))";
 
             result = visitor.Execute(script2);
-            Assert.IsTrue(db.Tables.Contains("TBL2"), "The table must be created");
-            var table2 = db.Tables["TBL2"];
+            Assert.IsTrue(db.ContainsTable("TBL2"), "The table must be created");
+            var table2 = db.GetTable("TBL2");
             Assert.IsTrue(table2.Columns.Contains("col2"));
             Assert.AreEqual(typeof(int), table2.Columns["col2"].DataType);
             Assert.IsTrue(table2.PrimaryKey.Length == 1, "The Primary Key is missing!");
@@ -213,8 +213,8 @@ namespace MemSQL.Test.Structural
             
             Assert.AreEqual(2, db.Constraints.Count(c => Equals(table2, c.Table)), 
                 "Either the PK or the FK are missing");
-            Assert.IsTrue(db.Constraints.Contains("FK_tbl"), "The FK was not found by name");
-            var fk = db.Constraints["FK_tbl"] as ForeignKeyConstraint;
+            Assert.IsTrue(db.ContainsConstraint("FK_tbl"), "The FK was not found by name");
+            var fk = db.GetConstraint("FK_tbl") as ForeignKeyConstraint;
             Assert.IsTrue(fk.Columns.Length == 1);
             Assert.AreEqual("col2", fk.Columns[0].ColumnName);
             Assert.AreEqual(table2, fk.Table, "The child table is not the correct one");
@@ -238,8 +238,8 @@ namespace MemSQL.Test.Structural
             var visitor = new SQLInterpreter(db);
             var result = visitor.Execute(script);
             Assert.AreEqual(0, result.RowsAffected);
-            Assert.IsTrue(db.Tables.Contains("TBL"), "The table must be created");
-            var table = db.Tables["TBL"];
+            Assert.IsTrue(db.ContainsTable("TBL"), "The table must be created");
+            var table = db.GetTable("TBL");
             Assert.IsTrue(table.Columns.Contains("num"));
             Assert.AreEqual(typeof(int), table.Columns["num"].DataType);
             Assert.IsTrue(table.Columns.Contains("calc"));
@@ -261,7 +261,7 @@ namespace MemSQL.Test.Structural
             {
                 visitor.Execute(script);
             });
-            Assert.IsNull(db.Tables["table"], "Table 'table' should not exist");
+            Assert.IsNull(db.GetTable("table"), "Table 'table' should not exist");
         }
 
         [TestMethod]
@@ -280,7 +280,7 @@ namespace MemSQL.Test.Structural
             {
                 visitor.Execute(script);
             });
-            Assert.IsNull(db.Tables["TBL"], "TBL should not exist");
+            Assert.IsNull(db.GetTable("TBL"), "TBL should not exist");
         }
 
         [TestMethod]
@@ -304,7 +304,7 @@ namespace MemSQL.Test.Structural
                 {
                     visitor.Execute(script);
                 });
-                Assert.IsNull(db.Tables["TBL"], "TBL should not exist");
+                Assert.IsNull(db.GetTable("TBL"), "TBL should not exist");
             }
         }
 
@@ -330,7 +330,7 @@ namespace MemSQL.Test.Structural
                 {
                     visitor.Execute(script);
                 });
-                Assert.IsNull(db.Tables["TBL"], "TBL should not exist");
+                Assert.IsNull(db.GetTable("TBL"), "TBL should not exist");
             }
         }
 
@@ -341,7 +341,7 @@ namespace MemSQL.Test.Structural
             var db = new Database();
             var visitor = new SQLInterpreter(db);
             visitor.Execute(script);
-            Assert.IsTrue(db.Tables.Contains("Client"));
+            Assert.IsTrue(db.ContainsTable("Client"));
         }
 
         [TestMethod]
@@ -352,7 +352,7 @@ namespace MemSQL.Test.Structural
             var visitor = new SQLInterpreter(db);
             visitor.Execute(script);
 
-            var table = db.Tables["Client"];
+            var table = db.GetTable("Client");
             Assert.IsNotNull(table, "The table should be created");
             var col = table.Columns["Id"];
             Assert.IsNotNull(col, "The PK should be valid");
@@ -377,7 +377,7 @@ namespace MemSQL.Test.Structural
             var visitor = new SQLInterpreter(db);
             visitor.Execute(script);
 
-            var table = db.Tables["Client"];
+            var table = db.GetTable("Client");
             Assert.IsNotNull(table, "The table should be created");
             CollectionAssert.AreEqual(new[] { "Id" },
                 table.PrimaryKey.Select(c => c.ColumnName).ToArray(),
@@ -413,7 +413,7 @@ namespace MemSQL.Test.Structural
             var visitor = new SQLInterpreter(db);
             visitor.Execute(script);
 
-            var table = db.Tables["Client"];
+            var table = db.GetTable("Client");
             Assert.IsNotNull(table, "The table should be created");
             CollectionAssert.AreEqual(new[] { "Id" },
                 table.PrimaryKey.Select(c => c.ColumnName).ToArray(),
@@ -448,13 +448,13 @@ namespace MemSQL.Test.Structural
             var visitor = new SQLInterpreter(db);
             visitor.Execute(script);
 
-            var table = db.Tables["LogException"];
+            var table = db.GetTable("LogException");
             Assert.IsNotNull(table, "The table should exist");
             CollectionAssert.AreEqual(new[] { "id" },
                 table.PrimaryKey.Select(c => c.ColumnName).ToArray(),
                 "The PK should be configured correctly");
 
-            Assert.IsTrue(db.Constraints.Contains("FK_LogException_ToLogException"));
+            Assert.IsTrue(db.ContainsConstraint("FK_LogException_ToLogException"));
         }
 
         [TestMethod]
@@ -476,13 +476,13 @@ namespace MemSQL.Test.Structural
             var visitor = new SQLInterpreter(db);
             visitor.Execute(script);
 
-            var table = db.Tables["LogException"];
+            var table = db.GetTable("LogException");
             Assert.IsNotNull(table, "The table should exist");
             CollectionAssert.AreEqual(new[] { "id" },
                 table.PrimaryKey.Select(c => c.ColumnName).ToArray(),
                 "The PK should be configured correctly");
 
-            Assert.IsTrue(db.Constraints.Contains("FK_LogException_ToLogException"));
+            Assert.IsTrue(db.ContainsConstraint("FK_LogException_ToLogException"));
         }
 
         [TestMethod]
@@ -502,7 +502,7 @@ namespace MemSQL.Test.Structural
             var visitor = new SQLInterpreter(db);
             visitor.Execute(script);
 
-            var table = db.Tables["TBL"];
+            var table = db.GetTable("TBL");
             Assert.IsTrue(table.Columns["bar"].Unique, "Column should be unique");
 
             {
@@ -542,7 +542,7 @@ namespace MemSQL.Test.Structural
             var visitor = new SQLInterpreter(db);
             visitor.Execute(script);
 
-            var table = db.Tables["TBL"];
+            var table = db.GetTable("TBL");
             Assert.IsTrue(table.Columns["id"].Unique, "Column should be unique");
             CollectionAssert.AreEqual(new[] { table.Columns["id"] }, table.PrimaryKey,
                 "PK should be valid");
@@ -569,7 +569,7 @@ namespace MemSQL.Test.Structural
             {
                 visitor.Execute(script);
             });
-            Assert.IsNull(db.Tables["TBL"], "TBL should not exist");
+            Assert.IsNull(db.GetTable("TBL"), "TBL should not exist");
         }
 
         [TestMethod]
@@ -593,7 +593,7 @@ namespace MemSQL.Test.Structural
                */
                 visitor.Execute(script);
             });
-            Assert.IsNull(db.Tables["TBL"], "TBL should not exist");
+            Assert.IsNull(db.GetTable("TBL"), "TBL should not exist");
         }
 
         [TestMethod]
@@ -608,12 +608,12 @@ namespace MemSQL.Test.Structural
 	                [foo] INT NULL,
                 )";
             visitor.Execute(script);
-            Assert.IsNotNull(db.Tables["TBL"], "TBL should exist");
+            Assert.IsNotNull(db.GetTable("TBL"), "TBL should exist");
             Assert.ThrowsException<DuplicateNameException>(() =>
             {
                 visitor.Execute(script);
             });
-            Assert.IsNotNull(db.Tables["TBL"], "TBL should still exist");
+            Assert.IsNotNull(db.GetTable("TBL"), "TBL should still exist");
         }
 
         [TestMethod]
@@ -633,9 +633,9 @@ namespace MemSQL.Test.Structural
                 ";
             visitor.Execute(script);
 
-            var t1 = db.Tables["T1"];
+            var t1 = db.GetTable("T1");
             Assert.IsNotNull(t1, "Table T1 should exist");
-            var t2 = db.Tables["T2"];
+            var t2 = db.GetTable("T2");
             Assert.IsNotNull(t2, "Table T2 should exist");
 
             // Initialize T1
@@ -690,9 +690,9 @@ namespace MemSQL.Test.Structural
                 ";
             visitor.Execute(script);
 
-            var t1 = db.Tables["T1"];
+            var t1 = db.GetTable("T1");
             Assert.IsNotNull(t1, "Table T1 should exist");
-            var t2 = db.Tables["T2"];
+            var t2 = db.GetTable("T2");
             Assert.IsNotNull(t2, "Table T2 should exist");
 
             // Initialize T1
@@ -747,9 +747,9 @@ namespace MemSQL.Test.Structural
                 ";
             visitor.Execute(script);
 
-            var t1 = db.Tables["T1"];
+            var t1 = db.GetTable("T1");
             Assert.IsNotNull(t1, "Table T1 should exist");
-            var t2 = db.Tables["T2"];
+            var t2 = db.GetTable("T2");
             Assert.IsNotNull(t2, "Table T2 should exist");
 
             // Initialize T1
@@ -804,9 +804,9 @@ namespace MemSQL.Test.Structural
                 ";
             visitor.Execute(script);
 
-            var t1 = db.Tables["T1"];
+            var t1 = db.GetTable("T1");
             Assert.IsNotNull(t1, "Table T1 should exist");
-            var t2 = db.Tables["T2"];
+            var t2 = db.GetTable("T2");
             Assert.IsNotNull(t2, "Table T2 should exist");
 
             // Initialize T1
@@ -862,9 +862,9 @@ namespace MemSQL.Test.Structural
                 ";
             visitor.Execute(script);
 
-            var t1 = db.Tables["T1"];
+            var t1 = db.GetTable("T1");
             Assert.IsNotNull(t1, "Table T1 should exist");
-            var t2 = db.Tables["T2"];
+            var t2 = db.GetTable("T2");
             Assert.IsNotNull(t2, "Table T2 should exist");
 
             // Initialize T1
@@ -922,9 +922,9 @@ namespace MemSQL.Test.Structural
                 ";
             visitor.Execute(script);
 
-            var t1 = db.Tables["T1"];
+            var t1 = db.GetTable("T1");
             Assert.IsNotNull(t1, "Table T1 should exist");
-            var t2 = db.Tables["T2"];
+            var t2 = db.GetTable("T2");
             Assert.IsNotNull(t2, "Table T2 should exist");
 
             // Initialize T1
@@ -983,7 +983,7 @@ namespace MemSQL.Test.Structural
                     )";
                 visitor.Execute(script);
             });
-            Assert.IsNull(db.Tables["T2"], "T2 should not exist");
+            Assert.IsNull(db.GetTable("T2"), "T2 should not exist");
         }
 
         [TestMethod]
@@ -1006,7 +1006,7 @@ namespace MemSQL.Test.Structural
                     )";
                 visitor.Execute(script);
             });
-            Assert.IsNull(db.Tables["T2"], "T2 should not exist");
+            Assert.IsNull(db.GetTable("T2"), "T2 should not exist");
         }
 
         [TestMethod]
@@ -1029,7 +1029,7 @@ namespace MemSQL.Test.Structural
                     )";
                 visitor.Execute(script);
             });
-            Assert.IsNull(db.Tables["T2"], "T2 should not exist");
+            Assert.IsNull(db.GetTable("T2"), "T2 should not exist");
         }
 
         [TestMethod]
@@ -1052,7 +1052,7 @@ namespace MemSQL.Test.Structural
                     )";
                 visitor.Execute(script);
             });
-            Assert.IsNull(db.Tables["T2"], "T2 should not exist");
+            Assert.IsNull(db.GetTable("T2"), "T2 should not exist");
         }
     }
 }

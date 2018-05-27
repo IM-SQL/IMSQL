@@ -44,7 +44,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataModel\Constraint.cs" />
-    <Compile Include="DataModel\ConstraintCollection.cs" />
     <Compile Include="DataModel\ConstraintException.cs" />
     <Compile Include="DataModel\Database.cs" />
     <Compile Include="DataModel\DataColumn.cs" />
@@ -52,7 +51,6 @@
     <Compile Include="DataModel\DataRow.cs" />
     <Compile Include="DataModel\DataRowCollection.cs" />
     <Compile Include="DataModel\DataTable.cs" />
-    <Compile Include="DataModel\DataTableCollection.cs" />
     <Compile Include="DataModel\Environment.cs" />
     <Compile Include="DataModel\ForeignKeyConstraint.cs" />
     <Compile Include="ParseException.cs" />
