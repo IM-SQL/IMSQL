@@ -16,7 +16,7 @@ namespace MemSQL.Test
         {
             var db = new Database();
             DataTable table = db.AddTable("TBL");
-            table.Columns.Add(new DataColumn("ID", typeof(int)));
+            table.AddColumn(new DataColumn("ID", typeof(int)));
 
             var row = table.NewRow();
             row["ID"] = 3;

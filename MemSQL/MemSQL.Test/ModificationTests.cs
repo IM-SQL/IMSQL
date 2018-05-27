@@ -16,7 +16,7 @@ namespace MemSQL.Test
         {
             var db = new Database();
             DataTable table = db.AddTable("TBL");
-            table.Columns.Add(new DataColumn("ID", typeof(int)));
+            table.AddColumn(new DataColumn("ID", typeof(int)));
 
             var row = table.NewRow();
             row["ID"] = 3;
@@ -36,7 +36,7 @@ namespace MemSQL.Test
         {
             var db = new Database();
             DataTable table = db.AddTable("TBL");
-            table.Columns.Add(new DataColumn("ID", typeof(int)));
+            table.AddColumn(new DataColumn("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
                 var row = table.NewRow();
@@ -60,7 +60,7 @@ namespace MemSQL.Test
         {
             var db = new Database();
             DataTable table = db.AddTable("TBL");
-            table.Columns.Add(new DataColumn("ID", typeof(int)));
+            table.AddColumn(new DataColumn("ID", typeof(int)));
 
             var row = table.NewRow();
             row["ID"] = 3;
@@ -80,7 +80,7 @@ namespace MemSQL.Test
         {
             var db = new Database();
             DataTable table = db.AddTable("TBL");
-            table.Columns.Add(new DataColumn("ID", typeof(string)));
+            table.AddColumn(new DataColumn("ID", typeof(string)));
 
             var row = table.NewRow();
             row["ID"] = "hola";
@@ -100,7 +100,7 @@ namespace MemSQL.Test
         {
             var db = new Database();
             DataTable table = db.AddTable("TBL");
-            table.Columns.Add(new DataColumn("ID", typeof(string)));
+            table.AddColumn(new DataColumn("ID", typeof(string)));
 
             var row = table.NewRow();
             row["ID"] = "hola";
@@ -120,7 +120,7 @@ namespace MemSQL.Test
         {
             var db = new Database();
             DataTable table = db.AddTable("TBL");
-            table.Columns.Add(new DataColumn("ID", typeof(int)));
+            table.AddColumn(new DataColumn("ID", typeof(int)));
 
             var row = table.NewRow();
             row["ID"] = 3;
@@ -140,7 +140,7 @@ namespace MemSQL.Test
         {
             var db = new Database();
             DataTable table = db.AddTable("TBL");
-            table.Columns.Add(new DataColumn("ID", typeof(int)));
+            table.AddColumn(new DataColumn("ID", typeof(int)));
 
             var row = table.NewRow();
             row["ID"] = 3;
@@ -160,7 +160,7 @@ namespace MemSQL.Test
         {
             var db = new Database();
             DataTable table = db.AddTable("TBL");
-            table.Columns.Add(new DataColumn("ID", typeof(int)));
+            table.AddColumn(new DataColumn("ID", typeof(int)));
 
             var row = table.NewRow();
             row["ID"] = 10;
@@ -180,7 +180,7 @@ namespace MemSQL.Test
         {
             var db = new Database();
             DataTable table = db.AddTable("TBL");
-            table.Columns.Add(new DataColumn("ID", typeof(int)));
+            table.AddColumn(new DataColumn("ID", typeof(int)));
 
             var row = table.NewRow();
             row["ID"] = 10;
@@ -200,7 +200,7 @@ namespace MemSQL.Test
         {
             var db = new Database();
             DataTable table = db.AddTable("TBL");
-            table.Columns.Add(new DataColumn("ID", typeof(int)));
+            table.AddColumn(new DataColumn("ID", typeof(int)));
 
             var row = table.NewRow();
             row["ID"] = 5;
@@ -220,7 +220,7 @@ namespace MemSQL.Test
         {
             var db = new Database();
             DataTable table = db.AddTable("TBL");
-            table.Columns.Add(new DataColumn("ID", typeof(int)));
+            table.AddColumn(new DataColumn("ID", typeof(int)));
 
             var row = table.NewRow();
             row["ID"] = 4;
@@ -240,7 +240,7 @@ namespace MemSQL.Test
         {
             var db = new Database();
             DataTable table = db.AddTable("TBL");
-            table.Columns.Add(new DataColumn("ID", typeof(int)));
+            table.AddColumn(new DataColumn("ID", typeof(int)));
 
             var row = table.NewRow();
             row["ID"] = 7;
@@ -260,7 +260,7 @@ namespace MemSQL.Test
         {
             var db = new Database();
             DataTable table = db.AddTable("TBL");
-            table.Columns.Add(new DataColumn("ID", typeof(int)));
+            table.AddColumn(new DataColumn("ID", typeof(int)));
             for (int i = 0; i < 200; i++)
             {
                 var row = table.NewRow();
@@ -288,7 +288,7 @@ namespace MemSQL.Test
         {
             var db = new Database();
             DataTable table = db.AddTable("TBL");
-            table.Columns.Add(new DataColumn("ID", typeof(int)));
+            table.AddColumn(new DataColumn("ID", typeof(int)));
             for (int i = 0; i < 200; i++)
             {
                 var row = table.NewRow();
@@ -315,7 +315,7 @@ namespace MemSQL.Test
         {
             var db = new Database();
             DataTable table = db.AddTable("TBL");
-            table.Columns.Add(new DataColumn("ID", typeof(int)));
+            table.AddColumn(new DataColumn("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
                 var row = table.NewRow();

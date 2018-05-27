@@ -10,6 +10,7 @@ namespace MemSQL
     public class DataTable
     {
         private long? identity = null;
+        private List<DataColumn> columns = new List<DataColumn>();
 
         public DataTable(Database database) : this(null, database) {}
 
@@ -18,7 +19,6 @@ namespace MemSQL
             TableName = tableName;
             Database = database;
             Rows = new DataRowCollection(this);
-            Columns = new DataColumnCollection(this);
         }
 
         // TODO(Richo): I would like to make TableName read-only.
@@ -26,7 +26,7 @@ namespace MemSQL
 
         public Database Database { get; }
         public DataRowCollection Rows { get; }
-        public DataColumnCollection Columns { get; }
+        public IEnumerable<DataColumn> Columns { get { return columns; } }
 
         public DataColumn[] PrimaryKey
         {
@@ -38,7 +38,7 @@ namespace MemSQL
                     .Where(constraint => constraint.IsPrimaryKey)
                     .SelectMany(constraint => constraint.Columns)
                     .Distinct()
-                    .OrderBy(column => Columns.IndexOf(column.ColumnName))
+                    .OrderBy(column => columns.IndexOf(column))
                     .ToArray();
             }
             set
@@ -47,6 +47,40 @@ namespace MemSQL
                 var constraint = new UniqueConstraint("", value, true);
                 Database.AddConstraint(constraint);
             }
+        }
+
+        public DataColumn GetColumn(int columnIndex)
+        {
+            return columns[columnIndex];
+        }
+
+        public DataColumn GetColumn(string columnName)
+        {
+            return columns.FirstOrDefault(col => Equals(columnName, col.ColumnName));
+        }
+
+        public int IndexOfColumn(string columnName)
+        {
+            return columns.FindIndex(col => Equals(columnName, col.ColumnName));
+        }
+
+        public bool ContainsColumn(string columnName)
+        {
+            return columns.Any(col => Equals(columnName, col.ColumnName));
+        }
+
+        public void AddColumns(IEnumerable<DataColumn> cols)
+        {
+            foreach (var col in cols)
+            {
+                AddColumn(col);
+            }
+        }
+
+        public void AddColumn(DataColumn col)
+        {
+            col.Table = this;
+            columns.Add(col);
         }
 
         public DataRow NewRow()

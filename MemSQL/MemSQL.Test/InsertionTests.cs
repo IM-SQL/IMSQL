@@ -16,7 +16,7 @@ namespace MemSQL.Test
         {
             var db = new Database();
             DataTable table = db.AddTable("TBL");
-            table.Columns.Add(new DataColumn("ID", typeof(int)));
+            table.AddColumn(new DataColumn("ID", typeof(int)));
             string query = "Insert into [TBL] values(3)";
 
             SQLInterpreter interpreter = new SQLInterpreter(db);
@@ -33,8 +33,8 @@ namespace MemSQL.Test
         {
             var db = new Database();
             DataTable table = db.AddTable("TBL");
-            table.Columns.Add(new DataColumn("A", typeof(int)));
-            table.Columns.Add(new DataColumn("B", typeof(string)));
+            table.AddColumn(new DataColumn("A", typeof(int)));
+            table.AddColumn(new DataColumn("B", typeof(string)));
             string query = "Insert into [TBL] values(3,'asd')";
 
             SQLInterpreter interpreter = new SQLInterpreter(db);
@@ -52,11 +52,11 @@ namespace MemSQL.Test
         {
             var db = new Database();
             DataTable table = db.AddTable("TBL");
-            table.Columns.Add(new DataColumn("A", typeof(int)));
+            table.AddColumn(new DataColumn("A", typeof(int)));
 
-            table.Columns["A"].AutoIncrement = true;
-            table.Columns["A"].AutoIncrementSeed = 1;
-            table.Columns["A"].AutoIncrementStep = 1;
+            table.GetColumn("A").AutoIncrement = true;
+            table.GetColumn("A").AutoIncrementSeed = 1;
+            table.GetColumn("A").AutoIncrementStep = 1;
             string query = "Insert into [TBL](A) values(3)";
 
             SQLInterpreter interpreter = new SQLInterpreter(db);
@@ -76,9 +76,9 @@ namespace MemSQL.Test
         {
             var db = new Database();
             DataTable table = db.AddTable("TBL");
-            table.Columns.Add(new DataColumn("A", typeof(int)));
-            table.Columns.Add(new DataColumn("B", typeof(int)));
-            table.Columns["B"].DefaultValue = 5;
+            table.AddColumn(new DataColumn("A", typeof(int)));
+            table.AddColumn(new DataColumn("B", typeof(int)));
+            table.GetColumn("B").DefaultValue = 5;
             string query = "Insert into [TBL](A) values(3)";
 
             SQLInterpreter interpreter = new SQLInterpreter(db);
@@ -95,8 +95,8 @@ namespace MemSQL.Test
         {
             var db = new Database();
             DataTable table = db.AddTable("TBL");
-            table.Columns.Add(new DataColumn("A", typeof(int)));
-            table.Columns[0].AllowDBNull = true;
+            table.AddColumn(new DataColumn("A", typeof(int)));
+            table.GetColumn(0).AllowDBNull = true;
             string query = "Insert into [TBL] values(NULL)";
 
             SQLInterpreter interpreter = new SQLInterpreter(db);
@@ -113,8 +113,8 @@ namespace MemSQL.Test
         {
             var db = new Database();
             DataTable table = db.AddTable("TBL");
-            table.Columns.Add(new DataColumn("A", typeof(int)));
-            table.Columns.Add(new DataColumn("B", typeof(int)));
+            table.AddColumn(new DataColumn("A", typeof(int)));
+            table.AddColumn(new DataColumn("B", typeof(int)));
             string query = "Insert into [TBL](B,A) values(2,1)";
 
             SQLInterpreter interpreter = new SQLInterpreter(db);
@@ -132,10 +132,10 @@ namespace MemSQL.Test
         {
             var db = new Database();
             DataTable table = db.AddTable("TBL");
-            table.Columns.Add(new DataColumn("A", typeof(int)));
-            table.Columns.Add(new DataColumn("B", typeof(int)));
-            table.Columns.Add(new DataColumn("C", typeof(int)));
-            table.Columns["C"].AllowDBNull = true;
+            table.AddColumn(new DataColumn("A", typeof(int)));
+            table.AddColumn(new DataColumn("B", typeof(int)));
+            table.AddColumn(new DataColumn("C", typeof(int)));
+            table.GetColumn("C").AllowDBNull = true;
             string query = "Insert into [TBL](B,A) values(2,1)";
 
             SQLInterpreter interpreter = new SQLInterpreter(db);
@@ -164,8 +164,8 @@ namespace MemSQL.Test
 
             var db = new Database();
             DataTable table = db.AddTable("TBL");
-            table.Columns.Add(new DataColumn("A", typeof(int)));
-            table.Columns.Add(new DataColumn("B", typeof(int)));
+            table.AddColumn(new DataColumn("A", typeof(int)));
+            table.AddColumn(new DataColumn("B", typeof(int)));
 
             string query =
                 string.Format(
@@ -189,8 +189,8 @@ namespace MemSQL.Test
         {
             var db = new Database();
             DataTable table = db.AddTable("TBL");
-            table.Columns.Add(new DataColumn("A", typeof(int)));
-            table.Columns.Add(new DataColumn("B", typeof(int)));
+            table.AddColumn(new DataColumn("A", typeof(int)));
+            table.AddColumn(new DataColumn("B", typeof(int)));
             string query = "Insert into [TBL] values(3)";
 
             SQLInterpreter interpreter = new SQLInterpreter(db);
@@ -210,9 +210,9 @@ namespace MemSQL.Test
         {
             var db = new Database();
             DataTable table = db.AddTable("TBL");
-            table.Columns.Add(new DataColumn("A", typeof(int)));
-            table.Columns.Add(new DataColumn("B", typeof(int)));
-            table.Columns["A"].DefaultValue = 5;
+            table.AddColumn(new DataColumn("A", typeof(int)));
+            table.AddColumn(new DataColumn("B", typeof(int)));
+            table.GetColumn("A").DefaultValue = 5;
             string query = "Insert into [TBL] values(3)";
 
             SQLInterpreter interpreter = new SQLInterpreter(db);
@@ -232,11 +232,11 @@ namespace MemSQL.Test
         {
             var db = new Database();
             DataTable table = db.AddTable("TBL");
-            table.Columns.Add(new DataColumn("A", typeof(int)));
-            table.Columns.Add(new DataColumn("B", typeof(string)));
-            table.Columns["A"].AutoIncrement = true;
-            table.Columns["A"].AutoIncrementSeed = 1;
-            table.Columns["A"].AutoIncrementStep = 1;
+            table.AddColumn(new DataColumn("A", typeof(int)));
+            table.AddColumn(new DataColumn("B", typeof(string)));
+            table.GetColumn("A").AutoIncrement = true;
+            table.GetColumn("A").AutoIncrementSeed = 1;
+            table.GetColumn("A").AutoIncrementStep = 1;
 
             string query = "Insert into [TBL] values('asd')";
 

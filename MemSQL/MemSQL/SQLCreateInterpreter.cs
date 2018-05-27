@@ -32,7 +32,7 @@ namespace MemSQL
                 {
                     foreach (var constraint in cd.Constraints)
                     {
-                        var column = table.Columns[cd.ColumnIdentifier.Value];
+                        var column = table.GetColumn(cd.ColumnIdentifier.Value);
                         Visit<Action<DataTable, DataColumn>>(constraint)?.Invoke(table, column);
                     }
                 }
@@ -60,7 +60,7 @@ namespace MemSQL
             {
                 throw new ArgumentException("Only one identity column per table is allowed");
             }
-            result.Columns.AddRange(columns);
+            result.AddColumns(columns);
             return result;
         }
 
@@ -118,14 +118,14 @@ namespace MemSQL
                  * In those cases we rely on the "column" argument.
                  */
                 DataColumn[] columns;
-                if (node.Columns == null || node.Columns.Count == 0)
+                if (node.Columns == null || node.Columns.Count() == 0)
                 {
                     columns = new[] { column };
                 }
                 else
                 {
                     columns = node.Columns
-                        .Select(c => table.Columns[Visit<string[]>(c.Column.MultiPartIdentifier).Last()])
+                        .Select(c => table.GetColumn(Visit<string[]>(c.Column.MultiPartIdentifier).Last()))
                         .ToArray();
                 }
 
@@ -200,7 +200,7 @@ namespace MemSQL
                 DataColumn[] parents = node.ReferencedTableColumns
                     .Select(c =>
                     {
-                        var dc = refTable.Columns[c.Value];
+                        var dc = refTable.GetColumn(c.Value);
                         if (dc == null)
                         {
                             var msg = string.Format("Foreign key '{0}' references invalid column '{1}' in referenced table '{2}'",
@@ -214,7 +214,7 @@ namespace MemSQL
                 DataColumn[] children = node.Columns
                     .Select(c =>
                     {
-                        var dc = table.Columns[c.Value];
+                        var dc = table.GetColumn(c.Value);
                         if (dc == null)
                         {
                             var msg = string.Format("Foreign key '{0}' references invalid column '{1}' in referencing table '{2}'",

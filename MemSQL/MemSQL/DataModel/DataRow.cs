@@ -14,18 +14,18 @@ namespace MemSQL
         public DataRow(DataTable table)
         {
             Table = table;
-            currentValues = new object[table.Columns.Count];
+            currentValues = new object[table.Columns.Count()];
         }
 
         public DataTable Table { get; }
 
         public object this[string name]
         {
-            get { return currentValues[Table.Columns.IndexOf(name)]; }
+            get { return currentValues[Table.IndexOfColumn(name)]; }
             set
             {
-                var column = Table.Columns[name];
-                int index = Table.Columns.IndexOf(name);
+                var column = Table.GetColumn(name);
+                int index = Table.IndexOfColumn(name);
                 var oldValue = currentValues[index];
                 if (value == null) { value = DBNull.Value; }
                 try

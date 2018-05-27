@@ -20,12 +20,12 @@ namespace MemSQL.Test.Structural
             Assert.AreEqual(0, result.RowsAffected);
             Assert.IsTrue(db.ContainsTable("TBL"), "The table must be created");
             var table = db.GetTable("TBL");
-            Assert.IsTrue(table.Columns.Contains("col1"));
-            Assert.AreEqual(typeof(int), table.Columns["col1"].DataType);
-            Assert.IsTrue(table.Columns.Contains("col2"));
-            Assert.AreEqual(typeof(string), table.Columns["col2"].DataType);
-            Assert.IsTrue(table.Columns.Contains("col3"));
-            Assert.AreEqual(typeof(bool), table.Columns["col3"].DataType);
+            Assert.IsTrue(table.ContainsColumn("col1"));
+            Assert.AreEqual(typeof(int), table.GetColumn("col1").DataType);
+            Assert.IsTrue(table.ContainsColumn("col2"));
+            Assert.AreEqual(typeof(string), table.GetColumn("col2").DataType);
+            Assert.IsTrue(table.ContainsColumn("col3"));
+            Assert.AreEqual(typeof(bool), table.GetColumn("col3").DataType);
         }
 
         [TestMethod]
@@ -44,18 +44,18 @@ namespace MemSQL.Test.Structural
             Assert.AreEqual(0, result.RowsAffected);
             Assert.IsTrue(db.ContainsTable("CUSTOMERS"), "The table must be created");
             var table = db.GetTable("CUSTOMERS");
-            Assert.IsTrue(table.Columns.Contains("ID"));
-            Assert.AreEqual(typeof(int), table.Columns["ID"].DataType);
-            Assert.IsTrue(table.Columns.Contains("NAME"));
-            Assert.AreEqual(typeof(string), table.Columns["NAME"].DataType);
-            Assert.IsTrue(table.Columns.Contains("BIRTHDAY"));
-            Assert.AreEqual(typeof(DateTime), table.Columns["BIRTHDAY"].DataType);
-            Assert.IsTrue(table.Columns.Contains("ADDRESS"));
-            Assert.AreEqual(typeof(string), table.Columns["ADDRESS"].DataType);
-            Assert.IsTrue(table.Columns.Contains("SALARY"));
-            Assert.AreEqual(typeof(decimal), table.Columns["SALARY"].DataType);
+            Assert.IsTrue(table.ContainsColumn("ID"));
+            Assert.AreEqual(typeof(int), table.GetColumn("ID").DataType);
+            Assert.IsTrue(table.ContainsColumn("NAME"));
+            Assert.AreEqual(typeof(string), table.GetColumn("NAME").DataType);
+            Assert.IsTrue(table.ContainsColumn("BIRTHDAY"));
+            Assert.AreEqual(typeof(DateTime), table.GetColumn("BIRTHDAY").DataType);
+            Assert.IsTrue(table.ContainsColumn("ADDRESS"));
+            Assert.AreEqual(typeof(string), table.GetColumn("ADDRESS").DataType);
+            Assert.IsTrue(table.ContainsColumn("SALARY"));
+            Assert.AreEqual(typeof(decimal), table.GetColumn("SALARY").DataType);
             Assert.IsTrue(table.PrimaryKey.Length == 1, "The Primary Key is missing!");
-            Assert.AreEqual(table.Columns["ID"], table.PrimaryKey[0]);
+            Assert.AreEqual(table.GetColumn("ID"), table.PrimaryKey[0]);
         }
 
         [TestMethod]
@@ -71,12 +71,12 @@ namespace MemSQL.Test.Structural
             Assert.AreEqual(0, result.RowsAffected);
             Assert.IsTrue(db.ContainsTable("TBL"), "The table must be created");
             var table = db.GetTable("TBL");
-            Assert.IsTrue(table.Columns.Contains("col1"));
-            Assert.AreEqual(typeof(int), table.Columns["col1"].DataType);
-            Assert.IsTrue(table.Columns.Contains("col2"));
-            Assert.AreEqual(typeof(string), table.Columns["col2"].DataType);
-            Assert.IsTrue(table.Columns.Contains("col3"));
-            Assert.AreEqual(typeof(bool), table.Columns["col3"].DataType);
+            Assert.IsTrue(table.ContainsColumn("col1"));
+            Assert.AreEqual(typeof(int), table.GetColumn("col1").DataType);
+            Assert.IsTrue(table.ContainsColumn("col2"));
+            Assert.AreEqual(typeof(string), table.GetColumn("col2").DataType);
+            Assert.IsTrue(table.ContainsColumn("col3"));
+            Assert.AreEqual(typeof(bool), table.GetColumn("col3").DataType);
 
             var dr = table.NewRow();
             Assert.AreEqual(3, dr["col1"], "The default value was not present on the row");
@@ -94,12 +94,12 @@ namespace MemSQL.Test.Structural
             Assert.AreEqual(0, result.RowsAffected);
             Assert.IsTrue(db.ContainsTable("TBL"), "The table must be created");
             var table = db.GetTable("TBL");
-            Assert.IsTrue(table.Columns.Contains("col1"));
-            Assert.AreEqual(typeof(int), table.Columns["col1"].DataType);
-            Assert.IsFalse(table.Columns["col1"].AllowDBNull, "This column should not allow nulls");
-            Assert.IsTrue(table.Columns.Contains("col2"));
-            Assert.AreEqual(typeof(int), table.Columns["col2"].DataType);
-            Assert.IsTrue(table.Columns["col2"].AllowDBNull, "This column should allow nulls");
+            Assert.IsTrue(table.ContainsColumn("col1"));
+            Assert.AreEqual(typeof(int), table.GetColumn("col1").DataType);
+            Assert.IsFalse(table.GetColumn("col1").AllowDBNull, "This column should not allow nulls");
+            Assert.IsTrue(table.ContainsColumn("col2"));
+            Assert.AreEqual(typeof(int), table.GetColumn("col2").DataType);
+            Assert.IsTrue(table.GetColumn("col2").AllowDBNull, "This column should allow nulls");
         }
 
         [TestMethod]
@@ -112,10 +112,10 @@ namespace MemSQL.Test.Structural
             Assert.AreEqual(0, result.RowsAffected);
             Assert.IsTrue(db.ContainsTable("TBL"), "The table must be created");
             var table = db.GetTable("TBL");
-            Assert.IsTrue(table.Columns.Contains("ID"));
-            Assert.AreEqual(typeof(int), table.Columns["ID"].DataType);
+            Assert.IsTrue(table.ContainsColumn("ID"));
+            Assert.AreEqual(typeof(int), table.GetColumn("ID").DataType);
             Assert.IsTrue(table.PrimaryKey.Length == 1, "The Primary Key is missing!");
-            Assert.AreEqual(table.Columns["ID"], table.PrimaryKey[0]);
+            Assert.AreEqual(table.GetColumn("ID"), table.PrimaryKey[0]);
 
             for (int i = 1; i < 10; i++)
             {
@@ -134,10 +134,10 @@ namespace MemSQL.Test.Structural
             Assert.AreEqual(0, result.RowsAffected);
             Assert.IsTrue(db.ContainsTable("TBL"), "The table must be created");
             var table = db.GetTable("TBL");
-            Assert.IsTrue(table.Columns.Contains("ID"));
-            Assert.AreEqual(typeof(int), table.Columns["ID"].DataType);
+            Assert.IsTrue(table.ContainsColumn("ID"));
+            Assert.AreEqual(typeof(int), table.GetColumn("ID").DataType);
             Assert.IsTrue(table.PrimaryKey.Length == 1, "The Primary Key is missing!");
-            Assert.AreEqual(table.Columns["ID"], table.PrimaryKey[0]);
+            Assert.AreEqual(table.GetColumn("ID"), table.PrimaryKey[0]);
         }
 
         [TestMethod]
@@ -173,15 +173,15 @@ namespace MemSQL.Test.Structural
             Assert.AreEqual(0, result.RowsAffected);
             Assert.IsTrue(db.ContainsTable("TBL"), "The table must be created");
             var table = db.GetTable("TBL");
-            Assert.IsTrue(table.Columns.Contains("ID1"));
-            Assert.AreEqual(typeof(int), table.Columns["ID1"].DataType);
+            Assert.IsTrue(table.ContainsColumn("ID1"));
+            Assert.AreEqual(typeof(int), table.GetColumn("ID1").DataType);
 
-            Assert.IsTrue(table.Columns.Contains("ID2"));
-            Assert.AreEqual(typeof(int), table.Columns["ID2"].DataType);
+            Assert.IsTrue(table.ContainsColumn("ID2"));
+            Assert.AreEqual(typeof(int), table.GetColumn("ID2").DataType);
 
             Assert.IsTrue(table.PrimaryKey.Length == 2, "The Primary Key is missing!");
-            Assert.AreEqual(table.Columns["ID1"], table.PrimaryKey[0]);
-            Assert.AreEqual(table.Columns["ID2"], table.PrimaryKey[1]);
+            Assert.AreEqual(table.GetColumn("ID1"), table.PrimaryKey[0]);
+            Assert.AreEqual(table.GetColumn("ID2"), table.PrimaryKey[1]);
         }
 
         [TestMethod]
@@ -194,10 +194,10 @@ namespace MemSQL.Test.Structural
             Assert.AreEqual(0, result.RowsAffected);
             Assert.IsTrue(db.ContainsTable("TBL"), "The table must be created");
             var table = db.GetTable("TBL");
-            Assert.IsTrue(table.Columns.Contains("col1"));
-            Assert.AreEqual(typeof(int), table.Columns["col1"].DataType);
+            Assert.IsTrue(table.ContainsColumn("col1"));
+            Assert.AreEqual(typeof(int), table.GetColumn("col1").DataType);
             Assert.IsTrue(table.PrimaryKey.Length == 1, "The Primary Key is missing!");
-            Assert.AreEqual(table.Columns["col1"], table.PrimaryKey[0]);
+            Assert.AreEqual(table.GetColumn("col1"), table.PrimaryKey[0]);
 
             visitor = new SQLInterpreter(db);
             string script2 = "Create table [TBL2](col2 int NOT NULL,PRIMARY KEY (col2), " +
@@ -206,10 +206,10 @@ namespace MemSQL.Test.Structural
             result = visitor.Execute(script2);
             Assert.IsTrue(db.ContainsTable("TBL2"), "The table must be created");
             var table2 = db.GetTable("TBL2");
-            Assert.IsTrue(table2.Columns.Contains("col2"));
-            Assert.AreEqual(typeof(int), table2.Columns["col2"].DataType);
+            Assert.IsTrue(table2.ContainsColumn("col2"));
+            Assert.AreEqual(typeof(int), table2.GetColumn("col2").DataType);
             Assert.IsTrue(table2.PrimaryKey.Length == 1, "The Primary Key is missing!");
-            Assert.AreEqual(table2.Columns["col2"], table2.PrimaryKey[0]);
+            Assert.AreEqual(table2.GetColumn("col2"), table2.PrimaryKey[0]);
             
             Assert.AreEqual(2, db.Constraints.Count(c => Equals(table2, c.Table)), 
                 "Either the PK or the FK are missing");
@@ -240,10 +240,10 @@ namespace MemSQL.Test.Structural
             Assert.AreEqual(0, result.RowsAffected);
             Assert.IsTrue(db.ContainsTable("TBL"), "The table must be created");
             var table = db.GetTable("TBL");
-            Assert.IsTrue(table.Columns.Contains("num"));
-            Assert.AreEqual(typeof(int), table.Columns["num"].DataType);
-            Assert.IsTrue(table.Columns.Contains("calc"));
-            Assert.AreEqual(typeof(int), table.Columns["calc"].DataType);
+            Assert.IsTrue(table.ContainsColumn("num"));
+            Assert.AreEqual(typeof(int), table.GetColumn("num").DataType);
+            Assert.IsTrue(table.ContainsColumn("calc"));
+            Assert.AreEqual(typeof(int), table.GetColumn("calc").DataType);
             var dr1 = table.NewRow();
             dr1["num"] = 1;
             Assert.AreEqual(3, dr1["calc"]);
@@ -354,7 +354,7 @@ namespace MemSQL.Test.Structural
 
             var table = db.GetTable("Client");
             Assert.IsNotNull(table, "The table should be created");
-            var col = table.Columns["Id"];
+            var col = table.GetColumn("Id");
             Assert.IsNotNull(col, "The PK should be valid");
             Assert.IsTrue(col.AutoIncrement, "Autoincrement should be set");
             Assert.AreEqual(1, col.AutoIncrementSeed, "Autoincrement seed should be 1");
@@ -386,7 +386,7 @@ namespace MemSQL.Test.Structural
             string[] cols = new[] { "Id", "Name", "ExternalId", "InternalId" };
             for (int i = 0; i < cols.Length; i++)
             {
-                var col = table.Columns[cols[i]];
+                var col = table.GetColumn(cols[i]);
                 Assert.IsNotNull(col, "The column should exist");
                 Assert.IsTrue(col.Unique, "Unique constraint should be set");
                 Assert.IsFalse(col.AllowDBNull, "The column should not allow null");
@@ -422,7 +422,7 @@ namespace MemSQL.Test.Structural
             string[] cols = new[] { "Id", "Name", "ExternalId", "InternalId" };
             for (int i = 0; i < cols.Length; i++)
             {
-                var col = table.Columns[cols[i]];
+                var col = table.GetColumn(cols[i]);
                 Assert.IsNotNull(col, "The column should exist");
                 Assert.IsTrue(col.Unique, "Unique constraint should be set");
                 Assert.IsFalse(col.AllowDBNull, "The column should not allow null");
@@ -503,7 +503,7 @@ namespace MemSQL.Test.Structural
             visitor.Execute(script);
 
             var table = db.GetTable("TBL");
-            Assert.IsTrue(table.Columns["bar"].Unique, "Column should be unique");
+            Assert.IsTrue(table.GetColumn("bar").Unique, "Column should be unique");
 
             {
                 var row = table.NewRow();
@@ -543,11 +543,11 @@ namespace MemSQL.Test.Structural
             visitor.Execute(script);
 
             var table = db.GetTable("TBL");
-            Assert.IsTrue(table.Columns["id"].Unique, "Column should be unique");
-            CollectionAssert.AreEqual(new[] { table.Columns["id"] }, table.PrimaryKey,
+            Assert.IsTrue(table.GetColumn("id").Unique, "Column should be unique");
+            CollectionAssert.AreEqual(new[] { table.GetColumn("id") }, table.PrimaryKey,
                 "PK should be valid");
             Assert.IsTrue(db.Constraints.OfType<UniqueConstraint>()
-                .Where(c => c.Columns.SequenceEqual(new[] { table.Columns["id"], table.Columns["foo"] })).Any(),
+                .Where(c => c.Columns.SequenceEqual(new[] { table.GetColumn("id"), table.GetColumn("foo") })).Any(),
                 "Composite unique key should exist");
         }
 

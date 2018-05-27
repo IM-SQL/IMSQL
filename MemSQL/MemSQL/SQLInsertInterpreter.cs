@@ -29,17 +29,17 @@ namespace MemSQL
             if (providedColumns.Count == 0)
             {
                 providedColumns = new List<string>();
-                for (int i = 0; i < table.Columns.Count; i++)
+                for (int i = 0; i < table.Columns.Count(); i++)
                 {
-                    if (!table.Columns[i].AutoIncrement)
+                    if (!table.GetColumn(i).AutoIncrement)
                     {
-                        providedColumns.Add(table.Columns[i].ColumnName);
+                        providedColumns.Add(table.GetColumn(i).ColumnName);
                     }
                 }
             }
             else
             {
-                if (providedColumns.Any(name => table.Columns[name].AutoIncrement))
+                if (providedColumns.Any(name => table.GetColumn(name).AutoIncrement))
                 {
                     throw new InvalidOperationException("Cannot insert explicit value for identity column");
                 }
