@@ -144,38 +144,13 @@ namespace MemSQL
                     }
                 }
 
-                if (isPK)
+                if (isPK && table.PrimaryKey.Length > 0)
                 {
-                    if (table.PrimaryKey.Length > 0)
-                    {
-                        var msg = string.Format("Cannot add multiple PRIMARY KEY constraints to table '{0}'", table.TableName);
-                        throw new ArgumentException(msg);
-                    }
-                    else
-                    {
-                        table.PrimaryKey = columns;
-                        Database.Constraints
-                            .OfType<UniqueConstraint>()
-                            .Where(c => Equals(table, c.Table))
-                            .First(c => c.Columns.SequenceEqual(columns))
-                            .ConstraintName = name;
-                    }
+                    var msg = string.Format("Cannot add multiple PRIMARY KEY constraints to table '{0}'", table.TableName);
+                    throw new ArgumentException(msg);
                 }
-                else
-                {
-                    var existing = Database.Constraints
-                        .OfType<UniqueConstraint>()
-                        .Where(c => Equals(table, c.Table))
-                        .FirstOrDefault(c => c.Columns.SequenceEqual(columns));
-                    if (existing != null)
-                    {
-                        existing.ConstraintName = name;
-                    }
-                    else
-                    {
-                        Database.AddConstraint(new UniqueConstraint(name, columns, isPK));
-                    }
-                }
+
+                Database.AddConstraint(new UniqueConstraint(name, columns, isPK));
             };
             return applier;
         }
