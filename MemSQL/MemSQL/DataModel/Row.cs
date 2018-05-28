@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MemSQL.DataModel;
+using MemSQL.DataModel.Fields;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -9,28 +11,31 @@ namespace MemSQL
 {
     public class Row
     {
-        private object[] values;
+        private Field[] values;
 
         public Row(Table table)
         {
             Table = table;
-            values = new object[table.Columns.Count()];
+            values = table.Columns
+                .Select(col => col.NewField())
+                .ToArray();
         }
 
         public Table Table { get; }
 
         public object this[string name]
         {
-            get { return values[Table.IndexOfColumn(name)]; }
+            get { return values[Table.IndexOfColumn(name)].Value; }
             set
             {
                 int index = Table.IndexOfColumn(name);
                 var column = Table.GetColumn(index);
-                var oldValue = values[index];
+                var field = values[index];
+                var oldValue = field.Value;
                 if (value == null) { value = DBNull.Value; }
                 try
                 {
-                    values[index] = value == DBNull.Value ? value : Convert.ChangeType(value, column.DataType);
+                    field.Value = value == DBNull.Value ? value : Convert.ChangeType(value, column.DataType);
                     foreach (var constraint in Table.Database.Constraints)
                     {
                         constraint.OnUpdate(this, index, oldValue);
@@ -38,7 +43,7 @@ namespace MemSQL
                 }
                 catch
                 {
-                    values[index] = oldValue;
+                    field.Value = oldValue;
                     throw;
                 }
             }
@@ -53,7 +58,16 @@ namespace MemSQL
         public object[] ItemArray
         {
             get { return values; }
-            set { values = value; }
+            set
+            {
+                //TODO: validation of the length?
+                for (int i = 0; i < value.Length; i++)
+                {
+                    values[i].Value = value[i];
+
+                }
+
+            }
         }
 
         public void Delete()

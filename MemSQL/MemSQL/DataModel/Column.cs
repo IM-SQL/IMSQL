@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MemSQL.DataModel;
+using MemSQL.DataModel.Fields;
 
 namespace MemSQL
 {
@@ -19,6 +21,37 @@ namespace MemSQL
         }
 
         public Table Table { get; set; }
+        private long? identity = null;
+
+        internal Field NewField()
+        {
+
+            if (AutoIncrement)
+            {
+                identity = identity.HasValue ? identity + AutoIncrementStep : AutoIncrementSeed;
+                return new IdentityField(ColumnName, DataType, identity);
+            }
+            else if (AllowDBNull)
+            {
+                return new NullableField(ColumnName, DataType);
+            }
+            else if (DefaultValue != null)
+            {
+                return new Field(ColumnName, DataType, DefaultValue);
+            }
+            //TODO: i think we should not be able to create rows that reach this point.
+
+            return new Field(ColumnName, DataType, GetDefault(DataType));
+        
+        }
+        private object GetDefault(Type type)
+        {
+            if (type.IsValueType)
+            {
+                return Activator.CreateInstance(type);
+            }
+            return null;
+        }
         public string ColumnName { get; }
         public Type DataType { get; }
         public bool AllowDBNull { get; set; }

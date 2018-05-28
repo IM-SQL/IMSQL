@@ -9,7 +9,6 @@ namespace MemSQL
 {
     public class Table
     {
-        private long? identity = null;
         private List<Row> rows = new List<Row>();
         private List<Column> columns = new List<Column>();
 
@@ -92,24 +91,8 @@ namespace MemSQL
 
         public Row NewRow()
         {
-            var row = new Row(this);
-            foreach (var col in Columns)
-            {
-                if (col.AutoIncrement)
-                {
-                    identity = identity.HasValue ? identity + col.AutoIncrementStep : col.AutoIncrementSeed;
-                    row[col.ColumnName] = identity;
-                }
-                else if (col.DefaultValue != null)
-                {
-                    row[col.ColumnName] = col.DefaultValue;
-                }
-                else if (col.AllowDBNull)
-                {
-                    row[col.ColumnName] = DBNull.Value;
-                }
-            }
-            return row;
+            return new Row(this);
+         
         }
 
         public void AddRow(params object[] items)

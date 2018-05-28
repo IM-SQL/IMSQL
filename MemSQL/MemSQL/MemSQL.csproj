@@ -47,6 +47,9 @@
     <Compile Include="DataModel\ConstraintException.cs" />
     <Compile Include="DataModel\Database.cs" />
     <Compile Include="DataModel\Column.cs" />
+    <Compile Include="DataModel\Fields\Field.cs" />
+    <Compile Include="DataModel\Fields\IdentityField.cs" />
+    <Compile Include="DataModel\Fields\NullableField.cs" />
     <Compile Include="DataModel\Row.cs" />
     <Compile Include="DataModel\Table.cs" />
     <Compile Include="DataModel\Environment.cs" />
