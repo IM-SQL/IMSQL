@@ -35,7 +35,7 @@ namespace MemSQL
                 if (value == null) { value = DBNull.Value; }
                 try
                 {
-                    field.Value = value == DBNull.Value ? value : Convert.ChangeType(value, column.DataType);
+                    field.Value = value ;
                     foreach (var constraint in Table.Database.Constraints)
                     {
                         constraint.OnUpdate(this, index, oldValue);
