@@ -1,4 +1,5 @@
-﻿using Microsoft.SqlServer.TransactSql.ScriptDom;
+﻿using MemSQL.DataModel.Views;
+using Microsoft.SqlServer.TransactSql.ScriptDom;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -46,7 +47,7 @@ namespace MemSQL
                 Database.RemoveTable(table);
                 throw;
             }
-            return table;
+            return new RecordSet(table.Columns, table.Rows);
         }
 
         protected override object InternalVisit(TableDefinition node)
@@ -211,7 +212,7 @@ namespace MemSQL
                     throw new ConstraintException(msg);
                 }
                 else if ((fk.DeleteRule == Rule.SetDefault || fk.UpdateRule == Rule.SetDefault)
-                    && children.Any(c => !c.AllowDBNull && c.DefaultValue == null ))
+                    && children.Any(c => !c.AllowDBNull && c.DefaultValue == null))
                 {
                     var msg = string.Format("Cannot create the foreign key \"{0}\" with the SET DEFAULT referential action, " +
                                             "because one or more referencing not-nullable columns lack a default constraint.", constraintName);

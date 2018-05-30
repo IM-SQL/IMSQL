@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MemSQL.DataModel.Views;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace MemSQL
@@ -14,7 +15,7 @@ namespace MemSQL
 
         protected override object InternalVisit(InsertStatement node)
         {
-            return Visit<Row[]>(node.InsertSpecification);
+            return Visit<RecordSet>(node.InsertSpecification);
         }
 
         protected override object InternalVisit(InsertSpecification node)
@@ -52,7 +53,7 @@ namespace MemSQL
                     return dr;
                 };
             } 
-            return rows.Select(CreateRow).ToArray();
+            return new RecordSet(table.Columns, rows.Select(CreateRow));
         }
 
         protected override object InternalVisit(ValuesInsertSource node)

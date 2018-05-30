@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using MemSQL.DataModel.Views;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace MemSQL
 {
     internal class SQLSelectInterpreter : SQLBaseInterpreter
     {
-        public SQLSelectInterpreter(Database db) : base(db) {}
+        public SQLSelectInterpreter(Database db) : base(db) { }
 
         protected override object InternalVisit(SelectStatement node)
         {
@@ -18,7 +19,7 @@ namespace MemSQL
             //TODO:node.OptimizerHints
             //TODO:node.QueryExpression
             //TODO:node.WithCtesAndXmlNamespaces
-            return Visit<Row[]>(node.QueryExpression);
+            return Visit<RecordSet>(node.QueryExpression);
         }
 
         protected override object InternalVisit(QuerySpecification node)
@@ -40,12 +41,12 @@ namespace MemSQL
             var top = EvaluateExpression<TopResult>(node.TopRowFilter, env);
             var predicate = EvaluateExpression<Func<Row, bool>>(node.WhereClause, env, row => true);
 
-            return Filter.From(table.Rows, predicate, top).ToArray();
+            return new RecordSet(table.Columns, Filter.From(table.Rows, predicate, top));
         }
 
         protected override object InternalVisit(FromClause node)
         {
-            return node.TableReferences.Select(t => Visit<Tuple<string,Table>>(t).Item2).ToArray();
+            return node.TableReferences.Select(t => Visit<Tuple<string, Table>>(t).Item2).ToArray();
         }
     }
 }

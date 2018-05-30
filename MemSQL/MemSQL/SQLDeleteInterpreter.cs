@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using MemSQL.DataModel.Views;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace MemSQL
@@ -12,7 +13,7 @@ namespace MemSQL
 
         protected override object InternalVisit(DeleteStatement node)
         {
-            return Visit<Row[]>(node.DeleteSpecification);
+            return Visit<RecordSet>(node.DeleteSpecification);
         }
 
         protected override object InternalVisit(DeleteSpecification node)
@@ -34,7 +35,7 @@ namespace MemSQL
                 item.Delete();
             }
             table.AcceptChanges();
-            return result;
+            return new RecordSet(table.Columns, result);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MemSQL.DataModel.Views;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
@@ -10,14 +11,14 @@ namespace MemSQL
 {
     public class SQLExecutionResult
     {
-        public SQLExecutionResult(int rowsAffected, object[] values)
+        public SQLExecutionResult(int rowsAffected, RecordSet[] values)
         {
             RowsAffected = rowsAffected;
             Values = values;
         }
 
         public int RowsAffected { get; }
-        public object[] Values { get; }
+        public RecordSet[] Values { get; }
 
         public override string ToString()
         {
@@ -25,12 +26,19 @@ namespace MemSQL
             sb.Append("Rows affected: ");
             sb.Append(RowsAffected);
             sb.AppendLine();
-            for (int i = 0; i < Values.Length; i++)
+            bool first = true;
+            foreach (var set in Values)
             {
-                if (i > 0) { sb.AppendLine(); }
                 sb.AppendLine();
-                Printer.Print(Values[i], sb);
+                foreach (var item in set.Records)
+                {
+                    if (first) { sb.AppendLine(); first = false; }
+                    sb.AppendLine();
+                    Printer.Print(item, sb);
+                }
+                sb.AppendLine();
             }
+
             return sb.ToString();
         }
 
@@ -53,7 +61,7 @@ namespace MemSQL
                     }
                     sb.Append(")");
                 }
-                else if (value == null )
+                else if (value == null)
                 {
                     sb.Append("NULL");
                 }

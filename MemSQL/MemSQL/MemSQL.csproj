@@ -57,6 +57,9 @@
     <Compile Include="DataModel\Table.cs" />
     <Compile Include="DataModel\Environment.cs" />
     <Compile Include="DataModel\ForeignKeyConstraint.cs" />
+    <Compile Include="DataModel\Views\Record.cs" />
+    <Compile Include="DataModel\Views\RecordColumn.cs" />
+    <Compile Include="DataModel\Views\RecordSet.cs" />
     <Compile Include="ParseException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Filter.cs" />
@@ -76,5 +79,6 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

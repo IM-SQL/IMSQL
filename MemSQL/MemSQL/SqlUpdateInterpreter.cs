@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using MemSQL.DataModel.Views;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace MemSQL
@@ -15,7 +16,7 @@ namespace MemSQL
             //TODO:node.OptimizerHints
             //TODO:node.WithCtesAndXmlNamespaces
 
-            return Visit<Row[]>(node.UpdateSpecification);
+            return Visit<RecordSet>(node.UpdateSpecification);
         }
 
         protected override object InternalVisit(UpdateSpecification node)
@@ -39,7 +40,7 @@ namespace MemSQL
                 setClause(item);
             }
             table.AcceptChanges();
-            return result.ToArray();
+            return new RecordSet(table.Columns, result);
         }
 
         private Action<Row> CreateSetClause(IList<SetClause> clauses, Environment env)
