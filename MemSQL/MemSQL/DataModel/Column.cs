@@ -23,7 +23,7 @@ namespace MemSQL
         public Table Table { get; set; }
         private long? identity = null;
 
-        internal Field NewField(object providedValue)
+        internal Field NewField(object providedValue,Row owner)
         {
             if (AutoIncrement)
             {
@@ -46,7 +46,7 @@ namespace MemSQL
 
         }
 
-        internal Field NewField()
+        internal Field NewField(Row owner)
         {
 
             if (AutoIncrement)
@@ -56,7 +56,7 @@ namespace MemSQL
             }
             else if (ComputedColumnSpecification != null)
             {
-                return new CalculatedField(ColumnName, DataType, ComputedColumnSpecification);
+                return new CalculatedField(ColumnName, DataType, ComputedColumnSpecification,owner);
             }
             else if (AllowDBNull)
             {
@@ -94,7 +94,7 @@ namespace MemSQL
         public bool AutoIncrement { get; set; }
         public long AutoIncrementStep { get; set; }
         public long AutoIncrementSeed { get; set; }
-        public Func<object> ComputedColumnSpecification { get; set; }
+        public Func<Row,object> ComputedColumnSpecification { get; set; }
         public override string ToString()
         {
             return string.Format("{0} ({1})", base.ToString(), ColumnName);

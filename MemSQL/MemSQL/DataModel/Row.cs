@@ -19,8 +19,8 @@ namespace MemSQL
             values = table.Columns
                 .Select(col =>
                 providedValues.ContainsKey(col.ColumnName) ?
-                    col.NewField(providedValues[col.ColumnName])
-                    : col.NewField())
+                    col.NewField(providedValues[col.ColumnName],this)
+                    : col.NewField(this))
                 .ToArray();
         }
 
