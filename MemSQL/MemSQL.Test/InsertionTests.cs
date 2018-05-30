@@ -105,7 +105,7 @@ namespace MemSQL.Test
 
             Assert.AreEqual(1, affected, "There should be one row affected");
             Assert.AreEqual(1, table.Rows.Count(), "There should be one row on the table");
-            Assert.AreEqual(DBNull.Value, table.GetRow(0)["A"], "The inserted value was not present on the table");
+            Assert.AreEqual(null, table.GetRow(0)["A"], "The inserted value was not present on the table");
         }
 
         [TestMethod]
@@ -146,7 +146,7 @@ namespace MemSQL.Test
             Assert.AreEqual(1, table.Rows.Count(), "There should be one row on the table");
             Assert.AreEqual(1, table.GetRow(0)["A"], "The inserted value was not present on the table");
             Assert.AreEqual(2, table.GetRow(0)["B"], "The inserted value was not present on the table");
-            Assert.AreEqual(DBNull.Value, table.GetRow(0)["C"], "The default value was not present on the table");
+            Assert.AreEqual(null, table.GetRow(0)["C"], "The default value was not present on the table");
         }
 
         [TestMethod]

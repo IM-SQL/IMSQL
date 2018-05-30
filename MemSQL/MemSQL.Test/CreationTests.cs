@@ -820,14 +820,14 @@ namespace MemSQL.Test.Structural
             t1.FindRow(1).Delete();
             Assert.IsNull(t1.FindRow(1), "The parent row should be removed");
             Assert.IsNotNull(t2.FindRow(1), "The child row should not be removed");
-            Assert.AreEqual(DBNull.Value, t2.FindRow(1)["T1"], "The child row FK should be null");
+            Assert.AreEqual(null, t2.FindRow(1)["T1"], "The child row FK should be null");
 
             {
                 var row = t1.FindRow(2);
                 row["Id"] = 4;
             }
             Assert.IsNotNull(t1.FindRow(4), "The parent row should be updated");
-            Assert.AreEqual(DBNull.Value, t2.FindRow(2)["T1"], "The child row FK should be null");
+            Assert.AreEqual(null, t2.FindRow(2)["T1"], "The child row FK should be null");
         }
 
         [TestMethod]
@@ -942,7 +942,7 @@ namespace MemSQL.Test.Structural
             t2_insert("C", 3);
 
             t2_insert("D", null);
-            Assert.AreEqual(DBNull.Value, t2.FindRow(4)["T1"]);
+            Assert.AreEqual(null, t2.FindRow(4)["T1"]);
 
             Assert.ThrowsException<ConstraintException>(() =>
             {
@@ -952,14 +952,14 @@ namespace MemSQL.Test.Structural
             t1.FindRow(1).Delete();
             Assert.IsNull(t1.FindRow(1), "The parent row should be removed");
             Assert.IsNotNull(t2.FindRow(1), "The child row should not be removed");
-            Assert.AreEqual(DBNull.Value, t2.FindRow(1)["T1"], "The child row FK should be null");
+            Assert.AreEqual(null, t2.FindRow(1)["T1"], "The child row FK should be null");
 
             {
                 var row = t1.FindRow(2);
                 row["Id"] = 4;
             }
             Assert.IsNotNull(t1.FindRow(4), "The parent row should be updated");
-            Assert.AreEqual(DBNull.Value, t2.FindRow(2)["T1"], "The child row FK should be null");
+            Assert.AreEqual(null, t2.FindRow(2)["T1"], "The child row FK should be null");
         }
 
         [TestMethod]
