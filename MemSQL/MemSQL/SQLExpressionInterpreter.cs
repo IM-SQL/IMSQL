@@ -119,5 +119,108 @@ namespace MemSQL
                 return !EvaluateExpression<bool>(node.Expression, env);
             });
         }
+
+        protected override object InternalVisit(SearchedCaseExpression node)
+        {
+            //TODO:node.Collation
+            Func<Environment, object> def = Visit<Func<Environment, object>>(node.ElseExpression);
+            //the key should be a predicate.
+            Dictionary<Func<Environment, object>, Func<Environment, object>> clauses = new Dictionary<Func<Environment, object>, Func<Environment, object>>();
+            foreach (var clause in node.WhenClauses)
+            {
+                clauses.Add(
+                    Visit<Func<Environment, object>>(clause.WhenExpression),
+                    Visit<Func<Environment, object>>(clause.ThenExpression)
+                    );
+            }
+            return new Func<Environment, object>((env) =>
+            {
+                foreach (var c in clauses)
+                {
+                    if ((bool)c.Key(env))
+                    { return c.Value(env); }
+                }
+                return def(env);
+            });
+        }
+
+        protected override object InternalVisit(BinaryExpression node)
+        {
+            //TODO: type checking?
+            Func<Environment, object> result;
+            switch (node.BinaryExpressionType)
+            {
+                case BinaryExpressionType.Add:
+                    result = new Func<Environment, object>((env) =>
+                    {
+                        var first = EvaluateExpression<dynamic>(node.FirstExpression, env);
+                        var second = EvaluateExpression<dynamic>(node.SecondExpression, env);
+                        return first + second;
+                    });
+                    break;
+                case BinaryExpressionType.Subtract:
+                    result = new Func<Environment, object>((env) =>
+                    {
+                        var first = EvaluateExpression<dynamic>(node.FirstExpression, env);
+                        var second = EvaluateExpression<dynamic>(node.SecondExpression, env);
+                        return first - second;
+                    });
+                    break;
+                case BinaryExpressionType.Multiply:
+                    result = new Func<Environment, object>((env) =>
+                    {
+                        var first = EvaluateExpression<dynamic>(node.FirstExpression, env);
+                        var second = EvaluateExpression<dynamic>(node.SecondExpression, env);
+                        return first * second;
+                    });
+                    break;
+                case BinaryExpressionType.Divide:
+                    result = new Func<Environment, object>((env) =>
+                    {
+                        var first = EvaluateExpression<dynamic>(node.FirstExpression, env);
+                        var second = EvaluateExpression<dynamic>(node.SecondExpression, env);
+                        return first / second;
+                    });
+                    break;
+                case BinaryExpressionType.Modulo:
+                    result = new Func<Environment, object>((env) =>
+                    {
+                        var first = EvaluateExpression<dynamic>(node.FirstExpression, env);
+                        var second = EvaluateExpression<dynamic>(node.SecondExpression, env);
+                        return first % second;
+                    });
+                    break;
+                case BinaryExpressionType.BitwiseAnd:
+                    result = new Func<Environment, object>((env) =>
+                    {
+                        var first = EvaluateExpression<dynamic>(node.FirstExpression, env);
+                        var second = EvaluateExpression<dynamic>(node.SecondExpression, env);
+                        return first & second;
+                    });
+                    break;
+                case BinaryExpressionType.BitwiseOr:
+                    result = new Func<Environment, object>((env) =>
+                    {
+                        var first = EvaluateExpression<dynamic>(node.FirstExpression, env);
+                        var second = EvaluateExpression<dynamic>(node.SecondExpression, env);
+                        return first | second;
+                    });
+                    break;
+                case BinaryExpressionType.BitwiseXor:
+                    result = new Func<Environment, object>((env) =>
+                    {
+                        var first = EvaluateExpression<dynamic>(node.FirstExpression, env);
+                        var second = EvaluateExpression<dynamic>(node.SecondExpression, env);
+                        return first ^ second;
+                    });
+                    break;
+                default:
+
+                    throw new NotImplementedException();
+                    break;
+            }
+
+            return result;
+        }
     }
 }

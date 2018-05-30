@@ -22,7 +22,7 @@ namespace MemSQL
             node.Accept(inner);
             return (T)inner.Result;
         }
-        
+
         public IEnumerable<T> VisitCollection<T>(IEnumerable<TSqlFragment> nodes, T defaultValue = default(T))
         {
             return nodes.Select(n => Visit(n, defaultValue)).ToArray();
@@ -65,6 +65,9 @@ namespace MemSQL
         protected virtual object InternalVisit(FromClause node) { throw new NotImplementedException(); }
         protected virtual object InternalVisit(TSqlScript node) { throw new NotImplementedException(); }
         protected virtual object InternalVisit(TSqlBatch node) { throw new NotImplementedException(); }
+        protected virtual object InternalVisit(SearchedCaseExpression node) { throw new NotImplementedException(); }
+        protected virtual object InternalVisit(BinaryExpression node) { throw new NotImplementedException(); }
+
 
         class SQLInternalVisitor : TSqlFragmentVisitor
         {
@@ -257,6 +260,14 @@ namespace MemSQL
             }
 
             public override void ExplicitVisit(TSqlBatch node)
+            {
+                Result = outer.InternalVisit(node);
+            }
+            public override void ExplicitVisit(SearchedCaseExpression node)
+            {
+                Result = outer.InternalVisit(node);
+            }
+            public override void ExplicitVisit(BinaryExpression node)
             {
                 Result = outer.InternalVisit(node);
             }
@@ -797,7 +808,6 @@ namespace MemSQL
             public override void ExplicitVisit(ComputeClause node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(FullTextCatalogOption node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(GlobalFunctionTableReference node) { throw new NotImplementedException(); }
-            public override void ExplicitVisit(BinaryExpression node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(ServiceContract node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(AlterServiceStatement node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(CreateServiceStatement node) { throw new NotImplementedException(); }
@@ -1050,7 +1060,6 @@ namespace MemSQL
             public override void ExplicitVisit(SecurityElement80 node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(NullIfExpression node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(CommandSecurityElement80 node) { throw new NotImplementedException(); }
-            public override void ExplicitVisit(SearchedCaseExpression node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(PrivilegeSecurityElement80 node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(SecurityStatementBody80 node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(SimpleCaseExpression node) { throw new NotImplementedException(); }
@@ -1193,5 +1202,7 @@ namespace MemSQL
             public override void ExplicitVisit(ExecuteOption node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(AlterTableStatement node) { throw new NotImplementedException(); }
         }
+
+
     }
 }
