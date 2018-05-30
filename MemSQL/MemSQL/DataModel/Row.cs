@@ -35,7 +35,6 @@ namespace MemSQL
                 var column = Table.GetColumn(index);
                 var field = values[index];
                 var oldValue = field.Value;
-                if (value == null) { value = DBNull.Value; }
                 try
                 {
                     field.Value = value;

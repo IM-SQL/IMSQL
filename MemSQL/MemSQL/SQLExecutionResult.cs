@@ -53,7 +53,7 @@ namespace MemSQL
                     }
                     sb.Append(")");
                 }
-                else if (value == null || value == DBNull.Value)
+                else if (value == null )
                 {
                     sb.Append("NULL");
                 }

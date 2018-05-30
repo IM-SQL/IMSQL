@@ -8,7 +8,7 @@ namespace MemSQL.DataModel.Fields
         public NullableField(string columnName, Type dataType, object value) : base(columnName, dataType, value)
         {
         }
-        public NullableField(string columnName, Type dataType) : base(columnName, dataType, DBNull.Value)
+        public NullableField(string columnName, Type dataType) : base(columnName, dataType,null)
         {
         }
         bool nullValue = false;
@@ -16,13 +16,13 @@ namespace MemSQL.DataModel.Fields
         {
             get
             {
-                if (nullValue) { return DBNull.Value; }
+                if (nullValue) { return null; }
                 return base.Value;
             }
             set
             {
-                nullValue = value == DBNull.Value;
-                if (value != DBNull.Value)
+                nullValue = value == null;
+                if (value != null)
                 {
                     base.Value = value;
                 }

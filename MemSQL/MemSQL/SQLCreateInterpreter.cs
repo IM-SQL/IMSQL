@@ -211,7 +211,7 @@ namespace MemSQL
                     throw new ConstraintException(msg);
                 }
                 else if ((fk.DeleteRule == Rule.SetDefault || fk.UpdateRule == Rule.SetDefault)
-                    && children.Any(c => !c.AllowDBNull && (c.DefaultValue == null || c.DefaultValue == DBNull.Value)))
+                    && children.Any(c => !c.AllowDBNull && c.DefaultValue == null ))
                 {
                     var msg = string.Format("Cannot create the foreign key \"{0}\" with the SET DEFAULT referential action, " +
                                             "because one or more referencing not-nullable columns lack a default constraint.", constraintName);

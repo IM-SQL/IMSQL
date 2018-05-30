@@ -32,7 +32,7 @@ namespace MemSQL
             {
                 var column = Columns[i];
                 var value = row[column.ColumnName];
-                if (column.AllowDBNull && (value == null || value == DBNull.Value))
+                if (column.AllowDBNull && (value == null  ))
                 {
                     continue;
                 }
@@ -79,7 +79,7 @@ namespace MemSQL
                 {
                     foreach (var row in Table.Rows.Where(row => Equals(value, row[column.ColumnName])).ToArray())
                     {
-                        row[column.ColumnName] = DBNull.Value;
+                        row[column.ColumnName] = null;
                     }
                 }
                 else if (DeleteRule == Rule.SetDefault)
@@ -122,7 +122,7 @@ namespace MemSQL
             {
                 foreach (var row in Table.Rows.Where(row => Equals(oldValue, row[column.ColumnName])))
                 {
-                    row[column.ColumnName] = DBNull.Value;
+                    row[column.ColumnName] = null;
                 }
             }
             else if (UpdateRule == Rule.SetDefault)

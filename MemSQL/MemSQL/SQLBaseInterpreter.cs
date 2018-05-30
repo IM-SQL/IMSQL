@@ -143,7 +143,7 @@ namespace MemSQL
 
         protected override object InternalVisit(NullLiteral node)
         {
-            return new Func<Environment, object>(env => DBNull.Value);
+            return new Func<Environment, object>(env =>null);
         }
 
         protected override object InternalVisit(NamedTableReference node)
