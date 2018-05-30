@@ -71,6 +71,23 @@ namespace MemSQL
              * TODO(Richo): Computed columns don't necessarily include the datatype, in that case
              * the data type has to be extracted from the computed expression.
              */
+            var computedColumnSpecification = Visit<Func<Environment, object>>(node.ComputedColumnExpression);
+            if (computedColumnSpecification != null)
+            {
+                //TODO: type checker 
+                var column1 = new Column(node.ColumnIdentifier.Value, typeof(Int32));
+
+                var inner = computedColumnSpecification;
+                column1.ComputedColumnSpecification =
+                    (row) =>
+                    {
+                        var env2 = Database.GlobalEnvironment.NewChild();
+                        env2.Add("currentRow", row);
+                        return inner(env2);
+                    };
+                return column1;
+
+            }
             var type = Visit<Type>(node.DataType);
             var column = new Column(node.ColumnIdentifier.Value, type);
             Visit<Action<Column>>(node.IdentityOptions)?.Invoke(column);

@@ -224,9 +224,30 @@ namespace MemSQL.Test.Structural
             Assert.AreEqual("col1", fk.RelatedColumns[0].ColumnName);
             Assert.AreEqual(table, fk.RelatedTable, "The parent table is not the correct one");
         }
-
         [TestMethod]
         public void ComputedColumnCreationTest()
+        {
+            string script = "CREATE TABLE [TBL](  " +
+                "[num] INT NOT NULL," +
+                "  [calc]  AS ( num ))" ;
+            var db = new Database();
+            var visitor = new SQLInterpreter(db);
+            var result = visitor.Execute(script);
+            Assert.AreEqual(0, result.RowsAffected);
+            Assert.IsTrue(db.ContainsTable("TBL"), "The table must be created");
+            var table = db.GetTable("TBL");
+            Assert.IsTrue(table.ContainsColumn("num"));
+            Assert.AreEqual(typeof(int), table.GetColumn("num").DataType);
+            Assert.IsTrue(table.ContainsColumn("calc"));
+            Assert.AreEqual(typeof(int), table.GetColumn("calc").DataType);
+            var dr1 = table.NewRow(1);
+            Assert.AreEqual(1, dr1["calc"]);
+            dr1["num"] = -5;
+            Assert.AreEqual(-5, dr1["calc"]);
+        }
+
+        [TestMethod]
+        public void ComputedColumnWithCaseCreationTest()
         {
             string script = "CREATE TABLE [TBL](  " +
                 "[num] INT NOT NULL," +

@@ -119,7 +119,7 @@ namespace MemSQL
             var providedColumns = new List<string>();
             for (int i = 0; i < Columns.Count(); i++)
             {
-                if (!GetColumn(i).AutoIncrement)
+                if (!GetColumn(i).AutoIncrement && GetColumn(i).ComputedColumnSpecification==null)
                 {
                     providedColumns.Add(GetColumn(i).ColumnName);
                 }

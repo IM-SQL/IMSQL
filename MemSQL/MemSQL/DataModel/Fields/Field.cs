@@ -12,10 +12,13 @@ namespace MemSQL.DataModel.Fields
         private Type dataType;
         protected object value;
 
-        public Field(string columnName, Type dataType, object defaultValue)
+        public Field(string columnName, Type dataType )
         {
             this.columnName = columnName;
-            this.dataType = dataType;
+            this.dataType = dataType; 
+        }
+        public Field(string columnName, Type dataType, object defaultValue):this(columnName,dataType)
+        { 
             this.Value = defaultValue;
         }
 
