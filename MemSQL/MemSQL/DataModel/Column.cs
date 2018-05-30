@@ -27,18 +27,23 @@ namespace MemSQL
         {
             if (AutoIncrement)
             {
-                  throw new InvalidOperationException("Cannot insert explicit value for identity column");
+                throw new InvalidOperationException("Cannot insert explicit value for identity column");
             }
-            else if (AllowDBNull) {
-                return new NullableField(ColumnName, DataType,providedValue);
+            else if (ComputedColumnSpecification != null)
+            {
+                throw new InvalidOperationException("Cannot insert explicit value for a calculated column");
+            }
+            else if (AllowDBNull)
+            {
+                return new NullableField(ColumnName, DataType, providedValue);
 
             }
             else if (providedValue == null)
-            { 
-                throw new ArgumentException(string.Format("A value for the field {0} should not have been provided",ColumnName));
+            {
+                throw new ArgumentException(string.Format("A value for the field {0} should not have been provided", ColumnName));
             }
             return new Field(ColumnName, DataType, providedValue);
-            
+
         }
 
         internal Field NewField()
@@ -48,6 +53,10 @@ namespace MemSQL
             {
                 identity = identity.HasValue ? identity + AutoIncrementStep : AutoIncrementSeed;
                 return new IdentityField(ColumnName, DataType, identity);
+            }
+            else if (ComputedColumnSpecification != null)
+            {
+                return new CalculatedField(ColumnName, DataType, ComputedColumnSpecification);
             }
             else if (AllowDBNull)
             {
@@ -85,7 +94,7 @@ namespace MemSQL
         public bool AutoIncrement { get; set; }
         public long AutoIncrementStep { get; set; }
         public long AutoIncrementSeed { get; set; }
-
+        public Func<object> ComputedColumnSpecification { get; set; }
         public override string ToString()
         {
             return string.Format("{0} ({1})", base.ToString(), ColumnName);

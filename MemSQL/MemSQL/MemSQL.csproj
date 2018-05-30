@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataModel\Fields\CalculatedField.cs" />
     <Compile Include="DataModel\Constraint.cs" />
     <Compile Include="DataModel\ConstraintException.cs" />
     <Compile Include="DataModel\Database.cs" />
