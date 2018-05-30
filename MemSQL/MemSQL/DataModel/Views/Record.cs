@@ -24,10 +24,10 @@ namespace MemSQL.DataModel.Views
         }
 
         RecordSet Set { get { return set; } }
-        object this[string name]
+        public object this[string name]
         {
             get { return values[Set.IndexOfColumn(name)]; }
         }
-        object[] ItemArray { get { return values; } }
+        public object[] ItemArray { get { return values; } }
     }
 }
