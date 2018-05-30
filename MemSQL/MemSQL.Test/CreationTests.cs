@@ -867,7 +867,7 @@ namespace MemSQL.Test.Structural
                 }
                 else
                 {
-                    row = t2.NewRow(f1);
+                    row = t2.NewRow(("Name",f1));
                 }
                 t2.AddRow(row);
             };
@@ -933,7 +933,7 @@ namespace MemSQL.Test.Structural
                 }
                 else
                 {
-                    row = t2.NewRow(f1);
+                    row = t2.NewRow(("Name", f1));
                 }
                 t2.AddRow(row);
             };
