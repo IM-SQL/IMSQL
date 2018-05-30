@@ -30,5 +30,29 @@ namespace MemSQL.Test
             Assert.AreEqual(1, affected, "There should be one row affected");
             Assert.AreEqual(3, table.GetRow(0)["ID"], "The selected value was not present on the Table");
         }
+        [TestMethod]
+        public void SomeFieldsSelectTest()
+        {
+            var db = new Database();
+            Table table = db.AddTable("TBL");
+            table.AddColumn(new Column("col1", typeof(int)));
+            table.AddColumn(new Column("col2", typeof(int)));
+
+            var row = table.NewRow(1,2);
+
+            table.AddRow(row);
+
+            string query = "Select col2 from [TBL]";
+            SQLInterpreter interpreter = new SQLInterpreter(db);
+
+            var result = interpreter.Execute(query);
+            int affected = result.RowsAffected;
+            Assert.AreEqual(1, affected, "There should be one row affected");
+            Assert.AreEqual(1, result.Values.Count(), "There should be only one result set");
+            Assert.AreEqual(1, result.Values[0].Columns.Count(), "There should be only one column");
+            Assert.AreEqual("col2", result.Values[0].Columns.ElementAt(0).ColumnName, "The expected column was not on the result set");
+            Assert.AreEqual(1, result.Values[0].Records.Count(), "There should be only one row");
+            Assert.AreEqual(2, result.Values[0].Records.ElementAt(0).ItemArray[0], "The selected value was not present on the Table");
+        }
     }
 }

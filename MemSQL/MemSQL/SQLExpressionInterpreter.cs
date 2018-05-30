@@ -216,8 +216,7 @@ namespace MemSQL
                     break;
                 default:
 
-                    throw new NotImplementedException();
-                    break;
+                    throw new NotImplementedException(); 
             }
 
             return result;

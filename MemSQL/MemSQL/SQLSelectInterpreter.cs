@@ -24,8 +24,7 @@ namespace MemSQL
 
         protected override object InternalVisit(QuerySpecification node)
         {
-            //TODO:node.ForClause
-            //TODO:node.FromClause
+            //TODO:node.ForClause 
             //TODO:node.GroupByClause
             //TODO:node.HavingClause
             //TODO:node.OffsetClause
@@ -41,7 +40,23 @@ namespace MemSQL
             var top = EvaluateExpression<TopResult>(node.TopRowFilter, env);
             var predicate = EvaluateExpression<Func<Row, bool>>(node.WhereClause, env, row => true);
 
-            return new RecordSet(table.Columns, Filter.From(table.Rows, predicate, top));
+
+            //TODO: the selected fields i get as expressions, i do not want an expression there for now.
+            IEnumerable<Column> selectedColumns = table.Columns;
+            if (node.SelectElements != null)
+            {
+                //TODO: columnName
+                //TODO: hardcoding cast for now.
+                selectedColumns =
+                    node.SelectElements.Select(c =>
+                            Visit<string[]>(
+                                ((ColumnReferenceExpression)
+                                    ((SelectScalarExpression)c).Expression).MultiPartIdentifier).Last())
+                 .Select(name => table.GetColumn(name));
+                
+            }
+
+            return new RecordSet(selectedColumns, Filter.From(table.Rows, predicate, top));
         }
 
         protected override object InternalVisit(FromClause node)
