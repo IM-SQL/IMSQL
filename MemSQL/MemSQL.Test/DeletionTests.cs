@@ -18,8 +18,7 @@ namespace MemSQL.Test
             Table table = db.AddTable("TBL");
             table.AddColumn(new Column("ID", typeof(int)));
 
-            var row = table.NewRow();
-            row["ID"] = 3;
+            var row = table.NewRow(3);
             table.AddRow(row);
 
             string query = "Delete from [TBL]";
@@ -40,8 +39,7 @@ namespace MemSQL.Test
             table.AddColumn(new Column("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
-                var row = table.NewRow();
-                row["ID"] = i;
+                var row = table.NewRow(i); 
                 table.AddRow(row);
             }
             string query = "Delete from [TBL]";
@@ -61,8 +59,7 @@ namespace MemSQL.Test
             table.AddColumn(new Column("ID", typeof(int)));
             for (int i = 0; i < 200; i++)
             {
-                var row = table.NewRow();
-                row["ID"] = i;
+                var row = table.NewRow(i); 
                 table.AddRow(row);
             }
             string query = "Delete TOP(50) from [TBL]";
@@ -82,8 +79,7 @@ namespace MemSQL.Test
             table.AddColumn(new Column("ID", typeof(int)));
             for (int i = 0; i < 200; i++)
             {
-                var row = table.NewRow();
-                row["ID"] = i;
+                var row = table.NewRow(i); 
                 table.AddRow(row);
             }
             string query = "Delete TOP(50) with ties from [TBL]";
@@ -102,8 +98,7 @@ namespace MemSQL.Test
             table.AddColumn(new Column("ID", typeof(int)));
             for (int i = 0; i < 200; i++)
             {
-                var row = table.NewRow();
-                row["ID"] = i;
+                var row = table.NewRow(i); 
                 table.AddRow(row);
             }
             string query = "Delete TOP (50) PERCENT from [TBL]";
@@ -123,8 +118,7 @@ namespace MemSQL.Test
             table.AddColumn(new Column("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
-                var row = table.NewRow();
-                row["ID"] = i;
+                var row = table.NewRow(i); 
                 table.AddRow(row);
             }
             string query = "Delete from [TBL] where [ID] = 1";
@@ -144,8 +138,7 @@ namespace MemSQL.Test
             table.AddColumn(new Column("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
-                var row = table.NewRow();
-                row["ID"] = i;
+                var row = table.NewRow(i); 
                 table.AddRow(row);
             }
             string query = "Delete from [TBL] where [ID] != 1";
@@ -165,8 +158,7 @@ namespace MemSQL.Test
             table.AddColumn(new Column("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
-                var row = table.NewRow();
-                row["ID"] = i;
+                var row = table.NewRow(i); 
                 table.AddRow(row);
             }
             string query = "Delete from [TBL] where [ID] <> 1";
@@ -186,8 +178,7 @@ namespace MemSQL.Test
             table.AddColumn(new Column("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
-                var row = table.NewRow();
-                row["ID"] = i;
+                var row = table.NewRow(i); 
                 table.AddRow(row);
             }
             string query = "Delete from [TBL] where [ID] < 2";
@@ -207,8 +198,7 @@ namespace MemSQL.Test
             table.AddColumn(new Column("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
-                var row = table.NewRow();
-                row["ID"] = i;
+                var row = table.NewRow(i); 
                 table.AddRow(row);
             }
             string query = "Delete from [TBL] where [ID] > 97";
@@ -228,8 +218,7 @@ namespace MemSQL.Test
             table.AddColumn(new Column("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
-                var row = table.NewRow();
-                row["ID"] = i;
+                var row = table.NewRow(i); 
                 table.AddRow(row);
             }
             string query = "Delete from [TBL] where [ID] <= 2";
@@ -249,8 +238,7 @@ namespace MemSQL.Test
             table.AddColumn(new Column("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
-                var row = table.NewRow();
-                row["ID"] = i;
+                var row = table.NewRow(i); 
                 table.AddRow(row);
             }
             string query = "Delete from [TBL] where [ID] !< 97";
@@ -270,8 +258,7 @@ namespace MemSQL.Test
             table.AddColumn(new Column("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
-                var row = table.NewRow();
-                row["ID"] = i;
+                var row = table.NewRow(i); 
                 table.AddRow(row);
             }
             string query = "Delete from [TBL] where [ID] !> 2";
@@ -291,8 +278,7 @@ namespace MemSQL.Test
             table.AddColumn(new Column("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
-                var row = table.NewRow();
-                row["ID"] = i;
+                var row = table.NewRow(i); 
                 table.AddRow(row);
             }
             string query = "Delete from [TBL] where [ID] >= 97";
@@ -312,8 +298,7 @@ namespace MemSQL.Test
             table.AddColumn(new Column("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
-                var row = table.NewRow();
-                row["ID"] = i;
+                var row = table.NewRow(i); 
                 table.AddRow(row);
             }
             string query = "Delete from [TBL] where not [ID] = 1";
@@ -333,8 +318,7 @@ namespace MemSQL.Test
             table.AddColumn(new Column("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
-                var row = table.NewRow();
-                row["ID"] = i;
+                var row = table.NewRow(i); 
                 table.AddRow(row);
             }
             string query = "Delete from [TBL] where [ID] > 1 AND [ID] < 5";
@@ -354,8 +338,7 @@ namespace MemSQL.Test
             table.AddColumn(new Column("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
-                var row = table.NewRow();
-                row["ID"] = i;
+                var row = table.NewRow(i); 
                 table.AddRow(row);
             }
             string query = "Delete from [TBL] where [ID] < 1 OR [ID] > 98";

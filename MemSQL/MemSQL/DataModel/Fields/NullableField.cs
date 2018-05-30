@@ -5,6 +5,9 @@ namespace MemSQL.DataModel.Fields
 {
     internal class NullableField : Field
     {
+        public NullableField(string columnName, Type dataType, object value) : base(columnName, dataType, value)
+        {
+        }
         public NullableField(string columnName, Type dataType) : base(columnName, dataType, DBNull.Value)
         {
         }

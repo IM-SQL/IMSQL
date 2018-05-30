@@ -18,8 +18,7 @@ namespace MemSQL.Test
             Table table = db.AddTable("TBL");
             table.AddColumn(new Column("ID", typeof(int)));
 
-            var row = table.NewRow();
-            row["ID"] = 3;
+            var row = table.NewRow(3); 
             table.AddRow(row);
 
             string query = "Update [TBL] set ID=2";
@@ -39,8 +38,7 @@ namespace MemSQL.Test
             table.AddColumn(new Column("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
-                var row = table.NewRow();
-                row["ID"] = i;
+                var row = table.NewRow(i); 
                 table.AddRow(row);
             }
             string query = "Update [TBL] set ID=2";
@@ -62,8 +60,7 @@ namespace MemSQL.Test
             Table table = db.AddTable("TBL");
             table.AddColumn(new Column("ID", typeof(int)));
 
-            var row = table.NewRow();
-            row["ID"] = 3;
+            var row = table.NewRow(3);
             table.AddRow(row);
 
             string query = "Update [TBL] set ID +=2";
@@ -82,8 +79,7 @@ namespace MemSQL.Test
             Table table = db.AddTable("TBL");
             table.AddColumn(new Column("ID", typeof(string)));
 
-            var row = table.NewRow();
-            row["ID"] = "hola";
+            var row = table.NewRow("hola"); 
             table.AddRow(row);
 
             string query = "Update [TBL] set ID +='-chau'";
@@ -102,8 +98,7 @@ namespace MemSQL.Test
             Table table = db.AddTable("TBL");
             table.AddColumn(new Column("ID", typeof(string)));
 
-            var row = table.NewRow();
-            row["ID"] = "hola";
+            var row = table.NewRow("hola"); 
             table.AddRow(row);
 
             string query = "Update [TBL] set ID +=3";
@@ -122,8 +117,7 @@ namespace MemSQL.Test
             Table table = db.AddTable("TBL");
             table.AddColumn(new Column("ID", typeof(int)));
 
-            var row = table.NewRow();
-            row["ID"] = 3;
+            var row = table.NewRow(3); 
             table.AddRow(row);
 
             string query = "Update [TBL] set ID -=2";
@@ -142,8 +136,7 @@ namespace MemSQL.Test
             Table table = db.AddTable("TBL");
             table.AddColumn(new Column("ID", typeof(int)));
 
-            var row = table.NewRow();
-            row["ID"] = 3;
+            var row = table.NewRow(3);
             table.AddRow(row);
 
             string query = "Update [TBL] set ID *=2";
@@ -162,8 +155,7 @@ namespace MemSQL.Test
             Table table = db.AddTable("TBL");
             table.AddColumn(new Column("ID", typeof(int)));
 
-            var row = table.NewRow();
-            row["ID"] = 10;
+            var row = table.NewRow(10);
             table.AddRow(row);
 
             string query = "Update [TBL] set ID /=2";
@@ -182,8 +174,7 @@ namespace MemSQL.Test
             Table table = db.AddTable("TBL");
             table.AddColumn(new Column("ID", typeof(int)));
 
-            var row = table.NewRow();
-            row["ID"] = 10;
+            var row = table.NewRow(10);
             table.AddRow(row);
 
             string query = "Update [TBL] set ID %=2";
@@ -202,8 +193,7 @@ namespace MemSQL.Test
             Table table = db.AddTable("TBL");
             table.AddColumn(new Column("ID", typeof(int)));
 
-            var row = table.NewRow();
-            row["ID"] = 5;
+            var row = table.NewRow(5);
             table.AddRow(row);
 
             string query = "Update [TBL] set ID &=3";
@@ -222,8 +212,7 @@ namespace MemSQL.Test
             Table table = db.AddTable("TBL");
             table.AddColumn(new Column("ID", typeof(int)));
 
-            var row = table.NewRow();
-            row["ID"] = 4;
+            var row = table.NewRow(4);
             table.AddRow(row);
 
             string query = "Update [TBL] set ID |=2";
@@ -242,8 +231,7 @@ namespace MemSQL.Test
             Table table = db.AddTable("TBL");
             table.AddColumn(new Column("ID", typeof(int)));
 
-            var row = table.NewRow();
-            row["ID"] = 7;
+            var row = table.NewRow(7);
             table.AddRow(row);
 
             string query = "Update [TBL] set ID ^=5";
@@ -263,8 +251,7 @@ namespace MemSQL.Test
             table.AddColumn(new Column("ID", typeof(int)));
             for (int i = 0; i < 200; i++)
             {
-                var row = table.NewRow();
-                row["ID"] = i;
+                var row = table.NewRow(i);
                 table.AddRow(row);
             }
             string query = "Update TOP(50)  [TBL] set ID=2";
@@ -291,8 +278,7 @@ namespace MemSQL.Test
             table.AddColumn(new Column("ID", typeof(int)));
             for (int i = 0; i < 200; i++)
             {
-                var row = table.NewRow();
-                row["ID"] = i;
+                var row = table.NewRow(i);
                 table.AddRow(row);
             }
             string query = "Update TOP(50) PERCENT [TBL] set ID=2";
@@ -318,8 +304,7 @@ namespace MemSQL.Test
             table.AddColumn(new Column("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
-                var row = table.NewRow();
-                row["ID"] = i;
+                var row = table.NewRow(i);
                 table.AddRow(row);
             }
             string query = "Update [TBL] set [ID]=5 where [ID] = 1";

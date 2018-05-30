@@ -24,43 +24,35 @@ namespace MemSQL
                 .Select(columnReference => Visit<string>(columnReference))
                 .ToList();
             var rows = Visit<object[][]>(node.InsertSource);
-
-            //if no column was provided then the whole table has to be provided as parameter. 
+            Func<object[], Row> CreateRow;
             if (providedColumns.Count == 0)
             {
-                providedColumns = new List<string>();
-                for (int i = 0; i < table.Columns.Count(); i++)
+                CreateRow = row =>
                 {
-                    if (!table.GetColumn(i).AutoIncrement)
-                    {
-                        providedColumns.Add(table.GetColumn(i).ColumnName);
-                    }
-                }
+                    Row dr = table.NewRow(row);
+                    table.AddRow(dr);
+                    return dr;
+                };
             }
             else
             {
-                if (providedColumns.Any(name => table.GetColumn(name).AutoIncrement))
+                Dictionary<string, object> values = new Dictionary<string, object>();
+                foreach (var item in providedColumns)
                 {
-                    throw new InvalidOperationException("Cannot insert explicit value for identity column");
+                    values.Add(item, null);
                 }
-            }
-
-            if (providedColumns.Count != rows[0].Length)
-            {
-                //there are probably columns missing.
-                throw new ArgumentException("The values provided do not match the expected columns");
-            }
-
-            return rows.Select(row =>
-            {
-                Row dr = table.NewRow();
-                for (int i = 0; i < providedColumns.Count; i++)
+                CreateRow = row =>
                 {
-                    dr[providedColumns[i]] = row[i];
-                }
-                table.AddRow(dr);
-                return dr;
-            }).ToArray();
+                    for (int i = 0; i < providedColumns.Count; i++)
+                    {
+                        values[providedColumns[i]] = row[i];
+                    }   
+                    Row dr = table.NewRow(values);
+                    table.AddRow(dr);
+                    return dr;
+                };
+            } 
+            return rows.Select(CreateRow).ToArray();
         }
 
         protected override object InternalVisit(ValuesInsertSource node)

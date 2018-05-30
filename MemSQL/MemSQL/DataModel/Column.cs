@@ -23,6 +23,24 @@ namespace MemSQL
         public Table Table { get; set; }
         private long? identity = null;
 
+        internal Field NewField(object providedValue)
+        {
+            if (AutoIncrement)
+            {
+                  throw new InvalidOperationException("Cannot insert explicit value for identity column");
+            }
+            else if (AllowDBNull) {
+                return new NullableField(ColumnName, DataType,providedValue);
+
+            }
+            else if (providedValue == null)
+            { 
+                throw new ArgumentException(string.Format("A value for the field {0} should not have been provided",ColumnName));
+            }
+            return new Field(ColumnName, DataType, providedValue);
+            
+        }
+
         internal Field NewField()
         {
 
@@ -39,10 +57,8 @@ namespace MemSQL
             {
                 return new Field(ColumnName, DataType, DefaultValue);
             }
-            //TODO: i think we should not be able to create rows that reach this point.
+            throw new ArgumentException(string.Format("A value for the field {0} should not have been provided", ColumnName));
 
-            return new Field(ColumnName, DataType, GetDefault(DataType));
-        
         }
         private object GetDefault(Type type)
         {

@@ -13,11 +13,14 @@ namespace MemSQL
     {
         private Field[] values;
 
-        public Row(Table table)
+        public Row(Table table, Dictionary<string, object> providedValues)
         {
             Table = table;
             values = table.Columns
-                .Select(col => col.NewField())
+                .Select(col =>
+                providedValues.ContainsKey(col.ColumnName) ?
+                    col.NewField(providedValues[col.ColumnName])
+                    : col.NewField())
                 .ToArray();
         }
 
@@ -35,7 +38,7 @@ namespace MemSQL
                 if (value == null) { value = DBNull.Value; }
                 try
                 {
-                    field.Value = value ;
+                    field.Value = value;
                     foreach (var constraint in Table.Database.Constraints)
                     {
                         constraint.OnUpdate(this, index, oldValue);

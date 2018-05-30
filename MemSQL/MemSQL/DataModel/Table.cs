@@ -12,7 +12,7 @@ namespace MemSQL
         private List<Row> rows = new List<Row>();
         private List<Column> columns = new List<Column>();
 
-        public Table(Database database) : this(null, database) {}
+        public Table(Database database) : this(null, database) { }
 
         public Table(string tableName, Database database)
         {
@@ -89,16 +89,60 @@ namespace MemSQL
             return rows[index];
         }
 
-        public Row NewRow()
+        public Row NewRow((string, object) first,  params (string,object)[] providedValues)
         {
-            return new Row(this);
-         
+
+            providedValues= prepend(first, providedValues);
+            return new Row(this, providedValues.ToDictionary(t=>t.Item1,t=>t.Item2));
+
+        }
+        public Row NewRow(Dictionary<string, object> providedValues)
+        {
+            return new Row(this, providedValues);
+
+        }
+
+        public Row NewRow(object first, params object[] items)
+        { 
+            return NewRow(prepend(first,items));
+        }
+
+        public T[] prepend<T>(T first, T[] rest) {
+            T[] values = new T[rest.Length + 1];
+            values[0] = first;
+            Array.Copy(rest, 0, values, 1, rest.Length);
+            return values;
+        }
+        public Row NewRow(object[] items)
+        {
+
+            var providedColumns = new List<string>();
+            for (int i = 0; i < Columns.Count(); i++)
+            {
+                if (!GetColumn(i).AutoIncrement)
+                {
+                    providedColumns.Add(GetColumn(i).ColumnName);
+                }
+            }
+            if (items.Length != providedColumns.Count)
+            {
+
+                throw new ArgumentException("The values provided do not match the expected columns");
+            }
+
+            Dictionary<string, object> providedValues = new Dictionary<string, object>();
+            for (int i = 0; i < providedColumns.Count; i++)
+            {
+                providedValues.Add(providedColumns[i], items[i]);
+            }
+
+            return NewRow(providedValues);
+
         }
 
         public void AddRow(params object[] items)
         {
-            var row = NewRow();
-            row.ItemArray = items;
+            var row = NewRow(items);
             AddRow(row);
         }
 

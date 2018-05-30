@@ -18,8 +18,8 @@ namespace MemSQL.Test
             Table table = db.AddTable("TBL");
             table.AddColumn(new Column("ID", typeof(int)));
 
-            var row = table.NewRow();
-            row["ID"] = 3;
+            var row = table.NewRow(3);
+
             table.AddRow(row);
 
             string query = "Select * from [TBL]";

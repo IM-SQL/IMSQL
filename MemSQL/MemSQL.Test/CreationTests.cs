@@ -62,6 +62,7 @@ namespace MemSQL.Test.Structural
         public void DefaultValuesTableCreationTest()
         {
             string script = "Create table [TBL](" +
+                "data int," +
                 "col1 int DEFAULT 3," +
                 "col2 varchar(3) DEFAULT 'asd'," +
                 "col3 bit DEFAULT 1)";
@@ -77,8 +78,9 @@ namespace MemSQL.Test.Structural
             Assert.AreEqual(typeof(string), table.GetColumn("col2").DataType);
             Assert.IsTrue(table.ContainsColumn("col3"));
             Assert.AreEqual(typeof(bool), table.GetColumn("col3").DataType);
-
-            var dr = table.NewRow();
+            
+            var dr = table.NewRow(("data", 0));
+            Assert.AreEqual(0, dr["data"], "The default value was not present on the row");
             Assert.AreEqual(3, dr["col1"], "The default value was not present on the row");
             Assert.AreEqual("asd", dr["col2"], "The default value was not present on the row");
             Assert.AreEqual(true, dr["col3"], "The default value was not present on the row");
@@ -105,7 +107,7 @@ namespace MemSQL.Test.Structural
         [TestMethod]
         public void AutoincrementPKTableCreationTest()
         {
-            string script = "Create table [TBL](ID int IDENTITY(3,3) PRIMARY KEY)";
+            string script = "Create table [TBL](ID int IDENTITY(3,3) PRIMARY KEY, DATA int)";
             var db = new Database();
             var visitor = new SQLInterpreter(db);
             var result = visitor.Execute(script);
@@ -119,7 +121,7 @@ namespace MemSQL.Test.Structural
 
             for (int i = 1; i < 10; i++)
             {
-                var dr = table.NewRow();
+                var dr = table.NewRow(i);
                 Assert.AreEqual(i * 3, dr["ID"], "The autonumeric field did not increment correctly");
             }
         }
@@ -210,7 +212,7 @@ namespace MemSQL.Test.Structural
             Assert.AreEqual(typeof(int), table2.GetColumn("col2").DataType);
             Assert.IsTrue(table2.PrimaryKey.Length == 1, "The Primary Key is missing!");
             Assert.AreEqual(table2.GetColumn("col2"), table2.PrimaryKey[0]);
-            
+
             Assert.AreEqual(2, table2.Constraints.Count(), "Either the PK or the FK are missing");
             Assert.IsTrue(db.ContainsConstraint("FK_tbl"), "The FK was not found by name");
             var fk = db.GetConstraint("FK_tbl") as ForeignKeyConstraint;
@@ -243,8 +245,8 @@ namespace MemSQL.Test.Structural
             Assert.AreEqual(typeof(int), table.GetColumn("num").DataType);
             Assert.IsTrue(table.ContainsColumn("calc"));
             Assert.AreEqual(typeof(int), table.GetColumn("calc").DataType);
-            var dr1 = table.NewRow();
-            dr1["num"] = 1;
+            var dr1 = table.NewRow(1);
+
             Assert.AreEqual(3, dr1["calc"]);
             dr1["num"] = -5;
             Assert.AreEqual(-10, dr1["calc"]);
@@ -503,25 +505,19 @@ namespace MemSQL.Test.Structural
 
             var table = db.GetTable("TBL");
             Assert.IsTrue(table.GetColumn("bar").Unique, "Column should be unique");
-
             {
-                var row = table.NewRow();
-                row["foo"] = "1";
-                row["bar"] = 1;
+                var row = table.NewRow("1", 1);
                 table.AddRow(row);
             }
             {
-                var row = table.NewRow();
-                row["foo"] = "1";
-                row["bar"] = 2;
+                var row = table.NewRow("1", 2);
                 table.AddRow(row);
             }
 
             Assert.ThrowsException<ConstraintException>(() =>
             {
-                var row = table.NewRow();
-                row["foo"] = "2";
-                row["bar"] = 1;
+                var row = table.NewRow("2", 1);
+
                 table.AddRow(row);
             });
         }
@@ -643,9 +639,7 @@ namespace MemSQL.Test.Structural
             // Initialize T2
             Action<string, int?> t2_insert = (f1, f2) =>
             {
-                var row = t2.NewRow();
-                row["Name"] = f1;
-                row["T1"] = (object)f2 ?? DBNull.Value;
+                var row = t2.NewRow(f1, f2);
                 t2.AddRow(row);
             };
             t2_insert("A", 1);
@@ -700,9 +694,7 @@ namespace MemSQL.Test.Structural
             // Initialize T2
             Action<string, int?> t2_insert = (f1, f2) =>
             {
-                var row = t2.NewRow();
-                row["Name"] = f1;
-                row["T1"] = (object)f2 ?? DBNull.Value;
+                var row = t2.NewRow(f1, f2);
                 t2.AddRow(row);
             };
             t2_insert("A", 1);
@@ -757,9 +749,7 @@ namespace MemSQL.Test.Structural
             // Initialize T2
             Action<string, int?> t2_insert = (f1, f2) =>
             {
-                var row = t2.NewRow();
-                row["Name"] = f1;
-                row["T1"] = (object)f2 ?? DBNull.Value;
+                var row = t2.NewRow(f1, f2);
                 t2.AddRow(row);
             };
             t2_insert("A", 1);
@@ -814,9 +804,7 @@ namespace MemSQL.Test.Structural
             // Initialize T2
             Action<string, int?> t2_insert = (f1, f2) =>
             {
-                var row = t2.NewRow();
-                row["Name"] = f1;
-                row["T1"] = (object)f2 ?? DBNull.Value;
+                var row = t2.NewRow(f1, f2);
                 t2.AddRow(row);
             };
             t2_insert("A", 1);
@@ -872,9 +860,15 @@ namespace MemSQL.Test.Structural
             // Initialize T2
             Action<string, int?> t2_insert = (f1, f2) =>
             {
-                var row = t2.NewRow();
-                row["Name"] = f1;
-                if (f2.HasValue) { row["T1"] = f2; }
+                Row row;
+                if (f2.HasValue)
+                {
+                    row = t2.NewRow(f1, f2);
+                }
+                else
+                {
+                    row = t2.NewRow(f1);
+                }
                 t2.AddRow(row);
             };
             t2_insert("A", 1);
@@ -932,9 +926,15 @@ namespace MemSQL.Test.Structural
             // Initialize T2
             Action<string, int?> t2_insert = (f1, f2) =>
             {
-                var row = t2.NewRow();
-                row["Name"] = f1;
-                if (f2.HasValue) { row["T1"] = f2; }
+                Row row;
+                if (f2.HasValue)
+                {
+                    row = t2.NewRow(f1, f2);
+                }
+                else
+                {
+                    row = t2.NewRow(f1);
+                }
                 t2.AddRow(row);
             };
             t2_insert("A", 1);
