@@ -45,15 +45,10 @@ namespace MemSQL
             IEnumerable<Column> selectedColumns = table.Columns;
             if (node.SelectElements != null)
             {
-                //TODO: columnName
-                //TODO: hardcoding cast for now.
-                selectedColumns =
-                    node.SelectElements.Select(c =>
-                            Visit<string[]>(
-                                ((ColumnReferenceExpression)
-                                    ((SelectScalarExpression)c).Expression).MultiPartIdentifier).Last())
-                 .Select(name => table.GetColumn(name));
-                
+                selectedColumns = node.SelectElements.SelectMany(element =>
+                {
+                    return EvaluateExpression<Func<Table, Column[]>>(element, env)(table);
+                }).ToArray();
             }
 
             return new RecordSet(selectedColumns, Filter.From(table.Rows, predicate, top));
@@ -62,6 +57,31 @@ namespace MemSQL
         protected override object InternalVisit(FromClause node)
         {
             return node.TableReferences.Select(t => Visit<Tuple<string, Table>>(t).Item2).ToArray();
+        }
+
+        protected override object InternalVisit(SelectStarExpression node)
+        {
+            return new Func<Environment, object>(env =>
+            {
+                return new Func<Table, Column[]>(table =>
+                {
+                    return table.Columns.ToArray();
+                });
+            });
+        }
+
+        protected override object InternalVisit(SelectScalarExpression node)
+        {
+            return new Func<Environment, object>(env =>
+            {
+                return new Func<Table, Column[]>(table =>
+                {
+                    // TODO(Richo): node.ColumnName ?
+
+                    string columnName = Visit<string>(node.Expression);
+                    return new[] { table.GetColumn(columnName) };
+                });
+            });
         }
     }
 }

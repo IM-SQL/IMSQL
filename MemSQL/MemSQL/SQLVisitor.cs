@@ -67,6 +67,8 @@ namespace MemSQL
         protected virtual object InternalVisit(TSqlBatch node) { throw new NotImplementedException(); }
         protected virtual object InternalVisit(SearchedCaseExpression node) { throw new NotImplementedException(); }
         protected virtual object InternalVisit(BinaryExpression node) { throw new NotImplementedException(); }
+        protected virtual object InternalVisit(SelectStarExpression node) { throw new NotImplementedException(); }
+        protected virtual object InternalVisit(SelectScalarExpression node) { throw new NotImplementedException(); }
 
 
         class SQLInternalVisitor : TSqlFragmentVisitor
@@ -268,6 +270,16 @@ namespace MemSQL
                 Result = outer.InternalVisit(node);
             }
             public override void ExplicitVisit(BinaryExpression node)
+            {
+                Result = outer.InternalVisit(node);
+            }
+
+            public override void ExplicitVisit(SelectStarExpression node)
+            {
+                Result = outer.InternalVisit(node);
+            }
+
+            public override void ExplicitVisit(SelectScalarExpression node)
             {
                 Result = outer.InternalVisit(node);
             }
@@ -770,13 +782,11 @@ namespace MemSQL
             public override void ExplicitVisit(TableReferenceWithAlias node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(TableReference node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(SelectSetVariable node) { throw new NotImplementedException(); }
-            public override void ExplicitVisit(OrderByClause node) { throw new NotImplementedException(); }
-            public override void ExplicitVisit(SelectStarExpression node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(SelectElement node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(QueryParenthesisExpression node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(OdbcQualifiedJoinTableReference node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(QualifiedJoin node) { throw new NotImplementedException(); }
-            public override void ExplicitVisit(SelectScalarExpression node) { throw new NotImplementedException(); }
+            public override void ExplicitVisit(OrderByClause node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(BooleanTernaryExpression node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(BooleanParenthesisExpression node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(BooleanExpression node) { throw new NotImplementedException(); }
