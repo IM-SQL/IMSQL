@@ -8,8 +8,7 @@ namespace MemSQL.DataModel.Views
 {
     public class Record
     {
-
-        object[] values;
+        private object[] values;
         private RecordSet set;
 
         public Record(Row row, RecordSet recordSet)
@@ -24,10 +23,12 @@ namespace MemSQL.DataModel.Views
         }
 
         RecordSet Set { get { return set; } }
+
         public object this[string name]
         {
             get { return values[Set.IndexOfColumn(name)]; }
         }
+
         public object[] ItemArray { get { return values; } }
     }
 }

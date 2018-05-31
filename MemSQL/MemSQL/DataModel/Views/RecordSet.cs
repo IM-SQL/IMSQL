@@ -6,13 +6,15 @@ namespace MemSQL.DataModel.Views
 {
     public class RecordSet
     {
-
         public RecordSet(IEnumerable<Column> columns, IEnumerable<Row> rows)
         {
             //TODO:validate that the columns actually are from the rows, and that the rows are from the same table?
             Columns = columns.Select(c => new RecordColumn(c)).ToArray();
             Records = rows.Select(r => new Record(r, this));
         }
+
+        public IEnumerable<Record> Records { get; }
+        public IEnumerable<RecordColumn> Columns { get; }
 
         internal int IndexOfColumn(string name)
         {
@@ -33,7 +35,5 @@ namespace MemSQL.DataModel.Views
             Records = records;
             Columns = columns;
         }
-        public IEnumerable<Record> Records { get; private set; }
-        public IEnumerable<RecordColumn> Columns { get; private set; }
     }
 }

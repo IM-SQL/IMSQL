@@ -10,9 +10,7 @@ namespace MemSQL.DataModel.Views
             DataType = c.DataType;
         }
 
-        public string ColumnName { get; private set; }
-        public Type DataType { get; private set; }
-
-
+        public string ColumnName { get; }
+        public Type DataType { get;  }
     }
 }

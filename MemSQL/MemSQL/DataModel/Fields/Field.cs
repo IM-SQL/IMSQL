@@ -8,22 +8,27 @@ namespace MemSQL.DataModel.Fields
 {
     class Field
     {
-        private string columnName;
-        private Type dataType;
-        protected object value;
+        protected object value; // TODO(Richo): Why protected?
 
-        public Field(string columnName, Type dataType )
+        public Field(string columnName, Type dataType)
         {
-            this.columnName = columnName;
-            this.dataType = dataType; 
-        }
-        public Field(string columnName, Type dataType, object defaultValue):this(columnName,dataType)
-        { 
-            this.Value = defaultValue;
+            ColumnName = columnName;
+            DataType = dataType;
         }
 
-        public virtual object Value {  get => value;  set => this.value = Convert.ChangeType(value, DataType); }
-        public Type DataType { get => dataType; }
-        public string ColumnName { get => columnName; }
+        public Field(string columnName, Type dataType, object defaultValue)
+            : this(columnName, dataType)
+        {
+            Value = defaultValue;
+        }
+
+        public string ColumnName { get; }
+        public Type DataType { get; }
+
+        public virtual object Value
+        {
+            get => value;
+            set => this.value = Convert.ChangeType(value, DataType);
+        }
     }
 }

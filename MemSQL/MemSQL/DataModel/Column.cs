@@ -10,6 +10,8 @@ namespace MemSQL
 {
     public class Column
     {
+        private long? identity = null;
+
         public Column(string columnName, Type dataType)
         {
             ColumnName = columnName;
@@ -21,7 +23,19 @@ namespace MemSQL
         }
 
         public Table Table { get; set; }
-        private long? identity = null;
+
+        public string ColumnName { get; }
+        public Type DataType { get; }
+
+        public bool AllowDBNull { get; set; }
+
+        public object DefaultValue { get; set; }
+
+        public bool AutoIncrement { get; set; }
+        public long AutoIncrementStep { get; set; }
+        public long AutoIncrementSeed { get; set; }
+
+        public Func<Row, object> ComputedColumnSpecification { get; set; }
 
         internal Field NewField(object providedValue,Row owner)
         {
@@ -36,19 +50,16 @@ namespace MemSQL
             else if (AllowDBNull)
             {
                 return new NullableField(ColumnName, DataType, providedValue);
-
             }
             else if (providedValue == null)
             {
                 throw new ArgumentException(string.Format("A value for the field {0} should not have been provided", ColumnName));
             }
             return new Field(ColumnName, DataType, providedValue);
-
         }
 
         internal Field NewField(Row owner)
         {
-
             if (AutoIncrement)
             {
                 identity = identity.HasValue ? identity + AutoIncrementStep : AutoIncrementSeed;
@@ -67,8 +78,8 @@ namespace MemSQL
                 return new Field(ColumnName, DataType, DefaultValue);
             }
             throw new ArgumentException(string.Format("A value for the field {0} should not have been provided", ColumnName));
-
         }
+
         private object GetDefault(Type type)
         {
             if (type.IsValueType)
@@ -77,10 +88,6 @@ namespace MemSQL
             }
             return null;
         }
-        public string ColumnName { get; }
-        public Type DataType { get; }
-        public bool AllowDBNull { get; set; }
-        public object DefaultValue { get; set; }
 
         public bool Unique
         {
@@ -91,10 +98,6 @@ namespace MemSQL
             }
         }
 
-        public bool AutoIncrement { get; set; }
-        public long AutoIncrementStep { get; set; }
-        public long AutoIncrementSeed { get; set; }
-        public Func<Row,object> ComputedColumnSpecification { get; set; }
         public override string ToString()
         {
             return string.Format("{0} ({1})", base.ToString(), ColumnName);

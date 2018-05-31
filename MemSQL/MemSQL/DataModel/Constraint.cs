@@ -25,6 +25,5 @@ namespace MemSQL
         {
             return string.Format("{0} ({1})", base.ToString(), ConstraintName);
         }
-
     }
 }

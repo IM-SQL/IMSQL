@@ -17,10 +17,9 @@ namespace MemSQL
         {
             Table = table;
             values = table.Columns
-                .Select(col =>
-                providedValues.ContainsKey(col.ColumnName) ?
-                    col.NewField(providedValues[col.ColumnName],this)
-                    : col.NewField(this))
+                .Select(col => providedValues.ContainsKey(col.ColumnName) ?
+                    col.NewField(providedValues[col.ColumnName], this) : 
+                    col.NewField(this))
                 .ToArray();
         }
 
@@ -56,22 +55,7 @@ namespace MemSQL
             // TODO(Richo): Do we need this?
             get { return DataRowState.Detached; }
         }
-
-        public object[] ItemArray
-        {
-            get { return values; }
-            set
-            {
-                //TODO: validation of the length?
-                for (int i = 0; i < value.Length; i++)
-                {
-                    values[i].Value = value[i];
-
-                }
-
-            }
-        }
-
+        
         public void Delete()
         {
             Table.RemoveRow(this);
