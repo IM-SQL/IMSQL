@@ -10,7 +10,7 @@ namespace MemSQL.DataModel.Views
         {
             //TODO:validate that the columns actually are from the rows, and that the rows are from the same table?
             Columns = columns.Select(c => new RecordColumn(c)).ToArray();
-            Records = rows.Select(r => new Record(r, this));
+            Records = rows.Select(r => new Record(r, this)).ToArray();
         }
 
         public IEnumerable<Record> Records { get; }

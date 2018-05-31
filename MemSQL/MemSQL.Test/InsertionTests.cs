@@ -247,5 +247,44 @@ namespace MemSQL.Test
             Assert.AreEqual(1, table.GetRow(0)["A"], "The inserted value was not present on the table");
             Assert.AreEqual("asd", table.GetRow(0)["B"], "The inserted value was not present on the table");
         }
+
+        [TestMethod]
+        public void EnumeratingResultsShouldNotExecuteInsertStatementTwice()
+        {
+            var db = new Database();
+            {
+                Table table = db.AddTable("TBL");
+                table.AddColumn(new Column("Id", typeof(int))
+                {
+                    AutoIncrement = true,
+                    AutoIncrementSeed = 1,
+                    AutoIncrementStep = 1,
+                });
+                table.AddColumn(new Column("Name", typeof(string)));
+                db.AddConstraint(new UniqueConstraint("TBL_PK", new[] { table.GetColumn("Id") }, true));
+            }
+
+            var interpreter = new SQLInterpreter(db);
+            string query = "insert into TBL ([Name]) values ('Richo')";
+            var result = interpreter.Execute(query);
+
+            // Enumerating all records should have no effect
+            foreach (var table in result.Values)
+            {
+                foreach (var row in table.Records)
+                {
+                    foreach (var col in table.Columns)
+                    {
+                        Console.WriteLine(row[col.ColumnName]);
+                    }
+                }
+            }
+            // Sending ToString() also enumerates the records
+            Console.WriteLine(result.ToString());
+
+            Assert.AreEqual(1, result.RowsAffected, "There should be one row affected");
+            Assert.AreEqual(1, db.GetTable("TBL").Rows.Count(), "There should be one row on the table");
+            Assert.AreEqual(1, db.GetTable("TBL").GetRow(0)["Id"], "The Id should be set correctly");
+        }
     }
 }
