@@ -62,10 +62,7 @@ namespace MemSQL
             {
                 return new Func<Table, (string, Func<Row, object>)[]>(table =>
                 {
-                    return table.Columns.Select(col =>
-                    {
-                        return (col.ColumnName, new Func<Row, object>(r => r[col.ColumnName]));
-                    }).ToArray();
+                    return table.Columns.Select(col => col.GetDefaultSelector).ToArray();
                 });
             });
         }
