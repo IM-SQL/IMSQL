@@ -98,7 +98,7 @@ namespace MemSQL
             }
         }
 
-        public (string,Func<Row,object>) GetDefaultSelector { get { return (ColumnName, new Func<Row, object>(r => r[ColumnName])); }   }
+        internal (string,Func<Row,object>) GetDefaultSelector { get { return (ColumnName, new Func<Row, object>(r => r[ColumnName])); }   }
 
         public override string ToString()
         {
