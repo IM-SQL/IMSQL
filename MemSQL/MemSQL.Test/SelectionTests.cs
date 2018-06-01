@@ -38,7 +38,7 @@ namespace MemSQL.Test
             table.AddColumn(new Column("col1", typeof(int)));
             table.AddColumn(new Column("col2", typeof(int)));
 
-            var row = table.NewRow(1,2);
+            var row = table.NewRow(1, 2);
 
             table.AddRow(row);
 
@@ -75,6 +75,28 @@ namespace MemSQL.Test
             Assert.AreEqual(1, result.Values[0].Columns.Count(), "There should be only one column");
             Assert.AreEqual("A", result.Values[0].Columns.ElementAt(0).ColumnName, "The expected column was not on the result set");
             Assert.AreEqual(3, result.Values[0].Records.First()["A"], "The selected value was not present on the Table");
+        }
+        [TestMethod]
+        public void SelectWithExpression()
+        {
+            var db = new Database();
+            Table table = db.AddTable("TBL");
+            table.AddColumn(new Column("ID", typeof(int)));
+
+            var row = table.NewRow(3);
+
+            table.AddRow(row);
+
+            string query = "Select ID, ID*2 from [TBL]";
+            SQLInterpreter interpreter = new SQLInterpreter(db);
+
+            var result = interpreter.Execute(query);
+            int affected = result.RowsAffected;
+            Assert.AreEqual(1, affected, "There should be one row affected");
+            Assert.AreEqual(2, result.Values[0].Columns.Count(), "There should be only one column");
+            var data = result.Values[0].Records.First().ItemArray;
+            Assert.AreEqual(3, data[0], "The selected value was not present on the Table");
+            Assert.AreEqual(6, data[1], "The calculated value was not present on the Table");
         }
     }
 }
