@@ -58,9 +58,9 @@
     <Compile Include="DataModel\Table.cs" />
     <Compile Include="DataModel\Environment.cs" />
     <Compile Include="DataModel\ForeignKeyConstraint.cs" />
-    <Compile Include="DataModel\Views\Record.cs" />
-    <Compile Include="DataModel\Views\RecordColumn.cs" />
-    <Compile Include="DataModel\Views\RecordSet.cs" />
+    <Compile Include="DataModel\Results\Record.cs" />
+    <Compile Include="DataModel\Results\RecordColumn.cs" />
+    <Compile Include="DataModel\Results\RecordSet.cs" />
     <Compile Include="ParseException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Filter.cs" />

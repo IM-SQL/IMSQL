@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MemSQL.DataModel.Views
+namespace MemSQL.DataModel.Results
 {
     public class RecordColumn
     {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MemSQL.DataModel.Views
+namespace MemSQL.DataModel.Results
 {
     public class Record
     {

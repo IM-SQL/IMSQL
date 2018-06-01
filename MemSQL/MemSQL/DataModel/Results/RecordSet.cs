@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MemSQL.DataModel.Views
+namespace MemSQL.DataModel.Results
 {
     public class RecordSet
     {

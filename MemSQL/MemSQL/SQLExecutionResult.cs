@@ -1,4 +1,4 @@
-﻿using MemSQL.DataModel.Views;
+﻿using MemSQL.DataModel.Results;
 using System;
 using System.Collections;
 using System.Collections.Generic;

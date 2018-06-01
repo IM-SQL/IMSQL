@@ -4,7 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MemSQL.DataModel.Views;
+using MemSQL.DataModel.Results;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace MemSQL

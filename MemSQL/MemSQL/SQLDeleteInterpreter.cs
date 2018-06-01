@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using MemSQL.DataModel.Views;
+using MemSQL.DataModel.Results;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace MemSQL

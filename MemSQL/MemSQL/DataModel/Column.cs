@@ -5,27 +5,23 @@ using System.Text;
 using System.Threading.Tasks;
 using MemSQL.DataModel;
 using MemSQL.DataModel.Fields;
+using MemSQL.DataModel.Results;
 
 namespace MemSQL
 {
-    public class Column
+    public class Column:RecordColumn
     {
         private long? identity = null;
 
-        public Column(string columnName, Type dataType)
-        {
-            ColumnName = columnName;
-            DataType = dataType;
-
+        public Column(string columnName, Type dataType):base(columnName,dataType)
+        { 
             AutoIncrement = false;
             AutoIncrementSeed = 0;
             AutoIncrementStep = 0;
         }
 
         public Table Table { get; set; }
-
-        public string ColumnName { get; }
-        public Type DataType { get; }
+         
 
         public bool AllowDBNull { get; set; }
 
