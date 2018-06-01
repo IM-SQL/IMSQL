@@ -16,7 +16,7 @@ namespace MemSQL.DataModel.Views
             //TODO:validate that the columns actually are from the rows, and that the rows are from the same table?
             //TODO: i am evaluating the expressions to infere the type, this can cause unintended sideffects.
             Selectors = selectors;
-            Columns = Selectors.Select(c => new RecordColumn(c.Item1, InfereType(c.Item2, rows)));
+            Columns = Selectors.Select(c => new RecordColumn(c.Item1, InfereType(c.Item2, rows))).ToArray();
             Records = rows.Select(r => new Record(r, this)).ToArray();
         }
         private Type InfereType(Func<Row, object> selector, IEnumerable<Row> rows)

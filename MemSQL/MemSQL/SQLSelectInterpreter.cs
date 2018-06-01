@@ -81,8 +81,13 @@ namespace MemSQL
                           innerEnv.Add("currentRow", row);
                           return expr(innerEnv);
                       });
-                      var name = Visit<string>(node.ColumnName);
-                      if (name == null)
+                      //what about node.ColumnName.Identifier ??
+                      string name = null;
+                      if (node.ColumnName != null)
+                      {
+                          name = node.ColumnName.Value;
+                      }
+                      else
                       {
                           //try to get the column name from the selected expression, if possible.
                           //TODO: if i do a select (3+4) sql server says something like "(no column name)", i am guessing a result column should have a nullable name

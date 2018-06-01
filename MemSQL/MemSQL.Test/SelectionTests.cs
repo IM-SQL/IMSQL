@@ -28,7 +28,7 @@ namespace MemSQL.Test
             var result = interpreter.Execute(query);
             int affected = result.RowsAffected;
             Assert.AreEqual(1, affected, "There should be one row affected");
-            Assert.AreEqual(3, table.GetRow(0)["ID"], "The selected value was not present on the Table");
+            Assert.AreEqual(3, result.Values[0].Records.First()["ID"], "The selected value was not present on the Table");
         }
         [TestMethod]
         public void SomeFieldsSelectTest()
@@ -53,6 +53,28 @@ namespace MemSQL.Test
             Assert.AreEqual("col2", result.Values[0].Columns.ElementAt(0).ColumnName, "The expected column was not on the result set");
             Assert.AreEqual(1, result.Values[0].Records.Count(), "There should be only one row");
             Assert.AreEqual(2, result.Values[0].Records.ElementAt(0).ItemArray[0], "The selected value was not present on the Table");
+        }
+
+        [TestMethod]
+        public void SelectWithAlias()
+        {
+            var db = new Database();
+            Table table = db.AddTable("TBL");
+            table.AddColumn(new Column("ID", typeof(int)));
+
+            var row = table.NewRow(3);
+
+            table.AddRow(row);
+
+            string query = "Select ID as A from [TBL]";
+            SQLInterpreter interpreter = new SQLInterpreter(db);
+
+            var result = interpreter.Execute(query);
+            int affected = result.RowsAffected;
+            Assert.AreEqual(1, affected, "There should be one row affected");
+            Assert.AreEqual(1, result.Values[0].Columns.Count(), "There should be only one column");
+            Assert.AreEqual("A", result.Values[0].Columns.ElementAt(0).ColumnName, "The expected column was not on the result set");
+            Assert.AreEqual(3, result.Values[0].Records.First()["A"], "The selected value was not present on the Table");
         }
     }
 }
