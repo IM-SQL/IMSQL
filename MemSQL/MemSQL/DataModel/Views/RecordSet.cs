@@ -21,8 +21,11 @@ namespace MemSQL.DataModel.Views
         }
         private Type InfereType(Func<Row, object> selector, IEnumerable<Row> rows)
         {
+            //TODO: this type inference is flawed.
             if (rows.Count() == 0) return typeof(object);
-            return selector(rows.First()).GetType();
+            var data = selector(rows.First());
+            if (data == null) return typeof(object);
+            return data.GetType();
 
         }
         public IEnumerable<Record> Records { get; }
