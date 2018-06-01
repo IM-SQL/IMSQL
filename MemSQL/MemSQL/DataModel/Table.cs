@@ -12,6 +12,11 @@ namespace MemSQL
         private List<Row> rows = new List<Row>();
         private List<Column> columns = new List<Column>();
 
+        static Table() {
+
+            Empty = new Table(new Database());
+            Empty.rows.Add(Empty.NewRow(new object[0]));
+        }
         public Table(Database database) : this(null, database) { }
 
         public Table(string tableName, Database database)
@@ -49,6 +54,8 @@ namespace MemSQL
                     .ToArray();
             }
         }
+
+        public static Table Empty { get; internal set; }
 
         public Column GetColumn(int columnIndex)
         {

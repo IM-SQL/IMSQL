@@ -98,5 +98,27 @@ namespace MemSQL.Test
             Assert.AreEqual(3, data[0], "The selected value was not present on the Table");
             Assert.AreEqual(6, data[1], "The calculated value was not present on the Table");
         }
+        [TestMethod]
+        public void SelectWithoutTable()
+        {
+            var db = new Database();
+            Table table = db.AddTable("TBL");
+            table.AddColumn(new Column("ID", typeof(int)));
+
+            var row = table.NewRow(3);
+
+            table.AddRow(row);
+
+            string query = "Select 7";
+            SQLInterpreter interpreter = new SQLInterpreter(db);
+
+            var result = interpreter.Execute(query);
+            int affected = result.RowsAffected;
+            Assert.AreEqual(1, affected, "There should be one row affected");
+            Assert.AreEqual(1, result.Values[0].Columns.Count(), "There should be only one column");
+            var data = result.Values[0].Records.First().ItemArray;
+            Assert.AreEqual(7, data[0], "The selected value was not present on the Table");
+
+        }
     }
 }
