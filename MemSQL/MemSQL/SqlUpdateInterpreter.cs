@@ -40,7 +40,7 @@ namespace MemSQL
                 setClause(item);
             }
             table.AcceptChanges();
-            return null; //TODO: new RecordSet(table.Columns, result);
+            return   new RecordSet(table.Columns, result);
         }
 
         private Action<Row> CreateSetClause(IList<SetClause> clauses, Environment env)
