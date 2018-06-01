@@ -4,10 +4,10 @@ namespace MemSQL.DataModel.Views
 {
     public class RecordColumn
     {
-        public RecordColumn(Column c)
+        public RecordColumn(string name , Type type )
         {
-            ColumnName = c.ColumnName;
-            DataType = c.DataType;
+            ColumnName = name;
+            DataType = type;
         }
 
         public string ColumnName { get; }

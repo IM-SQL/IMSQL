@@ -16,9 +16,9 @@ namespace MemSQL.DataModel.Views
             set = recordSet;
             values = new object[set.Columns.Count()];
             int index = 0;
-            foreach (var col in set.Columns)
+            foreach (var col in set.selectors)
             {
-                values[index++] = row[col.ColumnName];
+                values[index++] = col.Item2(row);
             }
         }
 

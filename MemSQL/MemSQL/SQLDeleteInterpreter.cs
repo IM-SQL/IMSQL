@@ -35,7 +35,7 @@ namespace MemSQL
                 item.Delete();
             }
             table.AcceptChanges();
-            return new RecordSet(table.Columns, result);
+            return null; //TODO: new RecordSet(table.Columns, result);
         }
     }
 }

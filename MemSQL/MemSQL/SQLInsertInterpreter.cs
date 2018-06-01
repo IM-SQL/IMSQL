@@ -53,7 +53,7 @@ namespace MemSQL
                     return dr;
                 };
             } 
-            return new RecordSet(table.Columns, rows.Select(CreateRow));
+            return null; //TODO:new RecordSet(table.Columns, rows.Select(CreateRow));
         }
 
         protected override object InternalVisit(ValuesInsertSource node)

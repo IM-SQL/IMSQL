@@ -42,14 +42,11 @@ namespace MemSQL
 
 
             //TODO: the selected fields i get as expressions, i do not want an expression there for now.
-            IEnumerable<Column> selectedColumns = table.Columns;
-            if (node.SelectElements != null)
-            {
-                selectedColumns = node.SelectElements.SelectMany(element =>
-                {
-                    return EvaluateExpression<Func<Table, Column[]>>(element, env)(table);
-                }).ToArray();
-            }
+            var selectedColumns = node.SelectElements.SelectMany(element =>
+             {
+                 return EvaluateExpression<Func<Table, (string, Func<Row, object>)[]>>(element, env)(table);
+             }).ToArray();
+
 
             return new RecordSet(selectedColumns, Filter.From(table.Rows, predicate, top));
         }
@@ -63,9 +60,12 @@ namespace MemSQL
         {
             return new Func<Environment, object>(env =>
             {
-                return new Func<Table, Column[]>(table =>
+                return new Func<Table, (string, Func<Row, object>)[]>(table =>
                 {
-                    return table.Columns.ToArray();
+                    return table.Columns.Select(col =>
+                    {
+                        return (col.ColumnName, new Func<Row, object>(r => r[col.ColumnName]));
+                    }).ToArray();
                 });
             });
         }
@@ -74,13 +74,25 @@ namespace MemSQL
         {
             return new Func<Environment, object>(env =>
             {
-                return new Func<Table, Column[]>(table =>
-                {
-                    // TODO(Richo): node.ColumnName ?
-
-                    string columnName = Visit<string>(node.Expression);
-                    return new[] { table.GetColumn(columnName) };
-                });
+                return new Func<Table, (string, Func<Row, object>)[]>(table =>
+                  {
+                      SQLExpressionInterpreter expressionInterpreter = new SQLExpressionInterpreter(Database);
+                      var expr = expressionInterpreter.Visit<Func<Environment, object>>(node.Expression);
+                      var innerEnv = env.NewChild();
+                      var selector = new Func<Row, object>((row) =>
+                      {
+                          innerEnv.Add("currentRow", row);
+                          return expr(innerEnv);
+                      });
+                      var name = Visit<string>(node.ColumnName);
+                      if (name == null)
+                      {
+                          //try to get the column name from the selected expression, if possible.
+                          //TODO: if i do a select (3+4) sql server says something like "(no column name)", i am guessing a result column should have a nullable name
+                          name = node.ScriptTokenStream[node.LastTokenIndex].Text;
+                      }
+                      return new(string, Func<Row, object>)[] { (name, selector) };
+                  });
             });
         }
     }
