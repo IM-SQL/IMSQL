@@ -50,9 +50,9 @@ namespace MemSQL
         {
             public static void Print(object value, StringBuilder sb)
             {
-                if (value is Record)
+                if (value is RowRecord)
                 {
-                    var items = (value as Record).ItemArray;
+                    var items = (value as RowRecord).ItemArray;
                     sb.Append("(");
                     for (int i = 0; i < items.Length; i++)
                     {

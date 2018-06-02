@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MemSQL.DataModel.Results;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MemSQL
 {
-    public class Table
+    public class Table:RecordTable
     {
         private List<Row> rows = new List<Row>();
         private List<Column> columns = new List<Column>();
@@ -56,6 +57,10 @@ namespace MemSQL
         }
 
         public static Table Empty { get; internal set; }
+
+        public IEnumerable<Record> Records => Rows;
+
+        IEnumerable<RecordColumn> RecordTable.Columns => Columns;
 
         public Column GetColumn(int columnIndex)
         {

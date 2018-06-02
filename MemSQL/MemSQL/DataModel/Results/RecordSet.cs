@@ -4,8 +4,13 @@ using System.Linq;
 
 namespace MemSQL.DataModel.Results
 {
-    public class RecordSet
+    public class RecordSet:RecordTable
     {
+        public RecordSet(IEnumerable<RecordColumn> columns, IEnumerable<RowRecord> records)
+        {
+            Records = records;
+            Columns = columns;
+        }
         public RecordSet(IEnumerable<Column> columns, IEnumerable<Row> rows):this(columns.Select(c=>c.GetDefaultSelector),rows)
         {
 
@@ -17,7 +22,7 @@ namespace MemSQL.DataModel.Results
             //TODO: i am evaluating the expressions to infere the type, this can cause unintended sideffects.
             Selectors = selectors;
             Columns = Selectors.Select(c => new RecordColumn(c.Item1, InfereType(c.Item2, rows))).ToArray();
-            Records = rows.Select(r => new Record(r, this)).ToArray();
+            Records = rows.Select(r => new RowRecord(r, this)).ToArray();
         }
         private Type InfereType(Func<Row, object> selector, IEnumerable<Row> rows)
         {
@@ -28,9 +33,12 @@ namespace MemSQL.DataModel.Results
             return data.GetType();
 
         }
-        public IEnumerable<Record> Records { get; }
+        public IEnumerable<RowRecord> Records { get; }
         public IEnumerable<RecordColumn> Columns { get; }
         internal IEnumerable<(string, Func<Row, object>)> Selectors { get; private set; }
+
+        IEnumerable<Record> RecordTable.Records => Records;
+
         internal int IndexOfColumn(string name)
         {
             int result = -1;
@@ -45,10 +53,6 @@ namespace MemSQL.DataModel.Results
             throw new KeyNotFoundException();
         }
 
-        public RecordSet(IEnumerable<RecordColumn> columns, IEnumerable<Record> records)
-        {
-            Records = records;
-            Columns = columns;
-        }
+      
     }
 }

@@ -1,5 +1,6 @@
 ﻿using MemSQL.DataModel;
 using MemSQL.DataModel.Fields;
+using MemSQL.DataModel.Results;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace MemSQL
 {
-    public class Row
+    public class Row:Record
     {
         private Field[] values;
 
@@ -55,7 +56,9 @@ namespace MemSQL
             // TODO(Richo): Do we need this?
             get { return DataRowState.Detached; }
         }
-        
+
+        public object[] ItemArray => values.Select(v=>v.Value).ToArray();
+
         public void Delete()
         {
             Table.RemoveRow(this);

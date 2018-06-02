@@ -25,7 +25,7 @@ namespace MemSQL
         public Table GetTable(string tableName)
         {
             if (tables.TryGetValue(tableName, out Table table)) return table;
-            return null;
+            throw new InvalidOperationException("Invalid object name " + tableName );
         }
         
         public Table AddTable(string tableName)

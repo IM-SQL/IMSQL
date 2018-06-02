@@ -54,13 +54,16 @@
     <Compile Include="DataModel\Fields\Field.cs" />
     <Compile Include="DataModel\Fields\IdentityField.cs" />
     <Compile Include="DataModel\Fields\NullableField.cs" />
+    <Compile Include="DataModel\Results\Record.cs" />
+    <Compile Include="DataModel\Results\RecordTable.cs" />
     <Compile Include="DataModel\Row.cs" />
     <Compile Include="DataModel\Table.cs" />
     <Compile Include="DataModel\Environment.cs" />
     <Compile Include="DataModel\ForeignKeyConstraint.cs" />
-    <Compile Include="DataModel\Results\Record.cs" />
+    <Compile Include="DataModel\Results\RowRecord.cs" />
     <Compile Include="DataModel\Results\RecordColumn.cs" />
     <Compile Include="DataModel\Results\RecordSet.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="ParseException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Filter.cs" />

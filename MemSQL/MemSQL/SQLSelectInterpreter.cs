@@ -41,6 +41,7 @@ namespace MemSQL
                 tables = new Table[] { Table.Empty };
             }
             Table table = tables.First();
+           
             var top = EvaluateExpression<TopResult>(node.TopRowFilter, env);
             var predicate = EvaluateExpression<Func<Row, bool>>(node.WhereClause, env, row => true);
 
