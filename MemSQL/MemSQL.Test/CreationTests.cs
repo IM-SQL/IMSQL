@@ -78,7 +78,7 @@ namespace MemSQL.Test.Structural
             Assert.AreEqual(typeof(string), table.GetColumn("col2").DataType);
             Assert.IsTrue(table.ContainsColumn("col3"));
             Assert.AreEqual(typeof(bool), table.GetColumn("col3").DataType);
-            
+
             var dr = table.NewRow(("data", 0));
             Assert.AreEqual(0, dr["data"], "The default value was not present on the row");
             Assert.AreEqual(3, dr["col1"], "The default value was not present on the row");
@@ -156,7 +156,9 @@ namespace MemSQL.Test.Structural
             {
                 visitor.Execute(script);
             });
-            Assert.IsNull(db.GetTable("TBL"), "TBL should not exist");
+            Assert.ThrowsException<InvalidOperationException>(
+               () => { db.GetTable("TBL"); },
+               "Table 'TBL' should not exist");
         }
 
         [TestMethod]
@@ -229,7 +231,7 @@ namespace MemSQL.Test.Structural
         {
             string script = "CREATE TABLE [TBL](  " +
                 "[num] INT NOT NULL," +
-                "  [calc]  AS ( num ))" ;
+                "  [calc]  AS ( num ))";
             var db = new Database();
             var visitor = new SQLInterpreter(db);
             var result = visitor.Execute(script);
@@ -283,7 +285,10 @@ namespace MemSQL.Test.Structural
             {
                 visitor.Execute(script);
             });
-            Assert.IsNull(db.GetTable("table"), "Table 'table' should not exist");
+            Assert.ThrowsException<InvalidOperationException>(
+                () => { db.GetTable("table"); },
+                "Table 'table' should not exist");
+
         }
 
         [TestMethod]
@@ -298,11 +303,13 @@ namespace MemSQL.Test.Structural
                 ";
             var db = new Database();
             var visitor = new SQLInterpreter(db);
-            Assert.ThrowsException<NullReferenceException>(() =>
+            Assert.ThrowsException<InvalidOperationException>(() =>
             {
                 visitor.Execute(script);
             });
-            Assert.IsNull(db.GetTable("TBL"), "TBL should not exist");
+            Assert.ThrowsException<InvalidOperationException>(
+                    () => { db.GetTable("TBL"); },
+                    "Table 'TBL' should not exist");
         }
 
         [TestMethod]
@@ -326,7 +333,9 @@ namespace MemSQL.Test.Structural
                 {
                     visitor.Execute(script);
                 });
-                Assert.IsNull(db.GetTable("TBL"), "TBL should not exist");
+                Assert.ThrowsException<InvalidOperationException>(
+                    () => { db.GetTable("TBL"); },
+                    "Table 'TBL' should not exist");
             }
         }
 
@@ -352,7 +361,9 @@ namespace MemSQL.Test.Structural
                 {
                     visitor.Execute(script);
                 });
-                Assert.IsNull(db.GetTable("TBL"), "TBL should not exist");
+                Assert.ThrowsException<InvalidOperationException>(
+                    () => { db.GetTable("TBL"); },
+                    "Table 'TBL' should not exist");
             }
         }
 
@@ -585,7 +596,9 @@ namespace MemSQL.Test.Structural
             {
                 visitor.Execute(script);
             });
-            Assert.IsNull(db.GetTable("TBL"), "TBL should not exist");
+            Assert.ThrowsException<InvalidOperationException>(
+                    () => { db.GetTable("TBL"); },
+                    "Table 'TBL' should not exist");
         }
 
         [TestMethod]
@@ -609,7 +622,9 @@ namespace MemSQL.Test.Structural
                */
                 visitor.Execute(script);
             });
-            Assert.IsNull(db.GetTable("TBL"), "TBL should not exist");
+            Assert.ThrowsException<InvalidOperationException>(
+               () => { db.GetTable("TBL"); },
+               "Table 'TBL' should not exist");
         }
 
         [TestMethod]
@@ -888,7 +903,7 @@ namespace MemSQL.Test.Structural
                 }
                 else
                 {
-                    row = t2.NewRow(("Name",f1));
+                    row = t2.NewRow(("Name", f1));
                 }
                 t2.AddRow(row);
             };
@@ -1003,7 +1018,9 @@ namespace MemSQL.Test.Structural
                     )";
                 visitor.Execute(script);
             });
-            Assert.IsNull(db.GetTable("T2"), "T2 should not exist");
+            Assert.ThrowsException<InvalidOperationException>(
+                    () => { db.GetTable("T2"); },
+                    "Table 'T2' should not exist");
         }
 
         [TestMethod]
@@ -1026,7 +1043,9 @@ namespace MemSQL.Test.Structural
                     )";
                 visitor.Execute(script);
             });
-            Assert.IsNull(db.GetTable("T2"), "T2 should not exist");
+            Assert.ThrowsException<InvalidOperationException>(
+                    () => { db.GetTable("T2"); },
+                    "Table 'T2' should not exist");
         }
 
         [TestMethod]
@@ -1049,7 +1068,9 @@ namespace MemSQL.Test.Structural
                     )";
                 visitor.Execute(script);
             });
-            Assert.IsNull(db.GetTable("T2"), "T2 should not exist");
+            Assert.ThrowsException<InvalidOperationException>(
+                    () => { db.GetTable("T2"); },
+                    "Table 'T2' should not exist");
         }
 
         [TestMethod]
@@ -1072,7 +1093,9 @@ namespace MemSQL.Test.Structural
                     )";
                 visitor.Execute(script);
             });
-            Assert.IsNull(db.GetTable("T2"), "T2 should not exist");
+            Assert.ThrowsException<InvalidOperationException>(
+                    () => { db.GetTable("T2"); },
+                    "Table 'T2' should not exist");
         }
     }
 }
