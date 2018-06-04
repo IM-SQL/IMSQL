@@ -25,7 +25,7 @@ namespace MemSQL
             List<string> providedColumns = node.Columns
                 .Select(columnReference => Visit<string>(columnReference))
                 .ToList();
-            var rows = Visit<object[][]>(node.InsertSource);
+            var providedRows = Visit<object[][]>(node.InsertSource);
             Func<object[], Row> CreateRow;
             if (providedColumns.Count == 0)
             {
@@ -54,17 +54,9 @@ namespace MemSQL
                     return dr;
                 };
             }
-            var set = rows.Select(CreateRow).ToArray();
-            var result = new RecordSet(table.Columns, set);
-            var selectors =  Visit<Func<Environment, Func<RecordTable, (string, Func<Record, object>)[]>>>(node.OutputClause)?.Invoke(Database.GlobalEnvironment)(result);
-            if (selectors == null)
-            {
-                //no output clause
-                return new SQLExecutionResult(set.Length,null);
-            }
-            var filteredResult = new RecordSet(selectors, Filter.From(result.Records, (row)=>true, null));
-
-            return new SQLExecutionResult(result.Records.Count(), filteredResult);
+            var rows = providedRows.Select(CreateRow).ToArray();
+            return new SQLExecutionResult(rows.Count(),
+                ApplyOutputClause(new RecordSet(table.Columns, rows), node.OutputClause)); 
         }
 
         protected override object InternalVisit(ValuesInsertSource node)

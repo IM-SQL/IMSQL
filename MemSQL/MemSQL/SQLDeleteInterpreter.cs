@@ -36,18 +36,8 @@ namespace MemSQL
                 item.Delete();
             }
             table.AcceptChanges();
-
-             
-            var result = new RecordSet(table.Columns, rows);
-            var selectors = Visit<Func<Environment, Func<RecordTable, (string, Func<Record, object>)[]>>>(node.OutputClause)?.Invoke(Database.GlobalEnvironment)(result);
-            if (selectors == null)
-            {
-                //no output clause
-                return new SQLExecutionResult(rows.Length, null);
-            }
-            var filteredResult = new RecordSet(selectors, Filter.From(result.Records, (row) => true, null));
-
-            return new SQLExecutionResult(result.Records.Count(), filteredResult); 
+            return new SQLExecutionResult(rows.Count(),
+                ApplyOutputClause(new RecordSet(table.Columns, rows), node.OutputClause));
         }
     }
 }

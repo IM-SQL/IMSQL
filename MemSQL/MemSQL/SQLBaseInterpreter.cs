@@ -1,4 +1,5 @@
 ﻿using MemSQL.DataModel.Results;
+using MemSQL.Result;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 using System;
 using System.Collections.Generic;
@@ -201,6 +202,15 @@ namespace MemSQL
 
 
         //TODO: maybe move this to a subclass
+        protected virtual RecordSet ApplyOutputClause(RecordSet source, OutputClause clause)
+        {
+            var selectors = Visit<Func<Environment, Func<RecordTable, (string, Func<Record, object>)[]>>>(clause)?.Invoke(Database.GlobalEnvironment)(source);
+            if (selectors != null)
+            {
+                return new RecordSet(selectors, Filter.From(source.Records, (row) => true, null));
+            }
+            return null;
+        }
         protected override object InternalVisit(OutputClause node)
         {
             return new Func<Environment, Func<RecordTable, (string, Func<Record, object>)[]>>(
@@ -243,17 +253,17 @@ namespace MemSQL
                         innerEnv.Add("currentRow", row);
                         return expr(innerEnv);
                     });
-            //what about node.ColumnName.Identifier ??
-            string name = null;
+                    //what about node.ColumnName.Identifier ??
+                    string name = null;
                     if (node.ColumnName != null)
                     {
                         name = node.ColumnName.Value;
                     }
                     else
                     {
-                //try to get the column name from the selected expression, if possible.
-                //TODO: if i do a select (3+4) sql server says something like "(no column name)", i am guessing a result column should have a nullable name
-                name = node.ScriptTokenStream[node.LastTokenIndex].Text;
+                        //try to get the column name from the selected expression, if possible.
+                        //TODO: if i do a select (3+4) sql server says something like "(no column name)", i am guessing a result column should have a nullable name
+                        name = node.ScriptTokenStream[node.LastTokenIndex].Text;
                     }
                     return new(string, Func<Record, object>)[] { (name, selector) };
                 });
