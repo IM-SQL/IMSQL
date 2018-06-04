@@ -11,14 +11,14 @@ namespace MemSQL
 {
     public class SQLExecutionResult
     {
-        public SQLExecutionResult(int rowsAffected, RecordSet[] values)
+        public SQLExecutionResult(int rowsAffected, RecordSet values)
         {
             RowsAffected = rowsAffected;
             Values = values;
         }
 
         public int RowsAffected { get; }
-        public RecordSet[] Values { get; }
+        public RecordSet Values { get; }
 
         public override string ToString()
         {
@@ -26,16 +26,14 @@ namespace MemSQL
             sb.Append("Rows affected: ");
             sb.Append(RowsAffected);
             bool first = true;
-            foreach (var set in Values)
+            foreach (var item in Values.Records)
             {
-                foreach (var item in set.Records)
-                {
-                    if (first) { sb.AppendLine(); first = false; }
-                    sb.AppendLine();
-                    Printer.Print(item, sb);
-                }
+                if (first) { sb.AppendLine(); first = false; }
                 sb.AppendLine();
+                Printer.Print(item, sb);
             }
+            sb.AppendLine();
+
             return sb.ToString();
         }
 

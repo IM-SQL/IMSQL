@@ -10,21 +10,21 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace MemSQL
-{ 
+{
     public class SQLInterpreter : SQLBaseInterpreter
     {
-        public SQLInterpreter() : this(new Database()) {}
-        public SQLInterpreter(Database db) : base(db) {}
+        public SQLInterpreter() : this(new Database()) { }
+        public SQLInterpreter(Database db) : base(db) { }
 
-        public SQLExecutionResult Execute(TextReader script)
+        public SQLExecutionResult[] Execute(TextReader script)
         {
             var parser = new TSql140Parser(false);
             var parseResult = parser.Parse(script, out var errors);
             if (errors.Any()) { throw new ParseException(errors); }
-            return Visit<SQLExecutionResult>(parseResult);
+            return Visit<SQLExecutionResult[]>(parseResult);
         }
 
-        public SQLExecutionResult Execute(string script)
+        public SQLExecutionResult[] Execute(string script)
         {
             using (var reader = new StringReader(script))
             {
@@ -34,15 +34,12 @@ namespace MemSQL
 
         protected override object InternalVisit(TSqlScript node)
         {
-            var results = VisitCollection<Tuple<int, object>[]>(node.Batches).SelectMany(each => each);
-            return new SQLExecutionResult(
-                rowsAffected: results.Sum(tuple => tuple.Item1),
-                values: results.Select(tuple => (RecordSet)tuple.Item2).ToArray());
+            return VisitCollection<SQLExecutionResult[]>(node.Batches).SelectMany(each => each).ToArray();
         }
 
         protected override object InternalVisit(TSqlBatch node)
         {
-            return VisitCollection<Tuple<int, object>>(node.Statements).ToArray();
+            return VisitCollection<SQLExecutionResult>(node.Statements).ToArray();
         }
 
         protected override object InternalVisit(CreateTableStatement node)
@@ -55,8 +52,7 @@ namespace MemSQL
         protected override object InternalVisit(InsertStatement node)
         {
             var interpreter = new SQLInsertInterpreter(Database);
-            var set = interpreter.Visit<RecordSet>(node);
-            return new Tuple<int, object>(set.Records.Count(), set);
+            return interpreter.Visit<SQLExecutionResult>(node);
         }
 
         protected override object InternalVisit(CreateIndexStatement node)

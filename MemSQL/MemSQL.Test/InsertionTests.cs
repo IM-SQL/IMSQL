@@ -20,7 +20,7 @@ namespace MemSQL.Test
             string query = "Insert into [TBL] values(3)";
 
             SQLInterpreter interpreter = new SQLInterpreter(db);
-            var result = interpreter.Execute(query);
+            var result = interpreter.Execute(query)[0];
             int affected = result.RowsAffected;
 
             Assert.AreEqual(1, affected, "There should be one row affected");
@@ -38,7 +38,7 @@ namespace MemSQL.Test
             string query = "Insert into [TBL] values(3,'asd')";
 
             SQLInterpreter interpreter = new SQLInterpreter(db);
-            var result = interpreter.Execute(query);
+            var result = interpreter.Execute(query)[0];
             int affected = result.RowsAffected;
 
             Assert.AreEqual(1, affected, "There should be one row affected");
@@ -82,7 +82,7 @@ namespace MemSQL.Test
             string query = "Insert into [TBL](A) values(3)";
 
             SQLInterpreter interpreter = new SQLInterpreter(db);
-            var result = interpreter.Execute(query);
+            var result = interpreter.Execute(query)[0];
             int affected = result.RowsAffected;
             Assert.AreEqual(1, affected, "There should be one row affected");
             Assert.AreEqual(1, table.Rows.Count(), "There should be one row on the table");
@@ -100,7 +100,7 @@ namespace MemSQL.Test
             string query = "Insert into [TBL] values(NULL)";
 
             SQLInterpreter interpreter = new SQLInterpreter(db);
-            var result = interpreter.Execute(query);
+            var result = interpreter.Execute(query)[0];
             int affected = result.RowsAffected;
 
             Assert.AreEqual(1, affected, "There should be one row affected");
@@ -118,7 +118,7 @@ namespace MemSQL.Test
             string query = "Insert into [TBL](B,A) values(2,1)";
 
             SQLInterpreter interpreter = new SQLInterpreter(db);
-            var result = interpreter.Execute(query);
+            var result = interpreter.Execute(query)[0];
             int affected = result.RowsAffected;
 
             Assert.AreEqual(1, affected, "There should be one row affected");
@@ -139,7 +139,7 @@ namespace MemSQL.Test
             string query = "Insert into [TBL](B,A) values(2,1)";
 
             SQLInterpreter interpreter = new SQLInterpreter(db);
-            var result = interpreter.Execute(query);
+            var result = interpreter.Execute(query)[0];
             int affected = result.RowsAffected;
 
             Assert.AreEqual(1, affected, "There should be one row affected");
@@ -172,7 +172,7 @@ namespace MemSQL.Test
                 "Insert into [TBL] values {0}", string.Join(", ", testData.Select(t => printTuple(t))));
 
             SQLInterpreter interpreter = new SQLInterpreter(db);
-            var result = interpreter.Execute(query);
+            var result = interpreter.Execute(query)[0];
             int affected = result.RowsAffected;
 
             Assert.AreEqual(testData.Count, affected, "The amount of rows affected is wrong");
@@ -241,7 +241,7 @@ namespace MemSQL.Test
             string query = "Insert into [TBL] values('asd')";
 
             SQLInterpreter interpreter = new SQLInterpreter(db);
-            var result = interpreter.Execute(query);
+            var result = interpreter.Execute(query)[0];
             Assert.AreEqual(1, result.RowsAffected, "There should be one row affected");
             Assert.AreEqual(1, table.Rows.Count(), "There should be one row on the table");
             Assert.AreEqual(1, table.GetRow(0)["A"], "The inserted value was not present on the table");
@@ -266,19 +266,18 @@ namespace MemSQL.Test
 
             var interpreter = new SQLInterpreter(db);
             string query = "insert into TBL ([Name]) values ('Richo')";
-            var result = interpreter.Execute(query);
+            var result = interpreter.Execute(query)[0];
 
             // Enumerating all records should have no effect
-            foreach (var table in result.Values)
+
+            foreach (var row in result.Values.Records)
             {
-                foreach (var row in table.Records)
+                foreach (var col in result.Values.Columns)
                 {
-                    foreach (var col in table.Columns)
-                    {
-                        Console.WriteLine(row[col.ColumnName]);
-                    }
+                    Console.WriteLine(row[col.ColumnName]);
                 }
             }
+
             // Sending ToString() also enumerates the records
             Console.WriteLine(result.ToString());
 
@@ -301,7 +300,7 @@ namespace MemSQL.Test
                  [Enabled] bit default 1
                 )");
 
-            var result = interpreter.Execute("insert into Customer ([Name]) values ('Richo'),('Diego'),('Sofía')");
+            var result = interpreter.Execute("insert into Customer ([Name]) values ('Richo'),('Diego'),('Sofía')")[0];
 
             Assert.AreEqual(3, result.RowsAffected, "Three rows should be inserted");
             Assert.AreEqual(3, db.GetTable("Customer").Rows.Count(), "There should be 3 rows in the table");
@@ -317,11 +316,11 @@ namespace MemSQL.Test
             string query = "Insert into [TBL] values(3,'asd')";
 
             SQLInterpreter interpreter = new SQLInterpreter(db);
-            var result = interpreter.Execute(query);
+            var result = interpreter.Execute(query)[0];
             int affected = result.RowsAffected;
 
             Assert.AreEqual(1, affected, "There should be one row affected");
-            Assert.AreEqual(0, result.Values.Length, "No result should have been returned");
+            Assert.AreEqual(null, result.Values, "No result should have been returned");
         }
         [TestMethod]
         public void InsertWithOutput()
@@ -333,12 +332,12 @@ namespace MemSQL.Test
             string query = "Insert into [TBL] output inserted.* values(3,'asd')";
 
             SQLInterpreter interpreter = new SQLInterpreter(db);
-            var result = interpreter.Execute(query);
+            var result = interpreter.Execute(query)[0];
             int affected = result.RowsAffected;
 
             Assert.AreEqual(1, affected, "There should be one row affected");
-            Assert.AreEqual(1, result.Values.Length, "One result should have been returned");
-            var resultSet = result.Values[0];
+            Assert.AreNotEqual(null, result.Values, "One result should have been returned");
+            var resultSet = result.Values;
             Assert.AreEqual(2, resultSet.Columns.Count(), "The result should have two columns");
             Assert.AreEqual("A", resultSet.Columns.ElementAt(0).ColumnName, "Failed to find the expected column");
             Assert.AreEqual("B", resultSet.Columns.ElementAt(1).ColumnName, "Failed to find the expected column");
@@ -360,19 +359,19 @@ namespace MemSQL.Test
             string query = "Insert into [TBL] output inserted.A values(3,'asd')";
 
             SQLInterpreter interpreter = new SQLInterpreter(db);
-            var result = interpreter.Execute(query);
+            var result = interpreter.Execute(query)[0];
             int affected = result.RowsAffected;
 
             Assert.AreEqual(1, affected, "There should be one row affected");
-            Assert.AreEqual(1, result.Values.Length, "One result should have been returned");
-            var resultSet = result.Values[0];
+            Assert.AreNotEqual(null, result.Values, "One result should have been returned");
+            var resultSet = result.Values;
             Assert.AreEqual(1, resultSet.Columns.Count(), "The result should have two columns");
             Assert.AreEqual("A", resultSet.Columns.ElementAt(0).ColumnName, "Failed to find the expected column");
 
             Assert.AreEqual(1, resultSet.Records.Count(), "There should be one row");
             var row = resultSet.Records.ElementAt(0);
 
-            Assert.AreEqual(3, row["A"], "The expected result was not present in the row"); 
+            Assert.AreEqual(3, row["A"], "The expected result was not present in the row");
 
         }
     }

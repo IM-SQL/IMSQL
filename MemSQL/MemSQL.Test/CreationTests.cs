@@ -16,7 +16,7 @@ namespace MemSQL.Test.Structural
             string script = "Create table [TBL](col1 int,col2 varchar(3),col3 bit)";
             var db = new Database();
             var visitor = new SQLInterpreter(db);
-            var result = visitor.Execute(script);
+            var result = visitor.Execute(script)[0];
             Assert.AreEqual(0, result.RowsAffected);
             Assert.IsTrue(db.ContainsTable("TBL"), "The table must be created");
             var table = db.GetTable("TBL");
@@ -40,7 +40,7 @@ namespace MemSQL.Test.Structural
                             + "PRIMARY KEY (ID));";
             var db = new Database();
             var visitor = new SQLInterpreter(db);
-            var result = visitor.Execute(script);
+            var result = visitor.Execute(script)[0];
             Assert.AreEqual(0, result.RowsAffected);
             Assert.IsTrue(db.ContainsTable("CUSTOMERS"), "The table must be created");
             var table = db.GetTable("CUSTOMERS");
@@ -68,7 +68,7 @@ namespace MemSQL.Test.Structural
                 "col3 bit DEFAULT 1)";
             var db = new Database();
             var visitor = new SQLInterpreter(db);
-            var result = visitor.Execute(script);
+            var result = visitor.Execute(script)[0];
             Assert.AreEqual(0, result.RowsAffected);
             Assert.IsTrue(db.ContainsTable("TBL"), "The table must be created");
             var table = db.GetTable("TBL");
@@ -92,7 +92,7 @@ namespace MemSQL.Test.Structural
             string script = "Create table [TBL](col1 int NOT NULL,col2 int NULL)";
             var db = new Database();
             var visitor = new SQLInterpreter(db);
-            var result = visitor.Execute(script);
+            var result = visitor.Execute(script)[0];
             Assert.AreEqual(0, result.RowsAffected);
             Assert.IsTrue(db.ContainsTable("TBL"), "The table must be created");
             var table = db.GetTable("TBL");
@@ -110,7 +110,7 @@ namespace MemSQL.Test.Structural
             string script = "Create table [TBL](ID int IDENTITY(3,3) PRIMARY KEY, DATA int)";
             var db = new Database();
             var visitor = new SQLInterpreter(db);
-            var result = visitor.Execute(script);
+            var result = visitor.Execute(script)[0];
             Assert.AreEqual(0, result.RowsAffected);
             Assert.IsTrue(db.ContainsTable("TBL"), "The table must be created");
             var table = db.GetTable("TBL");
@@ -132,7 +132,7 @@ namespace MemSQL.Test.Structural
             string script = "Create table [TBL](ID int PRIMARY KEY)";
             var db = new Database();
             var visitor = new SQLInterpreter(db);
-            var result = visitor.Execute(script);
+            var result = visitor.Execute(script)[0];
             Assert.AreEqual(0, result.RowsAffected);
             Assert.IsTrue(db.ContainsTable("TBL"), "The table must be created");
             var table = db.GetTable("TBL");
@@ -173,7 +173,7 @@ namespace MemSQL.Test.Structural
                 )";
             var db = new Database();
             var visitor = new SQLInterpreter(db);
-            var result = visitor.Execute(script);
+            var result = visitor.Execute(script)[0];
             Assert.AreEqual(0, result.RowsAffected);
             Assert.IsTrue(db.ContainsTable("TBL"), "The table must be created");
             var table = db.GetTable("TBL");
@@ -194,7 +194,7 @@ namespace MemSQL.Test.Structural
             string script = "Create table [TBL](col1 int NOT NULL,PRIMARY KEY (col1))";
             var db = new Database();
             var visitor = new SQLInterpreter(db);
-            var result = visitor.Execute(script);
+            var result = visitor.Execute(script)[0];
             Assert.AreEqual(0, result.RowsAffected);
             Assert.IsTrue(db.ContainsTable("TBL"), "The table must be created");
             var table = db.GetTable("TBL");
@@ -207,7 +207,7 @@ namespace MemSQL.Test.Structural
             string script2 = "Create table [TBL2](col2 int NOT NULL,PRIMARY KEY (col2), " +
                 "CONSTRAINT FK_tbl FOREIGN KEY (col2)     REFERENCES TBL(col1))";
 
-            result = visitor.Execute(script2);
+            result = visitor.Execute(script2)[0];
             Assert.IsTrue(db.ContainsTable("TBL2"), "The table must be created");
             var table2 = db.GetTable("TBL2");
             Assert.IsTrue(table2.ContainsColumn("col2"));
@@ -234,7 +234,7 @@ namespace MemSQL.Test.Structural
                 "  [calc]  AS ( num ))";
             var db = new Database();
             var visitor = new SQLInterpreter(db);
-            var result = visitor.Execute(script);
+            var result = visitor.Execute(script)[0];
             Assert.AreEqual(0, result.RowsAffected);
             Assert.IsTrue(db.ContainsTable("TBL"), "The table must be created");
             var table = db.GetTable("TBL");
@@ -260,7 +260,7 @@ namespace MemSQL.Test.Structural
                 "    END)";
             var db = new Database();
             var visitor = new SQLInterpreter(db);
-            var result = visitor.Execute(script);
+            var result = visitor.Execute(script)[0];
             Assert.AreEqual(0, result.RowsAffected);
             Assert.IsTrue(db.ContainsTable("TBL"), "The table must be created");
             var table = db.GetTable("TBL");

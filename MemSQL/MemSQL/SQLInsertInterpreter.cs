@@ -15,7 +15,7 @@ namespace MemSQL
 
         protected override object InternalVisit(InsertStatement node)
         {
-            return Visit<RecordSet>(node.InsertSpecification);
+            return Visit<SQLExecutionResult>(node.InsertSpecification);
         }
 
         protected override object InternalVisit(InsertSpecification node)
@@ -52,8 +52,15 @@ namespace MemSQL
                     table.AddRow(dr);
                     return dr;
                 };
-            } 
-            return  new RecordSet(table.Columns, rows.Select(CreateRow));
+            }
+            var set = rows.Select(CreateRow).ToArray();
+            var selectors = Visit<Func<Table, (string, Func<Row, object>)[]>>(node.OutputClause);
+            if (selectors == null)
+            {
+                //no output clause
+                return new SQLExecutionResult(set.Length,null);
+            }
+            throw new NotImplementedException(); 
         }
 
         protected override object InternalVisit(ValuesInsertSource node)
