@@ -190,6 +190,7 @@ namespace MemSQL
             //TODO: node.Cursor
             return new SQLExpressionInterpreter(Database).Visit<object>(node);
         }
+
         protected override object InternalVisit(SearchedCaseExpression node)
         {
             //TODO: node.Cursor

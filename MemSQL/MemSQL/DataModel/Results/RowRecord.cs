@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MemSQL.DataModel.Results
 {
-    public class RowRecord:Record
+    public class RowRecord : Record
     {
         private object[] values;
         private RecordSet set;
@@ -30,6 +30,6 @@ namespace MemSQL.DataModel.Results
         }
 
         public object[] ItemArray { get { return values; } }
-         
+
     }
 }

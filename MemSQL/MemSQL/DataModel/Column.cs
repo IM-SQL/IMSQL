@@ -9,19 +9,19 @@ using MemSQL.DataModel.Results;
 
 namespace MemSQL
 {
-    public class Column:RecordColumn
+    public class Column : RecordColumn
     {
         private long? identity = null;
 
-        public Column(string columnName, Type dataType):base(columnName,dataType)
-        { 
+        public Column(string columnName, Type dataType) : base(columnName, dataType)
+        {
             AutoIncrement = false;
             AutoIncrementSeed = 0;
             AutoIncrementStep = 0;
         }
 
         public Table Table { get; set; }
-         
+
 
         public bool AllowDBNull { get; set; }
 
@@ -33,7 +33,7 @@ namespace MemSQL
 
         public Func<Row, object> ComputedColumnSpecification { get; set; }
 
-        internal Field NewField(object providedValue,Row owner)
+        internal Field NewField(object providedValue, Row owner)
         {
             if (AutoIncrement)
             {
@@ -63,7 +63,7 @@ namespace MemSQL
             }
             else if (ComputedColumnSpecification != null)
             {
-                return new CalculatedField(ColumnName, DataType, ComputedColumnSpecification,owner);
+                return new CalculatedField(ColumnName, DataType, ComputedColumnSpecification, owner);
             }
             else if (AllowDBNull)
             {
@@ -94,7 +94,7 @@ namespace MemSQL
             }
         }
 
-        internal (string,Func<Row,object>) GetDefaultSelector { get { return (ColumnName, new Func<Row, object>(r => r[ColumnName])); }   }
+        internal (string, Func<Row, object>) GetDefaultSelector { get { return (ColumnName, new Func<Row, object>(r => r[ColumnName])); } }
 
         public override string ToString()
         {

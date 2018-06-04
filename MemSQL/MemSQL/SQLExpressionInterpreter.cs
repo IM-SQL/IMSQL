@@ -215,7 +215,6 @@ namespace MemSQL
                     });
                     break;
                 default:
-
                     throw new NotImplementedException(); 
             }
 

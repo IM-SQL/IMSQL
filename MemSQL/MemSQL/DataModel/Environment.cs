@@ -19,7 +19,7 @@ namespace MemSQL
         }
 
         public Environment() : this(null) { }
-        
+
         public object this[string key]
         {
             get

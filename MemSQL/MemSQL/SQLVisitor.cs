@@ -265,10 +265,12 @@ namespace MemSQL
             {
                 Result = outer.InternalVisit(node);
             }
+
             public override void ExplicitVisit(SearchedCaseExpression node)
             {
                 Result = outer.InternalVisit(node);
             }
+
             public override void ExplicitVisit(BinaryExpression node)
             {
                 Result = outer.InternalVisit(node);

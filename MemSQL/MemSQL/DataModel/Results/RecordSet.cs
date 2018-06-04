@@ -4,17 +4,18 @@ using System.Linq;
 
 namespace MemSQL.DataModel.Results
 {
-    public class RecordSet:RecordTable
+    public class RecordSet : RecordTable
     {
         public RecordSet(IEnumerable<RecordColumn> columns, IEnumerable<RowRecord> records)
         {
             Records = records;
             Columns = columns;
         }
-        public RecordSet(IEnumerable<Column> columns, IEnumerable<Row> rows):this(columns.Select(c=>c.GetDefaultSelector),rows)
-        {
 
-        }
+        public RecordSet(IEnumerable<Column> columns, IEnumerable<Row> rows)
+            : this(columns.Select(c => c.GetDefaultSelector), rows)
+        { }
+
         public RecordSet(IEnumerable<(string, Func<Row, object>)> selectors, IEnumerable<Row> providedRows)
         {
             var rows = providedRows.ToArray();
@@ -24,6 +25,7 @@ namespace MemSQL.DataModel.Results
             Columns = Selectors.Select(c => new RecordColumn(c.Item1, InfereType(c.Item2, rows))).ToArray();
             Records = rows.Select(r => new RowRecord(r, this)).ToArray();
         }
+
         private Type InfereType(Func<Row, object> selector, IEnumerable<Row> rows)
         {
             //TODO: this type inference is flawed.
@@ -31,8 +33,8 @@ namespace MemSQL.DataModel.Results
             var data = selector(rows.First());
             if (data == null) return typeof(object);
             return data.GetType();
-
         }
+
         public IEnumerable<RowRecord> Records { get; }
         public IEnumerable<RecordColumn> Columns { get; }
         internal IEnumerable<(string, Func<Row, object>)> Selectors { get; private set; }
@@ -52,7 +54,5 @@ namespace MemSQL.DataModel.Results
             }
             throw new KeyNotFoundException();
         }
-
-      
     }
 }

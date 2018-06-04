@@ -32,7 +32,7 @@ namespace MemSQL
             {
                 var column = Columns[i];
                 var value = row[column.ColumnName];
-                if (column.AllowDBNull && (value == null  ))
+                if (column.AllowDBNull && (value == null))
                 {
                     continue;
                 }
@@ -41,7 +41,7 @@ namespace MemSQL
                 if (!RelatedTable.Rows.Any(relatedRow => Equals(value, relatedRow[relatedColumn.ColumnName])))
                 {
                     var msg = string.Format("The INSERT statement conflicted with the FOREIGN KEY constraint '{0}'." +
-                        " The conflict occurred in table '{1}', column '{2}'.", 
+                        " The conflict occurred in table '{1}', column '{2}'.",
                         ConstraintName, RelatedTable.TableName, relatedColumn.ColumnName);
                     throw new ConstraintException(msg);
                 }
@@ -51,7 +51,7 @@ namespace MemSQL
         public override void OnDelete(Row relatedRow)
         {
             if (!Equals(RelatedTable, relatedRow.Table)) return;
-            
+
             for (int i = 0; i < RelatedColumns.Length; i++)
             {
                 var relatedColumn = RelatedColumns[i];
@@ -63,7 +63,7 @@ namespace MemSQL
                     if (Table.Rows.Any(row => Equals(value, row[column.ColumnName])))
                     {
                         var msg = string.Format("The DELETE statement conflicted with the REFERENCE constraint '{0}'." +
-                            " The conflict occurred in table '{1}', column '{2}'.", 
+                            " The conflict occurred in table '{1}', column '{2}'.",
                             ConstraintName, Table.TableName, column.ColumnName);
                         throw new ConstraintException(msg);
                     }
@@ -111,7 +111,7 @@ namespace MemSQL
                     throw new ConstraintException(msg);
                 }
             }
-            else if(UpdateRule == Rule.Cascade)
+            else if (UpdateRule == Rule.Cascade)
             {
                 foreach (var row in Table.Rows.Where(row => Equals(oldValue, row[column.ColumnName])))
                 {

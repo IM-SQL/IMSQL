@@ -25,9 +25,9 @@ namespace MemSQL
         public Table GetTable(string tableName)
         {
             if (tables.TryGetValue(tableName, out Table table)) return table;
-            throw new InvalidOperationException("Invalid object name " + tableName );
+            throw new InvalidOperationException("Invalid object name " + tableName);
         }
-        
+
         public Table AddTable(string tableName)
         {
             var table = new Table(tableName, this);
@@ -65,7 +65,7 @@ namespace MemSQL
             constraints.Add(constraint);
         }
 
-        public int ExecuteNonQuery(string command, Dictionary<string,object> parameters) { throw new NotImplementedException(); }
+        public int ExecuteNonQuery(string command, Dictionary<string, object> parameters) { throw new NotImplementedException(); }
         public DbDataReader ExecuteReader(string command, Dictionary<string, object> parameters) { throw new NotImplementedException(); }
         public T ExecuteScalar<T>(string command, Dictionary<string, object> parameters) { throw new NotImplementedException(); }
     }

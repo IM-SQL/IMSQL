@@ -8,16 +8,17 @@ using System.Threading.Tasks;
 
 namespace MemSQL
 {
-    public class Table:RecordTable
+    public class Table : RecordTable
     {
         private List<Row> rows = new List<Row>();
         private List<Column> columns = new List<Column>();
 
-        static Table() {
-
+        static Table()
+        {
             Empty = new Table(new Database());
             Empty.rows.Add(Empty.NewRow(new object[0]));
         }
+
         public Table(Database database) : this(null, database) { }
 
         public Table(string tableName, Database database)
@@ -101,10 +102,10 @@ namespace MemSQL
             return rows[index];
         }
 
-        public Row NewRow((string, object) first,  params (string,object)[] providedValues)
+        public Row NewRow((string, object) first, params (string, object)[] providedValues)
         {
             providedValues = Prepend(first, providedValues);
-            return new Row(this, providedValues.ToDictionary(t=>t.Item1,t=>t.Item2));
+            return new Row(this, providedValues.ToDictionary(t => t.Item1, t => t.Item2));
         }
 
         public Row NewRow(Dictionary<string, object> providedValues)
@@ -113,8 +114,8 @@ namespace MemSQL
         }
 
         public Row NewRow(object first, params object[] items)
-        { 
-            return NewRow(Prepend(first,items));
+        {
+            return NewRow(Prepend(first, items));
         }
 
         // TODO(Richo): Maybe make it an extension method?
@@ -131,7 +132,7 @@ namespace MemSQL
             var providedColumns = new List<string>();
             for (int i = 0; i < Columns.Count(); i++)
             {
-                if (!GetColumn(i).AutoIncrement && GetColumn(i).ComputedColumnSpecification==null)
+                if (!GetColumn(i).AutoIncrement && GetColumn(i).ComputedColumnSpecification == null)
                 {
                     providedColumns.Add(GetColumn(i).ColumnName);
                 }

@@ -8,11 +8,7 @@ namespace MemSQL.DataModel.Results
 {
     public interface Record
     {
-         
-        object this[string name]
-        {
-            get;
-        }
+        object this[string name] { get; }
         object[] ItemArray { get; }
     }
 }

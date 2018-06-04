@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace MemSQL.DataModel.Results
 {
-  public  interface RecordTable
+    public interface RecordTable
     {
-         IEnumerable<Record> Records { get; }
-         IEnumerable<RecordColumn> Columns { get; }
+        IEnumerable<Record> Records { get; }
+        IEnumerable<RecordColumn> Columns { get; }
     }
 }
