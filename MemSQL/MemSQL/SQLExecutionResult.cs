@@ -25,11 +25,9 @@ namespace MemSQL
             var sb = new StringBuilder();
             sb.Append("Rows affected: ");
             sb.Append(RowsAffected);
-            sb.AppendLine();
             bool first = true;
             foreach (var set in Values)
             {
-                sb.AppendLine();
                 foreach (var item in set.Records)
                 {
                     if (first) { sb.AppendLine(); first = false; }
@@ -38,7 +36,6 @@ namespace MemSQL
                 }
                 sb.AppendLine();
             }
-
             return sb.ToString();
         }
 
