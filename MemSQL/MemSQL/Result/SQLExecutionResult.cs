@@ -7,9 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MemSQL
+namespace MemSQL.Result
 {
-    public class SQLExecutionResult
+    public class SQLExecutionResult : SQLResult
     {
         public SQLExecutionResult(int rowsAffected, RecordSet values)
         {
@@ -20,17 +20,22 @@ namespace MemSQL
         public int RowsAffected { get; }
         public RecordSet Values { get; }
 
+        public override string Message => string.Format("({0} row(s) affected)", RowsAffected);
+
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.Append("Rows affected: ");
-            sb.Append(RowsAffected);
-            bool first = true;
-            foreach (var item in Values.Records)
+
+            sb.Append(Message);
+            if (Values != null)
             {
-                if (first) { sb.AppendLine(); first = false; }
-                sb.AppendLine();
-                Printer.Print(item, sb);
+                bool first = true;
+                foreach (var item in Values.Records)
+                {
+                    if (first) { sb.AppendLine(); first = false; }
+                    sb.AppendLine();
+                    Printer.Print(item, sb);
+                }
             }
             sb.AppendLine();
 

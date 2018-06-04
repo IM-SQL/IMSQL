@@ -1,5 +1,6 @@
 ﻿
 using MemSQL.DataModel.Results;
+using MemSQL.Result;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 using System;
 using System.Collections.Generic;

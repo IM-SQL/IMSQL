@@ -55,7 +55,8 @@ namespace MemSQL.REPL
         private string Eval(string inputText)
         {
             var result = interpreter.Execute(inputText);
-            return result.ToString();
+            return string.Join("\n", result.Select(e=>e.ToString()));
+
         }
 
         private void cmdTextBox_KeyUp(object sender, KeyEventArgs e)
@@ -86,14 +87,14 @@ namespace MemSQL.REPL
                 cmdTextBox.SelectionStart = lastIndex;
             }
         }
-        
+
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
             if (cmdTextBox.SelectionStart < lastIndex)
             {
                 e.SuppressKeyPress = true;
             }
-            else if (cmdTextBox.SelectionStart == lastIndex 
+            else if (cmdTextBox.SelectionStart == lastIndex
                 && (e.KeyCode == Keys.Back || e.KeyCode == Keys.Up || e.KeyCode == Keys.Left))
             {
                 e.SuppressKeyPress = true;

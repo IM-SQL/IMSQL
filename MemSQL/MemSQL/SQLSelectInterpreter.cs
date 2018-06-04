@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using MemSQL.DataModel.Results;
+using MemSQL.Result;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace MemSQL
