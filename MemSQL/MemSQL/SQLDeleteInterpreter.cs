@@ -20,7 +20,6 @@ namespace MemSQL
         protected override object InternalVisit(DeleteSpecification node)
         {
             //TODO:node.FromClause;
-            //TODO:node.OutputClause;
             //TODO:node.OutputIntoClause; 
 
             var env = Database.GlobalEnvironment.NewChild();

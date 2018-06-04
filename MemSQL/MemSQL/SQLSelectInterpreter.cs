@@ -18,7 +18,6 @@ namespace MemSQL
             //TODO:node.Into
             //TODO:node.On
             //TODO:node.OptimizerHints
-            //TODO:node.QueryExpression
             //TODO:node.WithCtesAndXmlNamespaces
             return Visit<SQLExecutionResult>(node.QueryExpression);
         }
@@ -30,7 +29,6 @@ namespace MemSQL
             //TODO:node.HavingClause
             //TODO:node.OffsetClause
             //TODO:node.OrderByClause
-            //TODO:node.SelectElements 
             //TODO:node.UniqueRowFilter 
 
             var env = Database.GlobalEnvironment.NewChild();
@@ -47,7 +45,6 @@ namespace MemSQL
             var predicate = EvaluateExpression<Func<Row, bool>>(node.WhereClause, env, row => true);
 
 
-            //TODO: the selected fields i get as expressions, i do not want an expression there for now.
             var selectedColumns = node.SelectElements.SelectMany(element =>
              {
                  return EvaluateExpression<Func<RecordTable, (string, Func<Record, object>)[]>>(element, env)(table);

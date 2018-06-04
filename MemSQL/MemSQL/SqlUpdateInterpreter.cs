@@ -23,7 +23,6 @@ namespace MemSQL
         protected override object InternalVisit(UpdateSpecification node)
         {
             //TODO:node.FromClause
-            //TODO:node.OutputClause
             //TODO:node.OutputIntoClause 
 
             var env = Database.GlobalEnvironment.NewChild();
@@ -64,7 +63,6 @@ namespace MemSQL
 
         protected override object InternalVisit(AssignmentSetClause node)
         {
-            //TODO: node.AssignmentKind
             Func<dynamic, dynamic, object> operation = null;
             switch (node.AssignmentKind)
             {

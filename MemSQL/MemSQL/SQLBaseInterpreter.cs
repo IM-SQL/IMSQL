@@ -150,9 +150,7 @@ namespace MemSQL
 
         protected override object InternalVisit(NamedTableReference node)
         {
-            //TODO: alias?
             var tableName = Visit<string>(node.SchemaObject);
-            //TODO: error on table not present?
             string name = node.Alias != null ? node.Alias.Value : tableName;
             return new Tuple<string, Table>(name, Database.GetTable(tableName));
         }
