@@ -55,7 +55,7 @@ namespace MemSQL
                 };
             }
             var set = rows.Select(CreateRow).ToArray();
-            var selectors = Visit<Func<Table, (string, Func<Row, object>)[]>>(node.OutputClause);
+            var selectors =  Visit<Func<Environment, Func<Table, (string, Func<Record, object>)[]>>>(node.OutputClause)?.Invoke(Database.GlobalEnvironment);
             if (selectors == null)
             {
                 //no output clause

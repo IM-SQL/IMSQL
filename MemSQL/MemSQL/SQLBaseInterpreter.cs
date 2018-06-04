@@ -36,7 +36,7 @@ namespace MemSQL
             if (func == null) return defaultValue;
             return func(env);
         }
-        
+
         protected override object InternalVisit(MultiPartIdentifier node)
         {
             return node.Identifiers.Select(each => each.Value).ToArray();
@@ -144,7 +144,7 @@ namespace MemSQL
 
         protected override object InternalVisit(NullLiteral node)
         {
-            return new Func<Environment, object>(env =>null);
+            return new Func<Environment, object>(env => null);
         }
 
         protected override object InternalVisit(NamedTableReference node)
@@ -161,8 +161,8 @@ namespace MemSQL
             return new Func<Environment, object>(env =>
             {
                 return new TopResult(
-                    amount: EvaluateExpression<int>(node.Expression, env), 
-                    percent: node.Percent, 
+                    amount: EvaluateExpression<int>(node.Expression, env),
+                    percent: node.Percent,
                     ties: node.WithTies);
             });
         }
@@ -203,12 +203,19 @@ namespace MemSQL
         //TODO: maybe move this to a subclass
         protected override object InternalVisit(OutputClause node)
         {
-            return new Func<Environment, RecordTable, object>((env,table) => {
-                return node.SelectColumns.SelectMany(element =>
+            return new Func<Environment, Func<Table, (string, Func<Record, object>)[]>>(
+                (env) =>
                 {
-                    return EvaluateExpression<Func<RecordTable, (string, Func<Record, object>)[]>>(element, env)(table);
-                }).ToArray();
-            });
+                    return new Func<RecordTable, (string, Func<Record, object>)[]>((table) =>
+                    {
+                        return node.SelectColumns.SelectMany(
+                            (element) =>
+                            {
+                                return EvaluateExpression<Func<RecordTable, (string, Func<Record, object>)[]>>(element, env)(table);
+                            }).ToArray();
+                    });
+
+                });
         }
 
         protected override object InternalVisit(SelectStarExpression node)
@@ -236,17 +243,17 @@ namespace MemSQL
                         innerEnv.Add("currentRow", row);
                         return expr(innerEnv);
                     });
-                    //what about node.ColumnName.Identifier ??
-                    string name = null;
+            //what about node.ColumnName.Identifier ??
+            string name = null;
                     if (node.ColumnName != null)
                     {
                         name = node.ColumnName.Value;
                     }
                     else
                     {
-                        //try to get the column name from the selected expression, if possible.
-                        //TODO: if i do a select (3+4) sql server says something like "(no column name)", i am guessing a result column should have a nullable name
-                        name = node.ScriptTokenStream[node.LastTokenIndex].Text;
+                //try to get the column name from the selected expression, if possible.
+                //TODO: if i do a select (3+4) sql server says something like "(no column name)", i am guessing a result column should have a nullable name
+                name = node.ScriptTokenStream[node.LastTokenIndex].Text;
                     }
                     return new(string, Func<Record, object>)[] { (name, selector) };
                 });
