@@ -69,7 +69,7 @@ namespace MemSQL
         protected virtual object InternalVisit(BinaryExpression node) { throw new NotImplementedException(); }
         protected virtual object InternalVisit(SelectStarExpression node) { throw new NotImplementedException(); }
         protected virtual object InternalVisit(SelectScalarExpression node) { throw new NotImplementedException(); }
-
+        protected virtual object InternalVisit(OutputClause node) { throw new NotImplementedException(); }
 
         class SQLInternalVisitor : TSqlFragmentVisitor
         {
@@ -282,6 +282,10 @@ namespace MemSQL
             }
 
             public override void ExplicitVisit(SelectScalarExpression node)
+            {
+                Result = outer.InternalVisit(node);
+            }
+            public override void ExplicitVisit(OutputClause node)
             {
                 Result = outer.InternalVisit(node);
             }
@@ -761,7 +765,6 @@ namespace MemSQL
             public override void ExplicitVisit(ScalarExpressionDialogOption node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(HavingClause node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(OutputIntoClause node) { throw new NotImplementedException(); }
-            public override void ExplicitVisit(OutputClause node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(GroupingSetsGroupingSpecification node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(GrandTotalGroupingSpecification node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(RollupGroupingSpecification node) { throw new NotImplementedException(); }

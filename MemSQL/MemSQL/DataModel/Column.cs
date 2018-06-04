@@ -95,8 +95,7 @@ namespace MemSQL
             }
         }
 
-        internal (string, Func<Row, object>) GetDefaultSelector { get { return (ColumnName, new Func<Row, object>(r => r[ColumnName])); } }
-
+        
         public override string ToString()
         {
             return string.Format("{0} ({1})", base.ToString(), ColumnName);

@@ -1,4 +1,5 @@
-﻿using Microsoft.SqlServer.TransactSql.ScriptDom;
+﻿using MemSQL.DataModel.Results;
+using Microsoft.SqlServer.TransactSql.ScriptDom;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -195,6 +196,61 @@ namespace MemSQL
         {
             //TODO: node.Cursor
             return new SQLExpressionInterpreter(Database).Visit<object>(node);
+        }
+
+
+
+        //TODO: maybe move this to a subclass
+        protected override object InternalVisit(OutputClause node)
+        {
+            return new Func<Environment, RecordTable, object>((env,table) => {
+                return node.SelectColumns.SelectMany(element =>
+                {
+                    return EvaluateExpression<Func<RecordTable, (string, Func<Record, object>)[]>>(element, env)(table);
+                }).ToArray();
+            });
+        }
+
+        protected override object InternalVisit(SelectStarExpression node)
+        {
+            return new Func<Environment, object>(env =>
+            {
+                return new Func<RecordTable, (string, Func<Record, object>)[]>(table =>
+                {
+                    return table.Columns.Select(col => col.GetDefaultSelector).ToArray();
+                });
+            });
+        }
+
+        protected override object InternalVisit(SelectScalarExpression node)
+        {
+            return new Func<Environment, object>(env =>
+            {
+                return new Func<RecordTable, (string, Func<Record, object>)[]>(table =>
+                {
+                    SQLExpressionInterpreter expressionInterpreter = new SQLExpressionInterpreter(Database);
+                    var expr = expressionInterpreter.Visit<Func<Environment, object>>(node.Expression);
+                    var innerEnv = env.NewChild();
+                    var selector = new Func<Record, object>((row) =>
+                    {
+                        innerEnv.Add("currentRow", row);
+                        return expr(innerEnv);
+                    });
+                    //what about node.ColumnName.Identifier ??
+                    string name = null;
+                    if (node.ColumnName != null)
+                    {
+                        name = node.ColumnName.Value;
+                    }
+                    else
+                    {
+                        //try to get the column name from the selected expression, if possible.
+                        //TODO: if i do a select (3+4) sql server says something like "(no column name)", i am guessing a result column should have a nullable name
+                        name = node.ScriptTokenStream[node.LastTokenIndex].Text;
+                    }
+                    return new(string, Func<Record, object>)[] { (name, selector) };
+                });
+            });
         }
     }
 }

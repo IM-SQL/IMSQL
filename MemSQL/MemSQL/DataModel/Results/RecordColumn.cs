@@ -12,5 +12,7 @@ namespace MemSQL.DataModel.Results
 
         public string ColumnName { get; }
         public Type DataType { get; }
+        internal (string, Func<Record, object>) GetDefaultSelector { get { return (ColumnName, new Func<Record, object>(r => r[ColumnName])); } }
+
     }
 }

@@ -6,7 +6,7 @@ namespace MemSQL.DataModel.Results
 {
     public class RecordSet : RecordTable
     {
-        public RecordSet(IEnumerable<RecordColumn> columns, IEnumerable<RowRecord> records)
+        public RecordSet(IEnumerable<RecordColumn> columns, IEnumerable<Record> records)
         {
             Records = records;
             Columns = columns;
@@ -16,7 +16,7 @@ namespace MemSQL.DataModel.Results
             : this(columns.Select(c => c.GetDefaultSelector), rows)
         { }
 
-        public RecordSet(IEnumerable<(string, Func<Row, object>)> selectors, IEnumerable<Row> providedRows)
+        public RecordSet(IEnumerable<(string, Func<Record, object>)> selectors, IEnumerable<Row> providedRows)
         {
             var rows = providedRows.ToArray();
             //TODO:validate that the columns actually are from the rows, and that the rows are from the same table?
@@ -35,9 +35,9 @@ namespace MemSQL.DataModel.Results
             return data.GetType();
         }
 
-        public IEnumerable<RowRecord> Records { get; }
+        public IEnumerable<Record> Records { get; }
         public IEnumerable<RecordColumn> Columns { get; }
-        internal IEnumerable<(string, Func<Row, object>)> Selectors { get; private set; }
+        internal IEnumerable<(string, Func<Record, object>)> Selectors { get; private set; }
 
         IEnumerable<Record> RecordTable.Records => Records;
 
