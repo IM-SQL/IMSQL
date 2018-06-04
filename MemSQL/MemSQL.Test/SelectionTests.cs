@@ -140,9 +140,9 @@ namespace MemSQL.Test
 
             Action<string, int> assert = (query, expected) =>
             {
-                var result = interpreter.Execute(query);
+                var result = interpreter.Execute(query)[0];
                 Assert.AreEqual(expected, result.RowsAffected);
-                Assert.AreEqual(expected, result.Values[0].Records.Count());
+                Assert.AreEqual(expected, result.Values.Records.Count());
             };
             
             assert("select * from Customer where [Enabled] = 1", 3);
@@ -175,9 +175,9 @@ namespace MemSQL.Test
 
             Action<string, int> assert = (query, expected) =>
             {
-                var result = interpreter.Execute(query);
+                var result = interpreter.Execute(query)[0];
                 Assert.AreEqual(expected, result.RowsAffected);
-                Assert.AreEqual(expected, result.Values[0].Records.Count());
+                Assert.AreEqual(expected, result.Values.Records.Count());
             };
 
             assert("select * from Customer where [Enabled] = '1'", 3);
