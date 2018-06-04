@@ -30,6 +30,7 @@ namespace MemSQL.Test
             Assert.AreEqual(1, affected, "There should be one row affected");
             Assert.AreEqual(3, result.Values.Records.First()["ID"], "The selected value was not present on the Table");
         }
+
         [TestMethod]
         public void SomeFieldsSelectTest()
         {
@@ -76,6 +77,7 @@ namespace MemSQL.Test
             Assert.AreEqual("A", result.Values.Columns.ElementAt(0).ColumnName, "The expected column was not on the result set");
             Assert.AreEqual(3, result.Values.Records.First()["A"], "The selected value was not present on the Table");
         }
+
         [TestMethod]
         public void SelectWithExpression()
         {
@@ -98,6 +100,7 @@ namespace MemSQL.Test
             Assert.AreEqual(3, data[0], "The selected value was not present on the Table");
             Assert.AreEqual(6, data[1], "The calculated value was not present on the Table");
         }
+
         [TestMethod]
         public void SelectWithoutTable()
         {
@@ -118,7 +121,76 @@ namespace MemSQL.Test
             Assert.AreEqual(1, result.Values.Columns.Count(), "There should be only one column");
             var data = result.Values.Records.First().ItemArray;
             Assert.AreEqual(7, data[0], "The selected value was not present on the Table");
+        }
 
+        [TestMethod]
+        public void BitColumnShouldAllowComparisonWithIntegers()
+        {
+            var db = new Database();
+            var interpreter = new SQLInterpreter(db);
+            interpreter.Execute(@"
+                create table Customer
+                (
+                 Id int primary key identity,
+                 [Name] nvarchar(50) not null,
+                 [Timestamp] datetime,
+                 [Enabled] bit default 1
+                )");
+            interpreter.Execute("insert into Customer ([Name]) values ('Richo'),('Diego'),('Sofía')");
+
+            Action<string, int> assert = (query, expected) =>
+            {
+                var result = interpreter.Execute(query);
+                Assert.AreEqual(expected, result.RowsAffected);
+                Assert.AreEqual(expected, result.Values[0].Records.Count());
+            };
+            
+            assert("select * from Customer where [Enabled] = 1", 3);
+            assert("select * from Customer where [Enabled] > 1", 0);
+            assert("select * from Customer where [Enabled] < 3", 3);
+            assert("select * from Customer where [Enabled] >= 2", 0);
+            assert("select * from Customer where [Enabled] <= 2", 3);
+
+            assert("select * from Customer where 1 = [Enabled]", 3);
+            assert("select * from Customer where 1 < [Enabled]", 0);
+            assert("select * from Customer where 3 > [Enabled]", 3);
+            assert("select * from Customer where 2 <= [Enabled]", 0);
+            assert("select * from Customer where 2 >= [Enabled]", 3);
+        }
+
+        [TestMethod]
+        public void BitColumnShouldAllowComparisonWithStrings()
+        {
+            var db = new Database();
+            var interpreter = new SQLInterpreter(db);
+            interpreter.Execute(@"
+                create table Customer
+                (
+                 Id int primary key identity,
+                 [Name] nvarchar(50) not null,
+                 [Timestamp] datetime,
+                 [Enabled] bit default 1
+                )");
+            interpreter.Execute("insert into Customer ([Name]) values ('Richo'),('Diego'),('Sofía')");
+
+            Action<string, int> assert = (query, expected) =>
+            {
+                var result = interpreter.Execute(query);
+                Assert.AreEqual(expected, result.RowsAffected);
+                Assert.AreEqual(expected, result.Values[0].Records.Count());
+            };
+
+            assert("select * from Customer where [Enabled] = '1'", 3);
+            assert("select * from Customer where [Enabled] > '1'", 0);
+            assert("select * from Customer where [Enabled] < '3'", 3);
+            assert("select * from Customer where [Enabled] >= '2'", 0);
+            assert("select * from Customer where [Enabled] <= '2'", 3);
+
+            assert("select * from Customer where '1' = [Enabled]", 3);
+            assert("select * from Customer where '1' < [Enabled]", 0);
+            assert("select * from Customer where '3' > [Enabled]", 3);
+            assert("select * from Customer where '2' <= [Enabled]", 0);
+            assert("select * from Customer where '2' >= [Enabled]", 3);
         }
     }
 }

@@ -69,6 +69,7 @@
     <Compile Include="Filter.cs" />
     <Compile Include="Result\SQLResult.cs" />
     <Compile Include="SQLBaseInterpreter.cs" />
+    <Compile Include="SQLComparer.cs" />
     <Compile Include="SQLCreateInterpreter.cs" />
     <Compile Include="SQLDeleteInterpreter.cs" />
     <Compile Include="Result\SQLExecutionResult.cs" />

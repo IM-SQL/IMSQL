@@ -36,7 +36,7 @@ namespace MemSQL
 
         protected override object InternalVisit(BooleanComparisonExpression node)
         {
-            var comparer = Comparer.DefaultInvariant;
+            var comparer = SQLComparer.Default;
             Func<object, object, bool> func;
 
             switch (node.ComparisonType)
