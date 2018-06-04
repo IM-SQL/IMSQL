@@ -223,14 +223,13 @@ namespace MemSQL.Test
 
             var result = interpreter.Execute(query)[0];
             int affected = result.RowsAffected;
-            Assert.AreEqual(2, affected, "There should be two row affected");
             Assert.AreNotEqual(null, result.Values, "There should be only one result set");
             Assert.AreEqual(4, result.Values.Columns.Count(), "There should be only one column");
             Assert.AreEqual("col1", result.Values.Columns.ElementAt(0).ColumnName, "The expected column was not on the result set");
             Assert.AreEqual("col2", result.Values.Columns.ElementAt(1).ColumnName, "The expected column was not on the result set");
             Assert.AreEqual("col3", result.Values.Columns.ElementAt(2).ColumnName, "The expected column was not on the result set");
             Assert.AreEqual("col4", result.Values.Columns.ElementAt(3).ColumnName, "The expected column was not on the result set");
-            Assert.AreEqual(1, result.Values.Records.Count(), "There should be only one row");
+            Assert.AreEqual(2, affected, "There should be two row affected");
             var items = result.Values.Records;
             Assert.AreEqual(1, items.ElementAt(0)["col1"], "The selected value was not present on the Table");
             Assert.AreEqual(2, items.ElementAt(0)["col2"], "The selected value was not present on the Table");
