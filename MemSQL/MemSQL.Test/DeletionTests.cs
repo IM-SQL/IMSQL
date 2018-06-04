@@ -39,7 +39,7 @@ namespace MemSQL.Test
             table.AddColumn(new Column("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
-                var row = table.NewRow(i); 
+                var row = table.NewRow(i);
                 table.AddRow(row);
             }
             string query = "Delete from [TBL]";
@@ -59,7 +59,7 @@ namespace MemSQL.Test
             table.AddColumn(new Column("ID", typeof(int)));
             for (int i = 0; i < 200; i++)
             {
-                var row = table.NewRow(i); 
+                var row = table.NewRow(i);
                 table.AddRow(row);
             }
             string query = "Delete TOP(50) from [TBL]";
@@ -79,7 +79,7 @@ namespace MemSQL.Test
             table.AddColumn(new Column("ID", typeof(int)));
             for (int i = 0; i < 200; i++)
             {
-                var row = table.NewRow(i); 
+                var row = table.NewRow(i);
                 table.AddRow(row);
             }
             string query = "Delete TOP(50) with ties from [TBL]";
@@ -98,7 +98,7 @@ namespace MemSQL.Test
             table.AddColumn(new Column("ID", typeof(int)));
             for (int i = 0; i < 200; i++)
             {
-                var row = table.NewRow(i); 
+                var row = table.NewRow(i);
                 table.AddRow(row);
             }
             string query = "Delete TOP (50) PERCENT from [TBL]";
@@ -118,7 +118,7 @@ namespace MemSQL.Test
             table.AddColumn(new Column("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
-                var row = table.NewRow(i); 
+                var row = table.NewRow(i);
                 table.AddRow(row);
             }
             string query = "Delete from [TBL] where [ID] = 1";
@@ -138,7 +138,7 @@ namespace MemSQL.Test
             table.AddColumn(new Column("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
-                var row = table.NewRow(i); 
+                var row = table.NewRow(i);
                 table.AddRow(row);
             }
             string query = "Delete from [TBL] where [ID] != 1";
@@ -158,7 +158,7 @@ namespace MemSQL.Test
             table.AddColumn(new Column("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
-                var row = table.NewRow(i); 
+                var row = table.NewRow(i);
                 table.AddRow(row);
             }
             string query = "Delete from [TBL] where [ID] <> 1";
@@ -178,7 +178,7 @@ namespace MemSQL.Test
             table.AddColumn(new Column("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
-                var row = table.NewRow(i); 
+                var row = table.NewRow(i);
                 table.AddRow(row);
             }
             string query = "Delete from [TBL] where [ID] < 2";
@@ -198,7 +198,7 @@ namespace MemSQL.Test
             table.AddColumn(new Column("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
-                var row = table.NewRow(i); 
+                var row = table.NewRow(i);
                 table.AddRow(row);
             }
             string query = "Delete from [TBL] where [ID] > 97";
@@ -218,7 +218,7 @@ namespace MemSQL.Test
             table.AddColumn(new Column("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
-                var row = table.NewRow(i); 
+                var row = table.NewRow(i);
                 table.AddRow(row);
             }
             string query = "Delete from [TBL] where [ID] <= 2";
@@ -238,7 +238,7 @@ namespace MemSQL.Test
             table.AddColumn(new Column("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
-                var row = table.NewRow(i); 
+                var row = table.NewRow(i);
                 table.AddRow(row);
             }
             string query = "Delete from [TBL] where [ID] !< 97";
@@ -258,7 +258,7 @@ namespace MemSQL.Test
             table.AddColumn(new Column("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
-                var row = table.NewRow(i); 
+                var row = table.NewRow(i);
                 table.AddRow(row);
             }
             string query = "Delete from [TBL] where [ID] !> 2";
@@ -278,7 +278,7 @@ namespace MemSQL.Test
             table.AddColumn(new Column("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
-                var row = table.NewRow(i); 
+                var row = table.NewRow(i);
                 table.AddRow(row);
             }
             string query = "Delete from [TBL] where [ID] >= 97";
@@ -298,7 +298,7 @@ namespace MemSQL.Test
             table.AddColumn(new Column("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
-                var row = table.NewRow(i); 
+                var row = table.NewRow(i);
                 table.AddRow(row);
             }
             string query = "Delete from [TBL] where not [ID] = 1";
@@ -318,7 +318,7 @@ namespace MemSQL.Test
             table.AddColumn(new Column("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
-                var row = table.NewRow(i); 
+                var row = table.NewRow(i);
                 table.AddRow(row);
             }
             string query = "Delete from [TBL] where [ID] > 1 AND [ID] < 5";
@@ -349,14 +349,14 @@ namespace MemSQL.Test
             Assert.AreEqual(2, affected, "There should be 2 row affected");
             Assert.AreEqual(98, table.Rows.Count(), "There should be 98 rows on the table");
         }
-          [TestMethod]
+        [TestMethod]
         public void DeleteWithoutOutputShouldNotReturnValues()
         {
             var db = new Database();
             Table table = db.AddTable("TBL");
             table.AddColumn(new Column("A", typeof(int)));
             table.AddColumn(new Column("B", typeof(string)));
-            var row = table.NewRow(3,"asd");
+            var row = table.NewRow(3, "asd");
             table.AddRow(row);
             string query = "delete from [TBL] ";
 
