@@ -15,6 +15,7 @@ namespace MemSQL
 
         public Column(string columnName, Type dataType) : base(columnName, dataType)
         {
+            AllowDBNull = true;
             AutoIncrement = false;
             AutoIncrementSeed = 0;
             AutoIncrementStep = 0;
@@ -65,13 +66,13 @@ namespace MemSQL
             {
                 return new CalculatedField(ColumnName, DataType, ComputedColumnSpecification, owner);
             }
-            else if (AllowDBNull)
-            {
-                return new NullableField(ColumnName, DataType);
-            }
             else if (DefaultValue != null)
             {
                 return new Field(ColumnName, DataType, DefaultValue);
+            }
+            else if (AllowDBNull)
+            {
+                return new NullableField(ColumnName, DataType);
             }
             throw new ArgumentException(string.Format("A value for the field {0} should not have been provided", ColumnName));
         }
