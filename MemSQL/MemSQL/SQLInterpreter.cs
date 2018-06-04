@@ -73,14 +73,12 @@ namespace MemSQL
         {
             var interpreter = new SQLDeleteInterpreter(Database);
             return interpreter.Visit<SQLExecutionResult>(node);
-
         }
 
         protected override object InternalVisit(UpdateStatement node)
         {
             var interpreter = new SQLUpdateInterpreter(Database);
-            var set = interpreter.Visit<RecordSet>(node);
-            return new Tuple<int, object>(set.Records.Count(), set);
+            return interpreter.Visit<SQLExecutionResult>(node);
         }
     }
 }

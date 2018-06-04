@@ -9,14 +9,14 @@ namespace MemSQL
 {
     internal class SQLUpdateInterpreter : SQLBaseInterpreter
     {
-        public SQLUpdateInterpreter(Database db) : base(db) {}
+        public SQLUpdateInterpreter(Database db) : base(db) { }
 
         protected override object InternalVisit(UpdateStatement node)
         {
             //TODO:node.OptimizerHints
             //TODO:node.WithCtesAndXmlNamespaces
 
-            return Visit<RecordSet>(node.UpdateSpecification);
+            return Visit<SQLExecutionResult>(node.UpdateSpecification);
         }
 
         protected override object InternalVisit(UpdateSpecification node)
@@ -28,7 +28,7 @@ namespace MemSQL
             var env = Database.GlobalEnvironment.NewChild();
 
             var table = Visit<Tuple<string, Table>>(node.Target).Item2;
-            var top = EvaluateExpression<TopResult>(node.TopRowFilter, env);            
+            var top = EvaluateExpression<TopResult>(node.TopRowFilter, env);
             var predicate = EvaluateExpression<Func<Row, bool>>(node.WhereClause, env, row => true);
 
             Action<Row> setClause = CreateSetClause(node.SetClauses, env);
@@ -40,7 +40,7 @@ namespace MemSQL
                 setClause(item);
             }
             table.AcceptChanges();
-            return   new RecordSet(table.Columns, result);
+            return new SQLExecutionResult(result.Count, new RecordSet(table.Columns, result));
         }
 
         private Action<Row> CreateSetClause(IList<SetClause> clauses, Environment env)
@@ -57,11 +57,11 @@ namespace MemSQL
                 }
             });
         }
-        
+
         protected override object InternalVisit(AssignmentSetClause node)
         {
             //TODO: node.AssignmentKind
-            Func<dynamic, dynamic, object> operation=null;
+            Func<dynamic, dynamic, object> operation = null;
             switch (node.AssignmentKind)
             {
                 case AssignmentKind.Equals:
