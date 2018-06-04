@@ -267,7 +267,7 @@ namespace MemSQL.Test
             var interpreter = new SQLInterpreter(db);
             string query = "insert into TBL ([Name]) output inserted.* values ('Richo')";
             var result = interpreter.Execute(query)[0];
-             
+
             // Enumerating all records should have no effect
 
             foreach (var row in result.Values.Records)
