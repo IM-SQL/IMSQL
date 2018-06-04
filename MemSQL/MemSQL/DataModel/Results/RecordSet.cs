@@ -6,6 +6,7 @@ namespace MemSQL.DataModel.Results
 {
     public class RecordSet : RecordTable
     {
+        internal RecordSet() { }
         public RecordSet(IEnumerable<RecordColumn> columns, IEnumerable<Record> records)
         {
             Records = records;
@@ -35,8 +36,8 @@ namespace MemSQL.DataModel.Results
             return data.GetType();
         }
 
-        public IEnumerable<Record> Records { get; }
-        public IEnumerable<RecordColumn> Columns { get; }
+        public IEnumerable<Record> Records { get; protected set; }
+        public IEnumerable<RecordColumn> Columns { get; protected set; }
         internal IEnumerable<(string, Func<Record, object>)> Selectors { get; private set; }
 
         IEnumerable<Record> RecordTable.Records => Records;

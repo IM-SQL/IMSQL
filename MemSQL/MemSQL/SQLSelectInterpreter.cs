@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using MemSQL.DataModel.Joins;
 using MemSQL.DataModel.Results;
 using MemSQL.Result;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
@@ -61,12 +62,21 @@ namespace MemSQL
         }
         protected override object InternalVisit(QualifiedJoin node)
         {
-
+            //this should return a tuple of string,recordtable
+            //the name will probably be null, i dont seem to have access to the alias here.
             var first = Visit<(string, RecordTable)>(node.FirstTableReference);
             var second = Visit<(string, RecordTable)>(node.SecondTableReference);
 
+            var env = Database.GlobalEnvironment.NewChild();
+             
+            var where = new WhereClause() { SearchCondition = node.SearchCondition };
+            var predicate = EvaluateExpression<Func<Record, bool>>(where, env, row => true);
 
-            return base.InternalVisit(node);
+            if (predicate == null)
+            {
+                predicate = (row) => true;
+            }
+            return ("", (RecordTable)new InnerJoinTable(first, second, predicate));
         }
     }
 }

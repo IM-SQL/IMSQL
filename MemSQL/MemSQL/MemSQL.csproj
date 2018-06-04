@@ -54,6 +54,7 @@
     <Compile Include="DataModel\Fields\Field.cs" />
     <Compile Include="DataModel\Fields\IdentityField.cs" />
     <Compile Include="DataModel\Fields\NullableField.cs" />
+    <Compile Include="DataModel\Joins\InnerJoinTable.cs" />
     <Compile Include="DataModel\Results\Record.cs" />
     <Compile Include="DataModel\Results\RecordTable.cs" />
     <Compile Include="DataModel\Row.cs" />

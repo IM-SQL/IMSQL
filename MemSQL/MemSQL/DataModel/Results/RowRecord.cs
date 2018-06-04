@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MemSQL.DataModel.Joins;
 
 namespace MemSQL.DataModel.Results
 {
     public class RowRecord : Record
     {
         private object[] values;
-        private RecordSet set;
+        private RecordSet set; 
 
         public RowRecord(Record row, RecordSet recordSet)
         {
@@ -20,6 +21,13 @@ namespace MemSQL.DataModel.Results
             {
                 values[index++] = col.Item2(row);
             }
+        }
+
+        public RowRecord(object[] v, RecordSet recordSet)
+        {
+
+            set = recordSet;
+            values= v;
         }
 
         RecordSet Set { get { return set; } }

@@ -24,14 +24,14 @@ namespace MemSQL
             return nodes.Select(VisitExpression<T>).ToArray();
         }
 
-        protected Func<Environment, T> VisitExpression<T>(TSqlFragment node)
+        protected internal Func<Environment, T> VisitExpression<T>(TSqlFragment node)
         {
             var func = Visit<Func<Environment, object>>(node);
             if (func == null) return null;
             return new Func<Environment, T>(env => (T)func(env));
         }
 
-        protected T EvaluateExpression<T>(TSqlFragment node, Environment env, T defaultValue = default(T))
+        protected internal T EvaluateExpression<T>(TSqlFragment node, Environment env, T defaultValue = default(T))
         {
             var func = VisitExpression<T>(node);
             if (func == null) return defaultValue;

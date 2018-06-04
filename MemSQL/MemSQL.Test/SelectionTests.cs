@@ -214,9 +214,9 @@ namespace MemSQL.Test
             table2.AddColumn(new Column("col4", typeof(string)));
 
             var row2 = table2.NewRow(1, "A");
-            table.AddRow(row2);
+            table2.AddRow(row2);
             row2 = table2.NewRow(3, "B");
-            table.AddRow(row2);
+            table2.AddRow(row2);
 
             string query = "Select * from [TBL] inner join [TBL2] on [TBL].[col1]=[TBL2].[col3]";
             SQLInterpreter interpreter = new SQLInterpreter(db);
