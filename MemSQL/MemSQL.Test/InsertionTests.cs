@@ -286,5 +286,26 @@ namespace MemSQL.Test
             Assert.AreEqual(1, db.GetTable("TBL").Rows.Count(), "There should be one row on the table");
             Assert.AreEqual(1, db.GetTable("TBL").GetRow(0)["Id"], "The Id should be set correctly");
         }
+
+        [TestMethod]
+        public void InsertingNULLInAnImplicitlyNullableColumn()
+        {
+            var db = new Database();
+            var interpreter = new SQLInterpreter(db);
+            interpreter.Execute(@"
+                create table Customer
+                (
+                 Id int primary key identity,
+                 [Name] nvarchar(50) not null,
+                 [Timestamp] datetime,
+                 [Enabled] bit default 1
+                )");
+
+            var result = interpreter.Execute("insert into Customer ([Name]) values ('Richo'),('Diego'),('Sofía')");
+
+            Assert.AreEqual(3, result.RowsAffected, "Three rows should be inserted");
+            Assert.AreEqual(3, db.GetTable("Customer").Rows.Count(), "There should be 3 rows in the table");
+            Assert.IsNull(db.GetTable("Customer").GetRow(0)["Timestamp"], "The field value should be null");
+        }
     }
 }
