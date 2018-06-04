@@ -29,14 +29,25 @@ namespace MemSQL
             var top = EvaluateExpression<TopResult>(node.TopRowFilter, env);
             var predicate = EvaluateExpression<Func<Row, bool>>(node.WhereClause, env, row => true);
 
-            var result = Filter.From(table.Rows, predicate, top).ToArray();
-            foreach (Row item in result)
+            var rows = Filter.From(table.Rows, predicate, top).ToArray();
+            foreach (Row item in rows)
             {
                 // TODO(Richo): What happens if one of these throws an error?
                 item.Delete();
             }
             table.AcceptChanges();
-            return new SQLExecutionResult(result.Length, new RecordSet(table.Columns, result));
+
+             
+            var result = new RecordSet(table.Columns, rows);
+            var selectors = Visit<Func<Environment, Func<RecordTable, (string, Func<Record, object>)[]>>>(node.OutputClause)?.Invoke(Database.GlobalEnvironment)(result);
+            if (selectors == null)
+            {
+                //no output clause
+                return new SQLExecutionResult(rows.Length, null);
+            }
+            var filteredResult = new RecordSet(selectors, Filter.From(result.Records, (row) => true, null));
+
+            return new SQLExecutionResult(result.Records.Count(), filteredResult); 
         }
     }
 }

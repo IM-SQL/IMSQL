@@ -338,7 +338,7 @@ namespace MemSQL.Test
             table.AddColumn(new Column("ID", typeof(int)));
             for (int i = 0; i < 100; i++)
             {
-                var row = table.NewRow(i); 
+                var row = table.NewRow(i);
                 table.AddRow(row);
             }
             string query = "Delete from [TBL] where [ID] < 1 OR [ID] > 98";
@@ -348,6 +348,80 @@ namespace MemSQL.Test
             int affected = result.RowsAffected;
             Assert.AreEqual(2, affected, "There should be 2 row affected");
             Assert.AreEqual(98, table.Rows.Count(), "There should be 98 rows on the table");
+        }
+          [TestMethod]
+        public void DeleteWithoutOutputShouldNotReturnValues()
+        {
+            var db = new Database();
+            Table table = db.AddTable("TBL");
+            table.AddColumn(new Column("A", typeof(int)));
+            table.AddColumn(new Column("B", typeof(string)));
+            var row = table.NewRow(3,"asd");
+            table.AddRow(row);
+            string query = "delete from [TBL] ";
+
+            SQLInterpreter interpreter = new SQLInterpreter(db);
+            var result = interpreter.Execute(query)[0];
+            int affected = result.RowsAffected;
+
+            Assert.AreEqual(1, affected, "There should be one row affected");
+            Assert.AreEqual(null, result.Values, "No result should have been returned");
+        }
+        [TestMethod]
+        public void DeleteWithOutput()
+        {
+            var db = new Database();
+            Table table = db.AddTable("TBL");
+            table.AddColumn(new Column("A", typeof(int)));
+            table.AddColumn(new Column("B", typeof(string)));
+            var r = table.NewRow(3, "asd");
+            table.AddRow(r);
+            string query = "delete from [TBL] output deleted.* ";
+
+            SQLInterpreter interpreter = new SQLInterpreter(db);
+            var result = interpreter.Execute(query)[0];
+            int affected = result.RowsAffected;
+
+            Assert.AreEqual(1, affected, "There should be one row affected");
+            Assert.AreNotEqual(null, result.Values, "One result should have been returned");
+            var resultSet = result.Values;
+            Assert.AreEqual(2, resultSet.Columns.Count(), "The result should have two columns");
+            Assert.AreEqual("A", resultSet.Columns.ElementAt(0).ColumnName, "Failed to find the expected column");
+            Assert.AreEqual("B", resultSet.Columns.ElementAt(1).ColumnName, "Failed to find the expected column");
+
+            Assert.AreEqual(1, resultSet.Records.Count(), "There should be one row");
+            var row = resultSet.Records.ElementAt(0);
+
+            Assert.AreEqual(3, row["A"], "The expected result was not present in the row");
+            Assert.AreEqual("asd", row["B"], "The expected result was not present in the row");
+
+        }
+        [TestMethod]
+        public void DeleteWithSelectiveOutput()
+        {
+            var db = new Database();
+            Table table = db.AddTable("TBL");
+            table.AddColumn(new Column("A", typeof(int)));
+            table.AddColumn(new Column("B", typeof(string)));
+            var r = table.NewRow(3, "asd");
+            table.AddRow(r);
+            string query = "delete from [TBL] output deleted.A ";
+
+            SQLInterpreter interpreter = new SQLInterpreter(db);
+            var result = interpreter.Execute(query)[0];
+            int affected = result.RowsAffected;
+
+            Assert.AreEqual(1, affected, "There should be one row affected");
+            Assert.AreNotEqual(null, result.Values, "One result should have been returned");
+            var resultSet = result.Values;
+            Assert.AreEqual(1, resultSet.Columns.Count(), "The result should have two columns");
+            Assert.AreEqual("A", resultSet.Columns.ElementAt(0).ColumnName, "Failed to find the expected column");
+
+            Assert.AreEqual(1, resultSet.Records.Count(), "There should be one row");
+            var row = resultSet.Records.ElementAt(0);
+
+            Assert.AreEqual(3, row["A"], "The expected result was not present in the row");
+
         }
     }
 }
