@@ -21,7 +21,7 @@ namespace MemSQL
 
         protected override object InternalVisit(InsertSpecification node)
         {
-            var table = Visit<Tuple<string, Table>>(node.Target).Item2;
+            var table =(Table) Visit<(string, RecordTable)>(node.Target).Item2;
             List<string> providedColumns = node.Columns
                 .Select(columnReference => Visit<string>(columnReference))
                 .ToList();

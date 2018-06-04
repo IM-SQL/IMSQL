@@ -34,15 +34,15 @@ namespace MemSQL
             var env = Database.GlobalEnvironment.NewChild();
 
             //this returns multiple tables because of the joins and whatever
-            IEnumerable<Table> tables = Visit<IEnumerable<Table>>(node.FromClause);
+            IEnumerable<RecordTable> tables = Visit<IEnumerable<RecordTable>>(node.FromClause);
             if (tables == null)
             {
                 tables = new Table[] { Table.Empty };
             }
-            Table table = tables.First();
+            RecordTable table = tables.First();
 
             var top = EvaluateExpression<TopResult>(node.TopRowFilter, env);
-            var predicate = EvaluateExpression<Func<Row, bool>>(node.WhereClause, env, row => true);
+            var predicate = EvaluateExpression<Func<Record, bool>>(node.WhereClause, env, row => true);
 
 
             var selectedColumns = node.SelectElements.SelectMany(element =>
@@ -50,14 +50,14 @@ namespace MemSQL
                  return EvaluateExpression<Func<RecordTable, (string, Func<Record, object>)[]>>(element, env)(table);
              }).ToArray();
 
-            var result = new RecordSet(selectedColumns, Filter.From(table.Rows, predicate, top));
+            var result = new RecordSet(selectedColumns, Filter.From(table.Records, predicate, top));
 
             return new SQLExecutionResult(result.Records.Count(), result);
         }
 
         protected override object InternalVisit(FromClause node)
         {
-            return node.TableReferences.Select(t => Visit<Tuple<string, Table>>(t).Item2).ToArray();
+            return node.TableReferences.Select(t => Visit<(string, RecordTable)>(t).Item2).ToArray();
         }
         protected override object InternalVisit(QualifiedJoin node)
         {
