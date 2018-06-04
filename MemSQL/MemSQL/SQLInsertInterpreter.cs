@@ -55,13 +55,16 @@ namespace MemSQL
                 };
             }
             var set = rows.Select(CreateRow).ToArray();
-            var selectors =  Visit<Func<Environment, Func<Table, (string, Func<Record, object>)[]>>>(node.OutputClause)?.Invoke(Database.GlobalEnvironment);
+            var result = new RecordSet(table.Columns, set);
+            var selectors =  Visit<Func<Environment, Func<RecordTable, (string, Func<Record, object>)[]>>>(node.OutputClause)?.Invoke(Database.GlobalEnvironment)(result);
             if (selectors == null)
             {
                 //no output clause
                 return new SQLExecutionResult(set.Length,null);
             }
-            throw new NotImplementedException(); 
+            var filteredResult = new RecordSet(selectors, Filter.From(result.Records, (row)=>true, null));
+
+            return new SQLExecutionResult(result.Records.Count(), filteredResult);
         }
 
         protected override object InternalVisit(ValuesInsertSource node)

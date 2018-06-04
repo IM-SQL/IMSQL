@@ -203,7 +203,7 @@ namespace MemSQL
         //TODO: maybe move this to a subclass
         protected override object InternalVisit(OutputClause node)
         {
-            return new Func<Environment, Func<Table, (string, Func<Record, object>)[]>>(
+            return new Func<Environment, Func<RecordTable, (string, Func<Record, object>)[]>>(
                 (env) =>
                 {
                     return new Func<RecordTable, (string, Func<Record, object>)[]>((table) =>

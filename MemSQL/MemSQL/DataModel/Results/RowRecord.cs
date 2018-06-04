@@ -11,7 +11,7 @@ namespace MemSQL.DataModel.Results
         private object[] values;
         private RecordSet set;
 
-        public RowRecord(Row row, RecordSet recordSet)
+        public RowRecord(Record row, RecordSet recordSet)
         {
             set = recordSet;
             values = new object[set.Columns.Count()];

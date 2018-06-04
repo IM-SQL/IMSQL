@@ -16,7 +16,7 @@ namespace MemSQL.DataModel.Results
             : this(columns.Select(c => c.GetDefaultSelector), rows)
         { }
 
-        public RecordSet(IEnumerable<(string, Func<Record, object>)> selectors, IEnumerable<Row> providedRows)
+        public RecordSet(IEnumerable<(string, Func<Record, object>)> selectors, IEnumerable<Record> providedRows)
         {
             var rows = providedRows.ToArray();
             //TODO:validate that the columns actually are from the rows, and that the rows are from the same table?
@@ -26,7 +26,7 @@ namespace MemSQL.DataModel.Results
             Records = rows.Select(r => new RowRecord(r, this)).ToArray();
         }
 
-        private Type InfereType(Func<Row, object> selector, IEnumerable<Row> rows)
+        private Type InfereType(Func<Record, object> selector, IEnumerable<Record> rows)
         {
             //TODO: this type inference is flawed.
             if (rows.Count() == 0) return typeof(object);
