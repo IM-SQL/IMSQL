@@ -34,14 +34,24 @@ namespace MemSQL
 
             Action<Row> setClause = CreateSetClause(node.SetClauses, env);
 
-            List<Row> result = new List<Row>();
-            result.AddRange(Filter.From(table.Rows, predicate, top));
-            foreach (var item in result)
+            List<Row> rows = new List<Row>();
+            rows.AddRange(Filter.From(table.Rows, predicate, top));
+            foreach (var item in rows)
             {
                 setClause(item);
             }
             table.AcceptChanges();
-            return new SQLExecutionResult(result.Count, new RecordSet(table.Columns, result));
+            var result = new RecordSet(table.Columns, rows);
+            var selectors = Visit<Func<Environment, Func<RecordTable, (string, Func<Record, object>)[]>>>(node.OutputClause)?.Invoke(Database.GlobalEnvironment)(result);
+            if (selectors == null)
+            {
+                //no output clause
+                return new SQLExecutionResult(rows.Count, null);
+            }
+            var filteredResult = new RecordSet(selectors, Filter.From(result.Records, (row) => true, null));
+
+            return new SQLExecutionResult(result.Records.Count(), filteredResult);
+
         }
 
         private Action<Row> CreateSetClause(IList<SetClause> clauses, Environment env)
@@ -108,5 +118,6 @@ namespace MemSQL
                 });
             });
         }
+
     }
 }
