@@ -13,7 +13,7 @@ namespace MemSQL
 
         protected override object InternalVisit(DeleteStatement node)
         {
-            return Visit<RecordSet>(node.DeleteSpecification);
+            return Visit<SQLExecutionResult>(node.DeleteSpecification);
         }
 
         protected override object InternalVisit(DeleteSpecification node)
@@ -35,7 +35,7 @@ namespace MemSQL
                 item.Delete();
             }
             table.AcceptChanges();
-            return   new RecordSet(table.Columns, result);
+            return new SQLExecutionResult(result.Length, new RecordSet(table.Columns, result));
         }
     }
 }

@@ -47,7 +47,7 @@ namespace MemSQL
             var interpreter = new SQLCreateInterpreter(Database);
             var table = interpreter.Visit<RecordSet>(node);
             //TODO: we should have result subtypes, SQL returns "Command(s) completed successfully." on this case, and it does not return a reference or data of the created table
-            return new SQLExecutionResult(0,null);
+            return new SQLExecutionResult(0, null);
         }
 
         protected override object InternalVisit(InsertStatement node)
@@ -72,8 +72,8 @@ namespace MemSQL
         protected override object InternalVisit(DeleteStatement node)
         {
             var interpreter = new SQLDeleteInterpreter(Database);
-            var set = interpreter.Visit<RecordSet>(node);
-            return new Tuple<int, object>(set.Records.Count(), set);
+            return interpreter.Visit<SQLExecutionResult>(node);
+
         }
 
         protected override object InternalVisit(UpdateStatement node)
