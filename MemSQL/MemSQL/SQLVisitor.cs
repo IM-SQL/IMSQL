@@ -70,6 +70,8 @@ namespace MemSQL
         protected virtual object InternalVisit(SelectStarExpression node) { throw new NotImplementedException(); }
         protected virtual object InternalVisit(SelectScalarExpression node) { throw new NotImplementedException(); }
         protected virtual object InternalVisit(OutputClause node) { throw new NotImplementedException(); }
+        protected virtual object InternalVisit(QualifiedJoin node) { throw new NotImplementedException(); }
+
 
         class SQLInternalVisitor : TSqlFragmentVisitor
         {
@@ -289,6 +291,11 @@ namespace MemSQL
             {
                 Result = outer.InternalVisit(node);
             }
+            public override void ExplicitVisit(QualifiedJoin node)
+            {
+                Result = outer.InternalVisit(node);
+            }
+
 
             public override void ExplicitVisit(QueryExpression node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(AutomaticTuningDropIndexOption node) { throw new NotImplementedException(); }
@@ -790,7 +797,6 @@ namespace MemSQL
             public override void ExplicitVisit(SelectElement node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(QueryParenthesisExpression node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(OdbcQualifiedJoinTableReference node) { throw new NotImplementedException(); }
-            public override void ExplicitVisit(QualifiedJoin node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(OrderByClause node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(BooleanTernaryExpression node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(BooleanParenthesisExpression node) { throw new NotImplementedException(); }

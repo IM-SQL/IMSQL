@@ -59,6 +59,14 @@ namespace MemSQL
         {
             return node.TableReferences.Select(t => Visit<Tuple<string, Table>>(t).Item2).ToArray();
         }
+        protected override object InternalVisit(QualifiedJoin node)
+        {
 
+            var first = Visit<(string, RecordTable)>(node.FirstTableReference);
+            var second = Visit<(string, RecordTable)>(node.SecondTableReference);
+
+
+            return base.InternalVisit(node);
+        }
     }
 }

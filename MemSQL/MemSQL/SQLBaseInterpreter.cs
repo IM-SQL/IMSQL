@@ -152,7 +152,7 @@ namespace MemSQL
         {
             var tableName = Visit<string>(node.SchemaObject);
             string name = node.Alias != null ? node.Alias.Value : tableName;
-            return new Tuple<string, Table>(name, Database.GetTable(tableName));
+            return (name, (RecordTable)Database.GetTable(tableName));
         }
 
         protected override object InternalVisit(TopRowFilter node)
