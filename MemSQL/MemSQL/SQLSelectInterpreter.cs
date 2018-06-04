@@ -19,7 +19,7 @@ namespace MemSQL
             //TODO:node.OptimizerHints
             //TODO:node.QueryExpression
             //TODO:node.WithCtesAndXmlNamespaces
-            return Visit<RecordSet>(node.QueryExpression);
+            return Visit<SQLExecutionResult>(node.QueryExpression);
         }
 
         protected override object InternalVisit(QuerySpecification node)
@@ -36,12 +36,12 @@ namespace MemSQL
 
             //this returns multiple tables because of the joins and whatever
             IEnumerable<Table> tables = Visit<IEnumerable<Table>>(node.FromClause);
-            if (tables==null)
+            if (tables == null)
             {
                 tables = new Table[] { Table.Empty };
             }
             Table table = tables.First();
-           
+
             var top = EvaluateExpression<TopResult>(node.TopRowFilter, env);
             var predicate = EvaluateExpression<Func<Row, bool>>(node.WhereClause, env, row => true);
 
@@ -52,8 +52,9 @@ namespace MemSQL
                  return EvaluateExpression<Func<Table, (string, Func<Row, object>)[]>>(element, env)(table);
              }).ToArray();
 
+            var result = new RecordSet(selectedColumns, Filter.From(table.Rows, predicate, top));
 
-            return new RecordSet(selectedColumns, Filter.From(table.Rows, predicate, top));
+            return new SQLExecutionResult(result.Records.Count(), result);
         }
 
         protected override object InternalVisit(FromClause node)

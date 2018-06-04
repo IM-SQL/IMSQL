@@ -65,8 +65,7 @@ namespace MemSQL
         protected override object InternalVisit(SelectStatement node)
         {
             var interpreter = new SQLSelectInterpreter(Database);
-            var set = interpreter.Visit<RecordSet>(node);
-            return new Tuple<int, object>(set.Records.Count(), set);
+            return interpreter.Visit<SQLExecutionResult>(node);
         }
 
         protected override object InternalVisit(DeleteStatement node)
