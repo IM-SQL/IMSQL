@@ -42,7 +42,7 @@ namespace MemSQL.DataModel.Results
 
         IEnumerable<Record> RecordTable.Records => Records;
 
-        internal int IndexOfColumn(string name)
+        internal virtual int IndexOfColumn(string name)
         {
             int result = -1;
             foreach (var item in Columns)

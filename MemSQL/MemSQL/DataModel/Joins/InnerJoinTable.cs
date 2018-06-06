@@ -9,24 +9,25 @@ namespace MemSQL.DataModel.Joins
 {
     public class InnerJoinTable : RecordSet
     {
+        private readonly (string, RecordTable) first;
+        private readonly (string, RecordTable) second;
+
         public InnerJoinTable((string, RecordTable) first, (string, RecordTable) second, Func<Record, bool> predicate)
             : base()
         {
             Columns = JoinColumns(first, second);
             Records = JoinRecords(first.Item2, second.Item2, predicate).ToArray();
+            this.first = first;
+            this.second = second;
         }
-
+        internal override int IndexOfColumn(string name)
+        {
+            return base.IndexOfColumn(name);
+        }
 
         private IEnumerable<RecordColumn> JoinColumns((string, RecordTable) first, (string, RecordTable) second)
         {
-
-            return first.Item2.Columns
-                .Select(col => { return new RecordColumn(first.Item1 + "." + col.ColumnName, col.DataType); })
-                .Union(
-                    second.Item2.Columns.Select(col =>
-                    {
-                        return new RecordColumn(second.Item1 + "." + col.ColumnName, col.DataType);
-                    })).ToArray();
+            return first.Item2.Columns.Union(second.Item2.Columns).ToArray();
         }
 
         private IEnumerable<Record> JoinRecords(RecordTable first, RecordTable second, Func<Record, bool> predicate)
