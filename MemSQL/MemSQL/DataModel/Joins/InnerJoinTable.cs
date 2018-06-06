@@ -20,7 +20,7 @@ namespace MemSQL.DataModel.Joins
             this.first = first;
             this.second = second;
         }
-        internal override int IndexOfColumn(string name)
+        internal override int IndexOfColumn(string[] name)
         {
             return base.IndexOfColumn(name);
         }

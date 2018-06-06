@@ -34,7 +34,7 @@ namespace MemSQL.DataModel.Results
 
         public object this[string name]
         {
-            get { return values[Set.IndexOfColumn(name)]; }
+            get { return values[Set.IndexOfColumn(new string[] { name })]; }
         }
 
         public object[] ItemArray { get { return values; } }

@@ -42,13 +42,13 @@ namespace MemSQL.DataModel.Results
 
         IEnumerable<Record> RecordTable.Records => Records;
 
-        internal virtual int IndexOfColumn(string name)
+        internal virtual int IndexOfColumn(string[] name)
         {
             int result = -1;
             foreach (var item in Columns)
             {
                 result++;
-                if (item.ColumnName == name)
+                if (item.ColumnName == name.Last())
                 {
                     return result;
                 }
