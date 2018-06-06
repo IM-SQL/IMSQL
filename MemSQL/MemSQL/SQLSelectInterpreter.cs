@@ -51,7 +51,7 @@ namespace MemSQL
                  return EvaluateExpression<Func<RecordTable, (string, Func<Record, object>)[]>>(element, env)(table);
              }).ToArray();
 
-            var result = new RecordSet(selectedColumns, Filter.From(table.Records, predicate, top));
+            var result = new RecordSet(table.TableName,selectedColumns, Filter.From(table.Records, predicate, top));
 
             return new SQLExecutionResult(result.Records.Count(), result);
         }

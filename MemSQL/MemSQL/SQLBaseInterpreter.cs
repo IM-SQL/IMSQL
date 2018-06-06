@@ -205,7 +205,7 @@ namespace MemSQL
             var selectors = Visit<Func<Environment, Func<RecordTable, (string, Func<Record, object>)[]>>>(clause)?.Invoke(Database.GlobalEnvironment)(source);
             if (selectors != null)
             {
-                return new RecordSet(selectors, Filter.From(source.Records, (row) => true, null));
+                return new RecordSet(source.TableName,selectors, Filter.From(source.Records, (row) => true, null));
             }
             return null;
         }

@@ -26,6 +26,7 @@ namespace MemSQL.DataModel.Joins
             { return base.IndexOfColumn(name); }
             if (name.Length > 2) { throw new NotImplementedException(); }
 
+
             string tblName = name[0];
             string colName = name[1];
             //TODO: if the item1 (name) is null, i should check it anyway, the joins do not have names.

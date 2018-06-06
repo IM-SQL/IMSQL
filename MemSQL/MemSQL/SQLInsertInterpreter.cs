@@ -56,7 +56,7 @@ namespace MemSQL
             }
             var rows = providedRows.Select(CreateRow).ToArray();
             return new SQLExecutionResult(rows.Count(),
-                ApplyOutputClause(new RecordSet(table.Columns, rows), node.OutputClause)); 
+                ApplyOutputClause(new RecordSet(table.TableName,table.Columns, rows), node.OutputClause)); 
         }
 
         protected override object InternalVisit(ValuesInsertSource node)

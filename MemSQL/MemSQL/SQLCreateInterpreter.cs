@@ -48,7 +48,7 @@ namespace MemSQL
                 Database.RemoveTable(table);
                 throw;
             }
-            return  new RecordSet(table.Columns, table.Rows);
+            return  new RecordSet(table.TableName,table.Columns, table.Rows);
         }
 
         protected override object InternalVisit(TableDefinition node)

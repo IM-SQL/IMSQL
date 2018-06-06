@@ -7,18 +7,20 @@ namespace MemSQL.DataModel.Results
     public class RecordSet : RecordTable
     {
         internal RecordSet() { }
-        public RecordSet(IEnumerable<RecordColumn> columns, IEnumerable<Record> records)
+        public RecordSet(string name, IEnumerable<RecordColumn> columns, IEnumerable<Record> records)
         {
+            TableName = name;
             Records = records;
             Columns = columns;
         }
 
-        public RecordSet(IEnumerable<Column> columns, IEnumerable<Row> rows)
-            : this(columns.Select(c => c.GetDefaultSelector), rows)
+        public RecordSet(string name, IEnumerable<Column> columns, IEnumerable<Row> rows)
+            : this(name,columns.Select(c => c.GetDefaultSelector), rows)
         { }
 
-        public RecordSet(IEnumerable<(string, Func<Record, object>)> selectors, IEnumerable<Record> providedRows)
+        public RecordSet(string name, IEnumerable<(string, Func<Record, object>)> selectors, IEnumerable<Record> providedRows)
         {
+            TableName = name;
             var rows = providedRows.ToArray();
             //TODO:validate that the columns actually are from the rows, and that the rows are from the same table?
             //TODO: i am evaluating the expressions to infere the type, this can cause unintended sideffects.
@@ -42,8 +44,19 @@ namespace MemSQL.DataModel.Results
 
         IEnumerable<Record> RecordTable.Records => Records;
 
+        public string TableName
+        {
+            get;
+            set;
+        }
+
         public virtual int IndexOfColumn(string[] name)
         {
+            if (name.Length == 2)
+            {
+                if (name[0] != this.TableName)
+                { return -1; }
+            }
             int result = -1;
             foreach (var item in Columns)
             {
@@ -53,7 +66,7 @@ namespace MemSQL.DataModel.Results
                     return result;
                 }
             }
-            throw new KeyNotFoundException();
+            return -1;
         }
     }
 }
