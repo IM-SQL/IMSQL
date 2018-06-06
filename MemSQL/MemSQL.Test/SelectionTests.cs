@@ -77,7 +77,27 @@ namespace MemSQL.Test
             Assert.AreEqual("A", result.Values.Columns.ElementAt(0).ColumnName, "The expected column was not on the result set");
             Assert.AreEqual(3, result.Values.Records.First()["A"], "The selected value was not present on the Table");
         }
+        [TestMethod]
+        public void SelectWithAliasAndWhere()
+        {
+            var db = new Database();
+            Table table = db.AddTable("TBL");
+            table.AddColumn(new Column("ID", typeof(int)));
 
+            var row = table.NewRow(3);
+
+            table.AddRow(row);
+
+            string query = "Select ID as A from [TBL] where A.ID=3";
+            SQLInterpreter interpreter = new SQLInterpreter(db);
+
+            var result = interpreter.Execute(query)[0];
+            int affected = result.RowsAffected;
+            Assert.AreEqual(1, affected, "There should be one row affected");
+            Assert.AreEqual(1, result.Values.Columns.Count(), "There should be only one column");
+            Assert.AreEqual("A", result.Values.Columns.ElementAt(0).ColumnName, "The expected column was not on the result set");
+            Assert.AreEqual(3, result.Values.Records.First()["A"], "The selected value was not present on the Table");
+        }
         [TestMethod]
         public void SelectWithExpression()
         {
