@@ -32,9 +32,9 @@ namespace MemSQL.DataModel.Results
 
         RecordSet Set { get { return set; } }
 
-        public object this[string name]
+        public object this[params string[] name]
         {
-            get { return values[Set.IndexOfColumn(new string[] { name })]; }
+            get { return values[Set.IndexOfColumn( name )]; }
         }
 
         public object[] ItemArray { get { return values; } }

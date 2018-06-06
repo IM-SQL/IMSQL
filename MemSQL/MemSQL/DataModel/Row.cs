@@ -26,7 +26,7 @@ namespace MemSQL
 
         public Table Table { get; }
 
-        public object this[string name]
+        public object this[params string[] name]
         {
             get { return values[Table.IndexOfColumn(name)].Value; }
             set

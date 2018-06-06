@@ -73,9 +73,10 @@ namespace MemSQL
             return columns.FirstOrDefault(col => Equals(columnName, col.ColumnName));
         }
 
-        public int IndexOfColumn(string columnName)
+        public int IndexOfColumn(string[] columnName)
         {
-            return columns.FindIndex(col => Equals(columnName, col.ColumnName));
+            if (columnName.Length > 1) throw new NotImplementedException();
+            return columns.FindIndex(col => Equals(columnName.Last(), col.ColumnName));
         }
 
         public bool ContainsColumn(string columnName)
