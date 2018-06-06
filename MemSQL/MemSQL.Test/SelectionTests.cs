@@ -99,6 +99,42 @@ namespace MemSQL.Test
             Assert.AreEqual(3, result.Values.Records.First()["A"], "The selected value was not present on the Table");
         }
         [TestMethod]
+        public void AliasedFieldShouldFailIFRequestedWithoutalias()
+        {
+            var db = new Database();
+            Table table = db.AddTable("TBL");
+            table.AddColumn(new Column("ID", typeof(int)));
+
+            var row = table.NewRow(3);
+
+            table.AddRow(row);
+
+            string query = "Select ID as A  from [TBL] where ID=3";
+            SQLInterpreter interpreter = new SQLInterpreter(db);
+            Assert.ThrowsException<InvalidOperationException>(() =>
+            {
+                var result = interpreter.Execute(query)[0];
+            });
+        }
+        [TestMethod]
+        public void AliasedTableShouldfailIfRequestedWithoutalias()
+        {
+            var db = new Database();
+            Table table = db.AddTable("TBL");
+            table.AddColumn(new Column("ID", typeof(int)));
+
+            var row = table.NewRow(3);
+
+            table.AddRow(row);
+
+            string query = "Select ID from [TBL] as A where TBL.ID=3";
+            SQLInterpreter interpreter = new SQLInterpreter(db);
+            Assert.ThrowsException<InvalidOperationException>(() =>
+            {
+                var result = interpreter.Execute(query)[0];
+            });
+        }
+        [TestMethod]
         public void SelectWithExpression()
         {
             var db = new Database();
@@ -164,7 +200,7 @@ namespace MemSQL.Test
                 Assert.AreEqual(expected, result.RowsAffected);
                 Assert.AreEqual(expected, result.Values.Records.Count());
             };
-            
+
             assert("select * from Customer where [Enabled] = 1", 3);
             assert("select * from Customer where [Enabled] > 1", 0);
             assert("select * from Customer where [Enabled] < 3", 3);
