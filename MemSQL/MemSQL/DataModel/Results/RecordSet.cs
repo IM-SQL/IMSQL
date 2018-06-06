@@ -15,7 +15,7 @@ namespace MemSQL.DataModel.Results
         }
 
         public RecordSet(string name, IEnumerable<Column> columns, IEnumerable<Row> rows)
-            : this(name,columns.Select(c => c.GetDefaultSelector), rows)
+            : this(name, columns.Select(c => c.GetDefaultSelector), rows)
         { }
 
         public RecordSet(string name, IEnumerable<(string, Func<Record, object>)> selectors, IEnumerable<Record> providedRows)
@@ -54,7 +54,7 @@ namespace MemSQL.DataModel.Results
         {
             if (name.Length == 2)
             {
-                if (name[0] != this.TableName)
+                if (TableName != "" && name[0] != TableName)
                 { return -1; }
             }
             int result = -1;
