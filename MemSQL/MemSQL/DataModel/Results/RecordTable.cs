@@ -10,5 +10,7 @@ namespace MemSQL.DataModel.Results
     {
         IEnumerable<Record> Records { get; }
         IEnumerable<RecordColumn> Columns { get; }
+
+        int IndexOfColumn(string[] columnName);
     }
 }

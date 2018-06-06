@@ -20,9 +20,25 @@ namespace MemSQL.DataModel.Joins
             this.first = first;
             this.second = second;
         }
-        internal override int IndexOfColumn(string[] name)
+        public override int IndexOfColumn(string[] name)
         {
-            return base.IndexOfColumn(name);
+            if (name.Length == 1)
+            { return base.IndexOfColumn(name); }
+            if (name.Length > 2) { throw new NotImplementedException(); }
+
+            string tblName = name[0];
+            string colName = name[1];
+            //TODO: if the item1 (name) is null, i should check it anyway, the joins do not have names.
+            //Maybe this should return -1 if not found, and i can check everything everytime. Maybe?
+            if (first.Item1 == tblName)
+            {
+                return first.Item2.IndexOfColumn(new string[] { colName });
+            }
+            if (second.Item1 == tblName)
+            {
+                return first.Item2.Columns.Count() + second.Item2.IndexOfColumn(new string[] { colName });
+            }
+            throw new NotImplementedException("Error here? table not found");
         }
 
         private IEnumerable<RecordColumn> JoinColumns((string, RecordTable) first, (string, RecordTable) second)
@@ -40,9 +56,10 @@ namespace MemSQL.DataModel.Joins
                     var row = new RowRecord(
                         row1.ItemArray.Concat(row2.ItemArray).ToArray()
                         , this);
-                    //if (predicate(row))
-
-                    yield return row;
+                    if (predicate(row))
+                    {
+                        yield return row;
+                    }
                 }
 
             }
