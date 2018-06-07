@@ -70,7 +70,7 @@ namespace MemSQL
 
         public Column GetColumn(string columnName)
         {
-            return columns.FirstOrDefault(col => Equals(columnName, col.ColumnName));
+            return columns.FirstOrDefault(col => columnName.Equals(col.ColumnName, StringComparison.InvariantCultureIgnoreCase));
         }
 
         public int IndexOfColumn(string[] columnName)
