@@ -25,7 +25,6 @@ namespace MemSQL.DataModel.Results
 
         public RowRecord(object[] v, RecordSet recordSet)
         {
-
             set = recordSet;
             values = v;
         }
@@ -37,10 +36,11 @@ namespace MemSQL.DataModel.Results
             get
             {
                 int index = Set.IndexOfColumn(name);
-                if(index==-1)
-                    throw new InvalidOperationException("Invalid object name " + string.Join(".",name));
+                if (index == -1)
+                {
+                    throw new InvalidOperationException("Invalid object name " + string.Join(".", name));
+                }
                 return values[index];
-
             }
         }
 

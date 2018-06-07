@@ -52,9 +52,9 @@ namespace MemSQL
              }).ToArray();
 
             //i need to apply the selectors before the filter, this ensures me that i apply the alias in the columns
-            var result = new RecordSet(table.TableName, selectedColumns, table.Records);
+            var result = new RecordSet(table.TableName, table.Columns, Filter.From(table.Records, predicate, top));
             //TODO: ensure that a select with a where that is not present on the result works.
-            result = new RecordSet(result.TableName, result.Columns, Filter.From(result.Records, predicate, top));
+            result = new RecordSet(result.TableName, selectedColumns, result.Records);
             return new SQLExecutionResult(result.Records.Count(), result);
         }
 

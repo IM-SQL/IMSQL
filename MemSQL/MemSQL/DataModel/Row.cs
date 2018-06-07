@@ -28,10 +28,22 @@ namespace MemSQL
 
         public object this[params string[] name]
         {
-            get { return values[Table.IndexOfColumn(name)].Value; }
+            get
+            {
+                int index = Table.IndexOfColumn(name);
+                if (index == -1)
+                {
+                    throw new InvalidOperationException("Invalid object name " + string.Join(".", name));
+                }
+                return values[index].Value;
+            }
             set
             {
                 int index = Table.IndexOfColumn(name);
+                if (index == -1)
+                {
+                    throw new InvalidOperationException("Invalid object name " + string.Join(".", name));
+                }
                 var column = Table.GetColumn(index);
                 var field = values[index];
                 var oldValue = field.Value;
