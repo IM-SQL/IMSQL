@@ -51,24 +51,24 @@ namespace MemSQL
                  return EvaluateExpression<Func<RecordTable, (string, Func<Record, object>)[]>>(element, env)(table);
              }).ToArray();
 
-            var result = new RecordSet(table.TableName,selectedColumns, Filter.From(table.Records, predicate, top));
+            var result = new RecordSet(table.TableName, selectedColumns, Filter.From(table.Records, predicate, top));
 
             return new SQLExecutionResult(result.Records.Count(), result);
         }
 
         protected override object InternalVisit(FromClause node)
         {
-            return node.TableReferences.Select(t => Visit<(string, RecordTable)>(t).Item2).ToArray();
+            return node.TableReferences.Select(t => Visit<RecordTable>(t)).ToArray();
         }
         protected override object InternalVisit(QualifiedJoin node)
         {
             //this should return a tuple of string,recordtable
             //the name will probably be null, i dont seem to have access to the alias here.
-            var first = Visit<(string, RecordTable)>(node.FirstTableReference);
-            var second = Visit<(string, RecordTable)>(node.SecondTableReference);
+            var first = Visit<RecordTable>(node.FirstTableReference);
+            var second = Visit<RecordTable>(node.SecondTableReference);
 
             var env = Database.GlobalEnvironment.NewChild();
-             
+
             var where = new WhereClause() { SearchCondition = node.SearchCondition };
             var predicate = EvaluateExpression<Func<Record, bool>>(where, env, row => true);
 
@@ -76,7 +76,7 @@ namespace MemSQL
             {
                 predicate = (row) => true;
             }
-            return ("", (RecordTable)new InnerJoinTable(first, second, predicate));
+            return new InnerJoinTable(first, second, predicate);
         }
     }
 }
