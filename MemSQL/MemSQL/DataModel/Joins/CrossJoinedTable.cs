@@ -1,25 +1,26 @@
-﻿using System;
+﻿using MemSQL.DataModel.Results;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MemSQL.DataModel.Results;
 
 namespace MemSQL.DataModel.Joins
 {
-    public class InnerJoinTable : RecordSet
+    public class CrossJoinedTable : RecordSet
     {
-        private readonly  RecordTable first;
-        private readonly  RecordTable second;
+        protected readonly RecordTable first;
+        protected readonly RecordTable second;
 
-        public InnerJoinTable( RecordTable first,  RecordTable second, Func<Record, bool> predicate)
+        public CrossJoinedTable(RecordTable first, RecordTable second)
             : base()
         {
             this.first = first;
             this.second = second;
             Columns = JoinColumns(first, second);
-            Records = JoinRecords(first, second, predicate).ToArray();
+            Records = JoinRecords(first, second);
         }
+
         public override int IndexOfColumn(string[] name)
         {
             if (name.Length == 1)
@@ -41,13 +42,12 @@ namespace MemSQL.DataModel.Joins
             }
             throw new NotImplementedException("Error here? table not found");
         }
-
-        private IEnumerable<RecordColumn> JoinColumns( RecordTable first,  RecordTable second)
+        protected virtual IEnumerable<RecordColumn> JoinColumns(RecordTable first, RecordTable second)
         {
             return first.Columns.Union(second.Columns).ToArray();
         }
 
-        private IEnumerable<Record> JoinRecords(RecordTable first, RecordTable second, Func<Record, bool> predicate)
+        protected virtual IEnumerable<Record> JoinRecords(RecordTable first, RecordTable second)
         {
             //TODO: this behaviour properly
             foreach (var row1 in first.Records)
@@ -57,10 +57,8 @@ namespace MemSQL.DataModel.Joins
                     var row = new RowRecord(
                         row1.ItemArray.Concat(row2.ItemArray).ToArray()
                         , this);
-                    if (predicate(row))
-                    {
-                        yield return row;
-                    }
+                    yield return row;
+
                 }
 
             }

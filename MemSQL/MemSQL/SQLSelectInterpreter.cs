@@ -78,7 +78,7 @@ namespace MemSQL
             {
                 predicate = (row) => true;
             }
-            return new InnerJoinTable(first, second, predicate);
+            return new InnerJoinedTable(first, second, predicate);
         }
     }
 }
