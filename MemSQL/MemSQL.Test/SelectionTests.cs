@@ -88,7 +88,7 @@ namespace MemSQL.Test
 
             table.AddRow(row);
 
-            string query = "Select ID as A from [TBL] where A.ID=3";
+            string query = "Select ID as A from [TBL] where TBL.A=3";
             SQLInterpreter interpreter = new SQLInterpreter(db);
 
             var result = interpreter.Execute(query)[0];

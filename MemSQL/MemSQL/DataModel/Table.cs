@@ -75,7 +75,13 @@ namespace MemSQL
 
         public int IndexOfColumn(string[] columnName)
         {
-            if (columnName.Length > 1) throw new NotImplementedException();
+            if (columnName.Length > 2) throw new NotImplementedException();
+            if (columnName.Length == 2)
+            {
+                if (!TableName.Equals(columnName[0], StringComparison.InvariantCultureIgnoreCase))
+                { return -1; }
+            }
+
             return columns.FindIndex(col => Equals(columnName.Last(), col.ColumnName));
         }
 
