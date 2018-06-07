@@ -9,14 +9,14 @@ namespace MemSQL.DataModel.Joins
 {
     public class InnerJoinTable : RecordSet
     {
-        private readonly  RecordTable first;
-        private readonly  RecordTable second;
+        private readonly (string, RecordTable) first;
+        private readonly (string, RecordTable) second;
 
-        public InnerJoinTable( RecordTable first,  RecordTable second, Func<Record, bool> predicate)
+        public InnerJoinTable((string, RecordTable) first, (string, RecordTable) second, Func<Record, bool> predicate)
             : base()
         {
             Columns = JoinColumns(first, second);
-            Records = JoinRecords(first, second, predicate).ToArray();
+            Records = JoinRecords(first.Item2, second.Item2, predicate).ToArray();
             this.first = first;
             this.second = second;
         }
@@ -31,20 +31,20 @@ namespace MemSQL.DataModel.Joins
             string colName = name[1];
             //TODO: if the item1 (name) is null, i should check it anyway, the joins do not have names.
             //Maybe this should return -1 if not found, and i can check everything everytime. Maybe?
-            if (first.TableName == tblName)
+            if (first.Item1 == tblName)
             {
-                return first.IndexOfColumn(new string[] { colName });
+                return first.Item2.IndexOfColumn(new string[] { colName });
             }
-            if (second.TableName == tblName)
+            if (second.Item1 == tblName)
             {
-                return first.Columns.Count() + second.IndexOfColumn(new string[] { colName });
+                return first.Item2.Columns.Count() + second.Item2.IndexOfColumn(new string[] { colName });
             }
             throw new NotImplementedException("Error here? table not found");
         }
 
-        private IEnumerable<RecordColumn> JoinColumns( RecordTable first,  RecordTable second)
+        private IEnumerable<RecordColumn> JoinColumns((string, RecordTable) first, (string, RecordTable) second)
         {
-            return first.Columns.Union(second.Columns).ToArray();
+            return first.Item2.Columns.Union(second.Item2.Columns).ToArray();
         }
 
         private IEnumerable<Record> JoinRecords(RecordTable first, RecordTable second, Func<Record, bool> predicate)

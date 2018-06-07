@@ -27,7 +27,7 @@ namespace MemSQL
 
             var env = Database.GlobalEnvironment.NewChild();
 
-            var table = (Table)Visit<RecordTable>(node.Target);
+            var table = (Table)Visit<(string, RecordTable)>(node.Target).Item2;
             var top = EvaluateExpression<TopResult>(node.TopRowFilter, env);
             var predicate = EvaluateExpression<Func<Row, bool>>(node.WhereClause, env, row => true);
 
