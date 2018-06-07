@@ -10,7 +10,7 @@ namespace MemSQL.DataModel.Results
         public RecordSet(string name, IEnumerable<RecordColumn> columns, IEnumerable<Record> records)
         {
             TableName = name;
-            Records = records;
+            Records = records.Select(r => r.Wrap(this));
             Columns = columns;
         }
 
@@ -54,7 +54,7 @@ namespace MemSQL.DataModel.Results
         {
             if (name.Length == 2)
             {
-                if (TableName != "" && !TableName.Equals(name[0], StringComparison.InvariantCultureIgnoreCase))
+                if (TableName != "" && !string.Equals(TableName, name[0], StringComparison.InvariantCultureIgnoreCase))
                 { return -1; }
             }
             int result = -1;

@@ -71,6 +71,7 @@ namespace MemSQL
         protected virtual object InternalVisit(SelectScalarExpression node) { throw new NotImplementedException(); }
         protected virtual object InternalVisit(OutputClause node) { throw new NotImplementedException(); }
         protected virtual object InternalVisit(QualifiedJoin node) { throw new NotImplementedException(); }
+        protected virtual object InternalVisit(QueryDerivedTable node) { throw new NotImplementedException(); }
 
 
         class SQLInternalVisitor : TSqlFragmentVisitor
@@ -287,11 +288,18 @@ namespace MemSQL
             {
                 Result = outer.InternalVisit(node);
             }
+
             public override void ExplicitVisit(OutputClause node)
             {
                 Result = outer.InternalVisit(node);
             }
+
             public override void ExplicitVisit(QualifiedJoin node)
+            {
+                Result = outer.InternalVisit(node);
+            }
+
+            public override void ExplicitVisit(QueryDerivedTable node)
             {
                 Result = outer.InternalVisit(node);
             }
@@ -937,7 +945,7 @@ namespace MemSQL
             public override void ExplicitVisit(IdentifierOrScalarExpression node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(SubqueryComparisonPredicate node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(InlineDerivedTable node) { throw new NotImplementedException(); }
-            public override void ExplicitVisit(QueryDerivedTable node) { throw new NotImplementedException(); }
+
             public override void ExplicitVisit(MaxLiteral node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(DefaultLiteral node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(BrowseForClause node) { throw new NotImplementedException(); }
@@ -1223,7 +1231,5 @@ namespace MemSQL
             public override void ExplicitVisit(ExecuteOption node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(AlterTableStatement node) { throw new NotImplementedException(); }
         }
-
-
     }
 }

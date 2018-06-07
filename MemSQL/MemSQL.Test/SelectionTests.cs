@@ -299,5 +299,16 @@ namespace MemSQL.Test
             Assert.AreEqual(3, items.ElementAt(1)["col3"], "The selected value was not present on the Table");
             Assert.AreEqual("B", items.ElementAt(1)["col4"], "The selected value was not present on the Table");
         }
+
+        [TestMethod]
+        public void SelectOnSubquery()
+        {
+            var db = new Database();
+            var interpreter = new SQLInterpreter(db);
+
+            var result = interpreter.Execute("select * from (select 3 as A) t where t.A = 3");
+            Assert.AreEqual(1, result[0].Values.Records.Count(), "The result set should only contain one element");
+            Assert.AreEqual(3, result[0].Values.Records.ElementAt(0)["A"], "The result should be 3");
+        }
     }
 }

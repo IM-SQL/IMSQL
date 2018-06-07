@@ -10,5 +10,7 @@ namespace MemSQL.DataModel.Results
     {
         object this[params string[] name] { get; }
         object[] ItemArray { get; }
+
+        Record Wrap(RecordSet recordSet);
     }
 }

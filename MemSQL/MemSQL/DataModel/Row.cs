@@ -75,5 +75,10 @@ namespace MemSQL
         {
             Table.RemoveRow(this);
         }
+
+        public Record Wrap(RecordSet recordSet)
+        {
+            return new RowRecord(ItemArray, recordSet);
+        }
     }
 }

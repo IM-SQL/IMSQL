@@ -62,6 +62,7 @@ namespace MemSQL
         {
             return node.TableReferences.Select(t => Visit<RecordTable>(t)).ToArray();
         }
+
         protected override object InternalVisit(QualifiedJoin node)
         {
             //this should return a tuple of string,recordtable
@@ -79,6 +80,17 @@ namespace MemSQL
                 predicate = (row) => true;
             }
             return new InnerJoinedTable(first, second, predicate);
+        }
+
+        protected override object InternalVisit(QueryDerivedTable node)
+        {
+            var realTable = Visit<SQLExecutionResult>(node.QueryExpression).Values;
+
+            if (node.Alias != null)
+            {
+                return new RecordSet(node.Alias.Value, realTable.Columns, realTable.Records);
+            }
+            return realTable;
         }
     }
 }

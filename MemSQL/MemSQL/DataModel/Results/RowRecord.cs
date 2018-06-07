@@ -46,5 +46,9 @@ namespace MemSQL.DataModel.Results
 
         public object[] ItemArray { get { return values; } }
 
+        public Record Wrap(RecordSet recordSet)
+        {
+            return new RowRecord(ItemArray, recordSet);
+        }
     }
 }
