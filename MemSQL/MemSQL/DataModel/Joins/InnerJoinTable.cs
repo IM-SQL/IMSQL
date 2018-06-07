@@ -15,10 +15,10 @@ namespace MemSQL.DataModel.Joins
         public InnerJoinTable( RecordTable first,  RecordTable second, Func<Record, bool> predicate)
             : base()
         {
-            Columns = JoinColumns(first, second);
-            Records = JoinRecords(first, second, predicate).ToArray();
             this.first = first;
             this.second = second;
+            Columns = JoinColumns(first, second);
+            Records = JoinRecords(first, second, predicate).ToArray();
         }
         public override int IndexOfColumn(string[] name)
         {
