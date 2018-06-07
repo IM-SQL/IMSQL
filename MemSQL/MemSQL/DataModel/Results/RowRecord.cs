@@ -10,7 +10,7 @@ namespace MemSQL.DataModel.Results
     public class RowRecord : Record
     {
         private object[] values;
-        private RecordSet set; 
+        private RecordSet set;
 
         public RowRecord(Record row, RecordSet recordSet)
         {
@@ -27,14 +27,21 @@ namespace MemSQL.DataModel.Results
         {
 
             set = recordSet;
-            values= v;
+            values = v;
         }
 
         RecordSet Set { get { return set; } }
 
         public object this[params string[] name]
         {
-            get { return values[Set.IndexOfColumn( name )]; }
+            get
+            {
+                int index = Set.IndexOfColumn(name);
+                if(index==-1)
+                    throw new InvalidOperationException("Invalid object name " + string.Join(".",name));
+                return values[index];
+
+            }
         }
 
         public object[] ItemArray { get { return values; } }
