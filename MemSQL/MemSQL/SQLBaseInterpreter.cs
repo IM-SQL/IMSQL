@@ -151,9 +151,15 @@ namespace MemSQL
         protected override object InternalVisit(NamedTableReference node)
         {
             var tableName = Visit<string>(node.SchemaObject);
-            string name = node.Alias != null ? node.Alias.Value : tableName;
-            //TODO: make this a result?
-            return Database.GetTable(tableName);
+
+            //TODO: this is actually a kind of hack, if i am in presence of an
+            var realTable = Database.GetTable(tableName);
+            if (node.Alias != null) {
+                return new RecordSet(node.Alias.Value, realTable.Columns, realTable.Rows);
+            }
+            //TODO: make this a result?.
+            //If i make this a result, the insert, delete, or update wont work. they need the real table here.
+            return realTable;
         }
 
         protected override object InternalVisit(TopRowFilter node)
