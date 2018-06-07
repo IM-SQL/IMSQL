@@ -54,14 +54,14 @@ namespace MemSQL.DataModel.Results
         {
             if (name.Length == 2)
             {
-                if (TableName != "" && name[0] != TableName)
+                if (TableName != "" && !TableName.Equals(name[0], StringComparison.InvariantCultureIgnoreCase))
                 { return -1; }
             }
             int result = -1;
             foreach (var item in Columns)
             {
                 result++;
-                if (item.ColumnName == name.Last())
+                if (item.ColumnName.Equals(name.Last(), StringComparison.InvariantCultureIgnoreCase))
                 {
                     return result;
                 }

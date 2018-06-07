@@ -84,10 +84,9 @@ namespace MemSQL
 
         protected override object InternalVisit(ColumnReferenceExpression node)
         {
-            //TODO(Tera): we should check what about the other parts of the identifier
             return new Func<Environment, object>((env) =>
             {
-                return env.At<Record>("currentRow")[Visit<string[]>(node.MultiPartIdentifier).Last()];
+                return env.At<Record>("currentRow")[Visit<string[]>(node.MultiPartIdentifier)];
             });
         }
 

@@ -42,7 +42,7 @@ namespace MemSQL
             table.AcceptChanges();
 
             return new SQLExecutionResult(rows.Count(),
-                ApplyOutputClause(new RecordSet(table.TableName,table.Columns, rows), node.OutputClause));
+                ApplyOutputClause(new RecordSet("UPDATED",table.Columns, rows), node.OutputClause));
 
         }
 
