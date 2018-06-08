@@ -73,6 +73,7 @@ namespace MemSQL
         protected virtual object InternalVisit(QualifiedJoin node) { throw new NotImplementedException(); }
         protected virtual object InternalVisit(QueryDerivedTable node) { throw new NotImplementedException(); }
         protected virtual object InternalVisit(UnqualifiedJoin node) { throw new NotImplementedException(); }
+        protected virtual object InternalVisit(SelectInsertSource node) { throw new NotImplementedException(); }
 
 
 
@@ -307,6 +308,10 @@ namespace MemSQL
             }
 
             public override void ExplicitVisit(UnqualifiedJoin node)
+            {
+                Result = outer.InternalVisit(node);
+            }
+            public override void ExplicitVisit(SelectInsertSource node)
             {
                 Result = outer.InternalVisit(node);
             }
@@ -1032,7 +1037,6 @@ namespace MemSQL
             public override void ExplicitVisit(UserDataTypeReference node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(ColumnMasterKeyParameter node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(SecurityPredicateAction node) { throw new NotImplementedException(); }
-            public override void ExplicitVisit(SelectInsertSource node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(UseHintList node) { throw new NotImplementedException(); }
 
             public override void ExplicitVisit(IfStatement node) { throw new NotImplementedException(); }

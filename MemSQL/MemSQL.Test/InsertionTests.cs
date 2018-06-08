@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using MemSQL.Result;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -372,6 +373,28 @@ namespace MemSQL.Test
             var row = resultSet.Records.ElementAt(0);
 
             Assert.AreEqual(3, row["A"], "The expected result was not present in the row");
+
+        }
+        [TestMethod]
+        public void InsertWithSubquery()
+        {
+
+
+            var db = new Database();
+            Table table = db.AddTable("TBL");
+            table.AddColumn(new Column("A", typeof(int)));
+            var row = table.NewRow(1);
+            table.AddRow(row);
+
+            var interpreter = new SQLInterpreter(db);
+            SQLExecutionResult result;
+
+            for (int i = 1; i < 10; i++)
+            {
+                int currentRowCount = table.Rows.Count();
+                result = interpreter.Execute("Insert into TBL(A) select A*2 from TBL ")[0];
+                Assert.AreEqual(currentRowCount, result.RowsAffected, "We should have duplicated the amount of rows");
+            }
 
         }
     }

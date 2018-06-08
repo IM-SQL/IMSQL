@@ -72,5 +72,10 @@ namespace MemSQL
                 .Select(cv => EvaluateExpression<object>(cv, Database.GlobalEnvironment))
                 .ToArray();
         }
+        protected override object InternalVisit(SelectInsertSource node)
+        {
+            var result = Visit<SQLExecutionResult>(node.Select).Values;
+            return result.Records.Select(r=>r.ItemArray).ToArray();
+        }
     }
 }

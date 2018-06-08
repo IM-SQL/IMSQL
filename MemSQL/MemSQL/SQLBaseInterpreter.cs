@@ -274,5 +274,10 @@ namespace MemSQL
                 });
             });
         }
+        protected override object InternalVisit(QuerySpecification node)
+        {
+            //TODO: db.newChild?
+            return new SQLSelectInterpreter(Database).Visit<SQLExecutionResult>(node);
+        }
     }
 }
