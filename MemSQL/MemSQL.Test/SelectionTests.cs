@@ -359,6 +359,62 @@ namespace MemSQL.Test
 
 
         }
+
+
+        [TestMethod]
+        public void CommaShouldEqualsCrossJoin()
+        {
+            var db = new Database();
+            Table table = db.AddTable("TBL");
+            table.AddColumn(new Column("col1", typeof(int)));
+            table.AddColumn(new Column("col2", typeof(int)));
+
+            var row = table.NewRow(1, 2);
+            table.AddRow(row);
+            row = table.NewRow(3, 4);
+            table.AddRow(row);
+
+
+
+            Table table2 = db.AddTable("TBL2");
+            table2.AddColumn(new Column("col3", typeof(int)));
+            table2.AddColumn(new Column("col4", typeof(string)));
+
+            var row2 = table2.NewRow(1, "A");
+            table2.AddRow(row2);
+            row2 = table2.NewRow(3, "B");
+            table2.AddRow(row2);
+
+            string crossJoinQuery = "Select * from [TBL] cross join [TBL2]";
+            string commaQuery = "Select * from [TBL],[TBL2]";
+            SQLInterpreter interpreter = new SQLInterpreter(db);
+
+            var crossJoinResult = interpreter.Execute(crossJoinQuery)[0];
+            var commaResult = interpreter.Execute(commaQuery)[0];
+
+
+            Assert.AreEqual(crossJoinResult.RowsAffected, commaResult.RowsAffected, "The affected rows should be the same");
+
+            Assert.AreNotEqual(null, crossJoinResult.Values, "There should be one result set");
+            Assert.AreNotEqual(null, commaResult.Values, "There should be one result set");
+
+
+            Assert.AreEqual(crossJoinResult.Values.Columns.Count(), commaResult.Values.Columns.Count(), "There should be the same amount of columns");
+            for (int i = 0; i < crossJoinResult.Values.Columns.Count(); i++)
+            {
+                Assert.AreEqual(crossJoinResult.Values.Columns.ElementAt(i).ColumnName, commaResult.Values.Columns.ElementAt(i).ColumnName, "There was a column missmatch on the result set");
+            }
+            Assert.AreEqual(crossJoinResult.Values.Records.Count(), commaResult.Values.Records.Count(), "There should be the same amount of records ");
+            for (int i = 0; i < crossJoinResult.Values.Records.Count(); i++)
+            {
+                Assert.IsTrue(
+
+                    crossJoinResult.Values.Records.ElementAt(i).ItemArray
+                    .SequenceEqual(commaResult.Values.Records.ElementAt(i).ItemArray),
+                    "There was a row missmatch on the set");
+            }
+
+        }
         [TestMethod]
         public void SelectOnSubquery()
         {

@@ -35,10 +35,18 @@ namespace MemSQL
             var env = Database.GlobalEnvironment.NewChild();
 
             //this returns multiple tables because of the joins and whatever
-            IEnumerable<RecordTable> tables = Visit<IEnumerable<RecordTable>>(node.FromClause);
-            if (tables == null)
+            List<RecordTable> tables = new List<RecordTable>(Visit<IEnumerable<RecordTable>>(node.FromClause,new RecordTable[0]));
+            if (tables.Count == 0)
             {
-                tables = new Table[] { Table.Empty };
+                tables.Add(Table.Empty);
+            }
+            while (tables.Count > 1)
+            {
+                var first = tables[0];
+                tables.RemoveAt(0);
+                var second = tables[0];
+                tables.RemoveAt(0);
+                tables.Insert(0, new CrossJoinedTable(first, second));
             }
             RecordTable table = tables.First();
 
@@ -88,11 +96,11 @@ namespace MemSQL
             switch (node.UnqualifiedJoinType)
             {
                 case UnqualifiedJoinType.CrossJoin:
-                    return new CrossJoinedTable(first, second); 
+                    return new CrossJoinedTable(first, second);
                 case UnqualifiedJoinType.CrossApply:
                 case UnqualifiedJoinType.OuterApply:
                 default:
-                    throw new NotImplementedException(); 
+                    throw new NotImplementedException();
             }
         }
         protected override object InternalVisit(QueryDerivedTable node)
