@@ -81,7 +81,20 @@ namespace MemSQL
             }
             return new InnerJoinedTable(first, second, predicate);
         }
-
+        protected override object InternalVisit(UnqualifiedJoin node)
+        {
+            var first = Visit<RecordTable>(node.FirstTableReference);
+            var second = Visit<RecordTable>(node.SecondTableReference);
+            switch (node.UnqualifiedJoinType)
+            {
+                case UnqualifiedJoinType.CrossJoin:
+                    return new CrossJoinedTable(first, second); 
+                case UnqualifiedJoinType.CrossApply:
+                case UnqualifiedJoinType.OuterApply:
+                default:
+                    throw new NotImplementedException(); 
+            }
+        }
         protected override object InternalVisit(QueryDerivedTable node)
         {
             var realTable = Visit<SQLExecutionResult>(node.QueryExpression).Values;
