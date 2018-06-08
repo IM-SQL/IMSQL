@@ -9,7 +9,7 @@ using MemSQL.DataModel.Results;
 
 namespace MemSQL
 {
-    public class Column : RecordColumn
+    public class Column : ResultColumn
     {
         private long? identity = null;
 

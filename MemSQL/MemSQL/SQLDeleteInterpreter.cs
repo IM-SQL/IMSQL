@@ -24,7 +24,7 @@ namespace MemSQL
 
             var env = Database.GlobalEnvironment.NewChild();
 
-            var table = (Table)Visit<RecordTable>(node.Target);
+            var table = (Table)Visit<IResultTable>(node.Target);
             var top = EvaluateExpression<TopResult>(node.TopRowFilter, env);
             var predicate = EvaluateExpression<Func<Row, bool>>(node.WhereClause, env, row => true);
 
@@ -36,7 +36,7 @@ namespace MemSQL
             }
             table.AcceptChanges();
             return new SQLExecutionResult(rows.Count(),
-                ApplyOutputClause(new RecordSet("DELETED",table.Columns, rows), node.OutputClause));
+                ApplyOutputClause(new RecordTable("DELETED",table.Columns, rows), node.OutputClause));
         }
     }
 }

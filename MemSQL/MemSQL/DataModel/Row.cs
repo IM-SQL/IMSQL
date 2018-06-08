@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace MemSQL
 {
-    public class Row:Record
+    public class Row:IResultRow
     {
         private Field[] values;
 
@@ -76,9 +76,9 @@ namespace MemSQL
             Table.RemoveRow(this);
         }
 
-        public Record Wrap(RecordSet recordSet)
+        public IResultRow Wrap(RecordTable recordSet)
         {
-            return new RowRecord(ItemArray, recordSet);
+            return new Record(ItemArray, recordSet);
         }
     }
 }

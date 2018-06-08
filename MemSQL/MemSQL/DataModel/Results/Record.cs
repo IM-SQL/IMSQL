@@ -3,14 +3,52 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MemSQL.DataModel.Joins;
 
 namespace MemSQL.DataModel.Results
 {
-    public interface Record
+    public class Record : IResultRow
     {
-        object this[params string[] name] { get; }
-        object[] ItemArray { get; }
+        private object[] values;
+        private RecordTable set;
 
-        Record Wrap(RecordSet recordSet);
+        public Record(IResultRow row, RecordTable recordSet)
+        {
+            set = recordSet;
+            values = new object[set.Columns.Count()];
+            int index = 0;
+            foreach (var col in set.Selectors)
+            {
+                values[index++] = col.Item2(row);
+            }
+        }
+
+        public Record(object[] v, RecordTable recordSet)
+        {
+            set = recordSet;
+            values = v;
+        }
+
+        RecordTable Set { get { return set; } }
+
+        public object this[params string[] name]
+        {
+            get
+            {
+                int index = Set.IndexOfColumn(name);
+                if (index == -1)
+                {
+                    throw new InvalidOperationException("Invalid object name " + string.Join(".", name));
+                }
+                return values[index];
+            }
+        }
+
+        public object[] ItemArray { get { return values; } }
+
+        public IResultRow Wrap(RecordTable recordSet)
+        {
+            return new Record(ItemArray, recordSet);
+        }
     }
 }

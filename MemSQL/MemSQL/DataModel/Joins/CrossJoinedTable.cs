@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace MemSQL.DataModel.Joins
 {
-    public class CrossJoinedTable : RecordSet
+    public class CrossJoinedTable : RecordTable
     {
-        protected readonly RecordTable first;
-        protected readonly RecordTable second;
+        protected readonly IResultTable first;
+        protected readonly IResultTable second;
 
-        public CrossJoinedTable(RecordTable first, RecordTable second)
+        public CrossJoinedTable(IResultTable first, IResultTable second)
             : base()
         {
             this.first = first;
@@ -42,19 +42,19 @@ namespace MemSQL.DataModel.Joins
             }
             throw new NotImplementedException("Error here? table not found");
         }
-        protected virtual IEnumerable<RecordColumn> JoinColumns(RecordTable first, RecordTable second)
+        protected virtual IEnumerable<ResultColumn> JoinColumns(IResultTable first, IResultTable second)
         {
             return first.Columns.Union(second.Columns).ToArray();
         }
 
-        protected virtual IEnumerable<Record> JoinRecords(RecordTable first, RecordTable second)
+        protected virtual IEnumerable<IResultRow> JoinRecords(IResultTable first, IResultTable second)
         {
             //TODO: this behaviour properly
             foreach (var row1 in first.Records)
             {
                 foreach (var row2 in second.Records)
                 {
-                    var row = new RowRecord(
+                    var row = new Record(
                         row1.ItemArray.Concat(row2.ItemArray).ToArray()
                         , this);
                     yield return row;

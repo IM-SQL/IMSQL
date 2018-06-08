@@ -35,7 +35,7 @@ namespace MemSQL
             var env = Database.GlobalEnvironment.NewChild();
 
             //this returns multiple tables because of the joins and whatever
-            List<RecordTable> tables = new List<RecordTable>(Visit<IEnumerable<RecordTable>>(node.FromClause,new RecordTable[0]));
+            List<IResultTable> tables = new List<IResultTable>(Visit<IEnumerable<IResultTable>>(node.FromClause,new IResultTable[0]));
             if (tables.Count == 0)
             {
                 tables.Add(Table.Empty);
@@ -48,40 +48,40 @@ namespace MemSQL
                 tables.RemoveAt(0);
                 tables.Insert(0, new CrossJoinedTable(first, second));
             }
-            RecordTable table = tables.First();
+            IResultTable table = tables.First();
 
             var top = EvaluateExpression<TopResult>(node.TopRowFilter, env);
-            var predicate = EvaluateExpression<Func<Record, bool>>(node.WhereClause, env, row => true);
+            var predicate = EvaluateExpression<Func<IResultRow, bool>>(node.WhereClause, env, row => true);
 
 
             var selectedColumns = node.SelectElements.SelectMany(element =>
              {
-                 return EvaluateExpression<Func<RecordTable, (string, Func<Record, object>)[]>>(element, env)(table);
+                 return EvaluateExpression<Func<IResultTable, (string, Func<IResultRow, object>)[]>>(element, env)(table);
              }).ToArray();
 
             //i need to apply the selectors before the filter, this ensures me that i apply the alias in the columns
-            var result = new RecordSet(table.TableName, table.Columns, Filter.From(table.Records, predicate, top));
+            var result = new RecordTable(table.TableName, table.Columns, Filter.From(table.Records, predicate, top));
             //TODO: ensure that a select with a where that is not present on the result works.
-            result = new RecordSet(result.TableName, selectedColumns, result.Records);
+            result = new RecordTable(result.TableName, selectedColumns, result.Records);
             return new SQLExecutionResult(result.Records.Count(), result);
         }
 
         protected override object InternalVisit(FromClause node)
         {
-            return node.TableReferences.Select(t => Visit<RecordTable>(t)).ToArray();
+            return node.TableReferences.Select(t => Visit<IResultTable>(t)).ToArray();
         }
 
         protected override object InternalVisit(QualifiedJoin node)
         {
             //this should return a tuple of string,recordtable
             //the name will probably be null, i dont seem to have access to the alias here.
-            var first = Visit<RecordTable>(node.FirstTableReference);
-            var second = Visit<RecordTable>(node.SecondTableReference);
+            var first = Visit<IResultTable>(node.FirstTableReference);
+            var second = Visit<IResultTable>(node.SecondTableReference);
 
             var env = Database.GlobalEnvironment.NewChild();
 
             var where = new WhereClause() { SearchCondition = node.SearchCondition };
-            var predicate = EvaluateExpression<Func<Record, bool>>(where, env, row => true);
+            var predicate = EvaluateExpression<Func<IResultRow, bool>>(where, env, row => true);
 
             if (predicate == null)
             {
@@ -91,8 +91,8 @@ namespace MemSQL
         }
         protected override object InternalVisit(UnqualifiedJoin node)
         {
-            var first = Visit<RecordTable>(node.FirstTableReference);
-            var second = Visit<RecordTable>(node.SecondTableReference);
+            var first = Visit<IResultTable>(node.FirstTableReference);
+            var second = Visit<IResultTable>(node.SecondTableReference);
             switch (node.UnqualifiedJoinType)
             {
                 case UnqualifiedJoinType.CrossJoin:
@@ -109,7 +109,7 @@ namespace MemSQL
 
             if (node.Alias != null)
             {
-                return new RecordSet(node.Alias.Value, realTable.Columns, realTable.Records);
+                return new RecordTable(node.Alias.Value, realTable.Columns, realTable.Records);
             }
             return realTable;
         }

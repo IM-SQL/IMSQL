@@ -155,7 +155,7 @@ namespace MemSQL
             //TODO: this is actually a kind of hack, if i am in presence of an
             var realTable = Database.GetTable(tableName);
             if (node.Alias != null) {
-                return new RecordSet(node.Alias.Value, realTable.Columns, realTable.Rows);
+                return new RecordTable(node.Alias.Value, realTable.Columns, realTable.Rows);
             }
             //TODO: make this a result?.
             //If i make this a result, the insert, delete, or update wont work. they need the real table here.
@@ -207,26 +207,26 @@ namespace MemSQL
 
 
         //TODO: maybe move this to a subclass
-        protected virtual RecordSet ApplyOutputClause(RecordSet source, OutputClause clause)
+        protected virtual RecordTable ApplyOutputClause(RecordTable source, OutputClause clause)
         {
-            var selectors = Visit<Func<Environment, Func<RecordTable, (string, Func<Record, object>)[]>>>(clause)?.Invoke(Database.GlobalEnvironment)(source);
+            var selectors = Visit<Func<Environment, Func<IResultTable, (string, Func<IResultRow, object>)[]>>>(clause)?.Invoke(Database.GlobalEnvironment)(source);
             if (selectors != null)
             {
-                return new RecordSet(source.TableName,selectors, Filter.From(source.Records, (row) => true, null));
+                return new RecordTable(source.TableName,selectors, Filter.From(source.Records, (row) => true, null));
             }
             return null;
         }
         protected override object InternalVisit(OutputClause node)
         {
-            return new Func<Environment, Func<RecordTable, (string, Func<Record, object>)[]>>(
+            return new Func<Environment, Func<IResultTable, (string, Func<IResultRow, object>)[]>>(
                 (env) =>
                 {
-                    return new Func<RecordTable, (string, Func<Record, object>)[]>((table) =>
+                    return new Func<IResultTable, (string, Func<IResultRow, object>)[]>((table) =>
                     {
                         return node.SelectColumns.SelectMany(
                             (element) =>
                             {
-                                return EvaluateExpression<Func<RecordTable, (string, Func<Record, object>)[]>>(element, env)(table);
+                                return EvaluateExpression<Func<IResultTable, (string, Func<IResultRow, object>)[]>>(element, env)(table);
                             }).ToArray();
                     });
 
@@ -237,7 +237,7 @@ namespace MemSQL
         {
             return new Func<Environment, object>(env =>
             {
-                return new Func<RecordTable, (string, Func<Record, object>)[]>(table =>
+                return new Func<IResultTable, (string, Func<IResultRow, object>)[]>(table =>
                 {
                     return table.Columns.Select(col => col.GetDefaultSelector).ToArray();
                 });
@@ -248,12 +248,12 @@ namespace MemSQL
         {
             return new Func<Environment, object>(env =>
             {
-                return new Func<RecordTable, (string, Func<Record, object>)[]>(table =>
+                return new Func<IResultTable, (string, Func<IResultRow, object>)[]>(table =>
                 {
                     SQLExpressionInterpreter expressionInterpreter = new SQLExpressionInterpreter(Database);
                     var expr = expressionInterpreter.Visit<Func<Environment, object>>(node.Expression);
                     var innerEnv = env.NewChild();
-                    var selector = new Func<Record, object>((row) =>
+                    var selector = new Func<IResultRow, object>((row) =>
                     {
                         innerEnv.Add("currentRow", row);
                         return expr(innerEnv);
@@ -270,7 +270,7 @@ namespace MemSQL
                         //TODO: if i do a select (3+4) sql server says something like "(no column name)", i am guessing a result column should have a nullable name
                         name = node.ScriptTokenStream[node.LastTokenIndex].Text;
                     }
-                    return new(string, Func<Record, object>)[] { (name, selector) };
+                    return new(string, Func<IResultRow, object>)[] { (name, selector) };
                 });
             });
         }

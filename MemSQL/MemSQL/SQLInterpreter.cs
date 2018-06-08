@@ -46,7 +46,7 @@ namespace MemSQL
         protected override object InternalVisit(CreateTableStatement node)
         {
             var interpreter = new SQLCreateInterpreter(Database);
-            var table = interpreter.Visit<RecordSet>(node);
+            var table = interpreter.Visit<RecordTable>(node);
             //TODO: we should have result subtypes, SQL returns "Command(s) completed successfully." on this case, and it does not return a reference or data of the created table
             return new SQLExecutionResult(0, null);
         }

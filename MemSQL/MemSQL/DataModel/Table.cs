@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MemSQL
 {
-    public class Table : RecordTable
+    public class Table : IResultTable
     {
         private List<Row> rows = new List<Row>();
         private List<Column> columns = new List<Column>();
@@ -59,9 +59,9 @@ namespace MemSQL
 
         public static Table Empty { get; internal set; }
 
-        public IEnumerable<Record> Records => Rows;
+        public IEnumerable<IResultRow> Records => Rows;
 
-        IEnumerable<RecordColumn> RecordTable.Columns => Columns;
+        IEnumerable<ResultColumn> IResultTable.Columns => Columns;
 
         public Column GetColumn(int columnIndex)
         {

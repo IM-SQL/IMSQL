@@ -7,16 +7,16 @@ using MemSQL.DataModel.Results;
 
 namespace MemSQL.DataModel.Joins
 {
-    public class InnerJoinedTable : RecordSet
+    public class InnerJoinedTable : RecordTable
     {
-        public InnerJoinedTable(RecordTable first, RecordTable second, Func<Record, bool> predicate)
+        public InnerJoinedTable(IResultTable first, IResultTable second, Func<IResultRow, bool> predicate)
         {
             CrossJoinedTable innerTable = new CrossJoinedTable(first, second);
             this.Columns = innerTable.Columns;
             Records = FilterRecords(innerTable.Records, predicate);
         }
 
-        private IEnumerable<Record> FilterRecords(IEnumerable<Record> records, Func<Record, bool> predicate)
+        private IEnumerable<IResultRow> FilterRecords(IEnumerable<IResultRow> records, Func<IResultRow, bool> predicate)
         {
             foreach (var row in records)
             {

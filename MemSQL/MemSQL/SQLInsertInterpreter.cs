@@ -21,7 +21,7 @@ namespace MemSQL
 
         protected override object InternalVisit(InsertSpecification node)
         {
-            var table = (Table)Visit<RecordTable>(node.Target);
+            var table = (Table)Visit<IResultTable>(node.Target);
             List<string> providedColumns = node.Columns
                 .Select(columnReference => Visit<string>(columnReference))
                 .ToList();
@@ -56,7 +56,7 @@ namespace MemSQL
             }
             var rows = providedRows.Select(CreateRow).ToArray();
             return new SQLExecutionResult(rows.Count(),
-                ApplyOutputClause(new RecordSet("INSERTED", table.Columns, rows), node.OutputClause));
+                ApplyOutputClause(new RecordTable("INSERTED", table.Columns, rows), node.OutputClause));
         }
 
         protected override object InternalVisit(ValuesInsertSource node)

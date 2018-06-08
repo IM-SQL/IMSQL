@@ -11,14 +11,14 @@ namespace MemSQL.Result
 {
     public class SQLExecutionResult : SQLResult
     {
-        public SQLExecutionResult(int rowsAffected, RecordSet values)
+        public SQLExecutionResult(int rowsAffected, RecordTable values)
         {
             RowsAffected = rowsAffected;
             Values = values;
         }
 
         public int RowsAffected { get; }
-        public RecordSet Values { get; }
+        public RecordTable Values { get; }
 
         public override string Message => string.Format("({0} row(s) affected)", RowsAffected);
 
@@ -50,9 +50,9 @@ namespace MemSQL.Result
         {
             public static void Print(object value, StringBuilder sb)
             {
-                if (value is RowRecord)
+                if (value is Record)
                 {
-                    var items = (value as RowRecord).ItemArray;
+                    var items = (value as Record).ItemArray;
                     sb.Append("(");
                     for (int i = 0; i < items.Length; i++)
                     {
