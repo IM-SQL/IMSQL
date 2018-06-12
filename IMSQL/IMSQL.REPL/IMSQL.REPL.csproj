@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{21F957AB-B675-4AFD-89C1-598E24CE6B0D}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>MemSQL.REPL</RootNamespace>
-    <AssemblyName>MemSQL.REPL</AssemblyName>
+    <RootNamespace>IMSQL.REPL</RootNamespace>
+    <AssemblyName>IMSQL.REPL</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -81,7 +81,7 @@
   <ItemGroup>
     <ProjectReference Include="..\IMSQL\IMSQL.csproj">
       <Project>{2b950fab-2487-464d-87ac-cf788a01ea0f}</Project>
-      <Name>MemSQL</Name>
+      <Name>IMSQL</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
