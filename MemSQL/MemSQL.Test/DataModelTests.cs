@@ -103,7 +103,8 @@ namespace MemSQL.Test
 
             table.AddRow(42);
             Assert.AreEqual(1, table.Rows.Count(), "The table should contain 1 row");
-            Assert.AreEqual(42, table.GetRow(0)["Id"], "The row inserted is set correctly");
+            Assert.AreEqual(42, table.GetRow(0)["Id"], "The row value is set correctly");
+            Assert.AreEqual(table, table.GetRow(0).Table, "The row table is set correctly");
 
             Assert.ThrowsException<ArgumentException>(
                 () => table.AddRow(1, 2, 3, "Richo"), 
