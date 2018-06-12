@@ -16,6 +16,7 @@ namespace MemSQL.Test
             var db = new Database();
             var table = db.AddTable("T1");
             Assert.AreEqual("T1", table.TableName, "The table name should be set correctly");
+            Assert.AreEqual(0, table.Rows.Count(), "The table should be empty");
         }
 
         [TestMethod]
@@ -40,6 +41,7 @@ namespace MemSQL.Test
             table.AddColumn(new Column("C15", typeof(Guid)));
 
             Assert.AreEqual(15, table.Columns.Count(), "15 columns should be added");
+            Assert.AreEqual(0, table.Rows.Count(), "The table should contain no rows");
             foreach (var col in table.Columns)
             {
                 Assert.AreEqual(table, col.Table, "The table should be set for column {0}", col.ColumnName);
@@ -56,6 +58,81 @@ namespace MemSQL.Test
             db.AddConstraint(new UniqueConstraint("T1_PK", new[] { table.GetColumn("Id") }, true));
             CollectionAssert.AreEqual(new[] { table.GetColumn("Id") }, table.PrimaryKey,
                 "The PrimaryKey property should be set");
+        }
+        
+        [TestMethod]
+        public void Test004CreateTableWithCompositePK()
+        {
+            var db = new Database();
+            var table = db.AddTable("T1");
+            table.AddColumn(new Column("Id1", typeof(int)));
+            table.AddColumn(new Column("Id2", typeof(string)));
+            db.AddConstraint(new UniqueConstraint(
+                constraintName: "T1_PK", 
+                columns: new[] { table.GetColumn("Id1"), table.GetColumn("Id2") }, 
+                isPrimaryKey: true));
+            CollectionAssert.AreEqual(
+                expected: new[] { table.GetColumn("Id1"), table.GetColumn("Id2") }, 
+                actual: table.PrimaryKey,
+                message: "The PrimaryKey property should be set");
+        }
+
+        [TestMethod]
+        public void Test005InsertRowInEmptyTable()
+        {
+            var db = new Database();
+            var table = db.AddTable("T1");
+
+            Assert.ThrowsException<ArgumentException>(
+                () => table.AddRow(1, 2, 3, "Richo"),
+                "The table should not allow inserting any row");
+            Assert.AreEqual(0, table.Rows.Count(), "The table should be empty");
+
+            Assert.ThrowsException<ArgumentException>(
+                () => table.NewRow(1, 2, 3, "Richo"),
+                "The table should not allow to create any row");
+            Assert.AreEqual(0, table.Rows.Count(), "The table should still be empty");
+        }
+
+        [TestMethod]
+        public void Test006InsertRowInTableWithJustOneColumn()
+        {
+            var db = new Database();
+            var table = db.AddTable("T1");
+            table.AddColumn(new Column("Id", typeof(int)));
+
+            table.AddRow(42);
+            Assert.AreEqual(1, table.Rows.Count(), "The table should contain 1 row");
+            Assert.AreEqual(42, table.GetRow(0)["Id"], "The row inserted is set correctly");
+
+            Assert.ThrowsException<ArgumentException>(
+                () => table.AddRow(1, 2, 3, "Richo"), 
+                "The table should not allow inserting more columns than specified");
+            Assert.AreEqual(1, table.Rows.Count(), "The table should still contain 1 row");
+
+            Assert.ThrowsException<FormatException>(
+                () => table.AddRow("Richo"),
+                "The table should not allow inserting a column of a different type than specified");
+            Assert.AreEqual(1, table.Rows.Count(), "The table should still contain 1 row");
+        }
+
+        [TestMethod]
+        public void Test007InsertRowInTableWithJustAPK()
+        {
+            var db = new Database();
+            var table = db.AddTable("T1");
+            table.AddColumn(new Column("Id", typeof(int)));
+            db.AddConstraint(new UniqueConstraint("T1_PK", new[] { table.GetColumn("Id") }, true));
+
+            table.AddRow(42);
+            Assert.AreEqual(1, table.Rows.Count(), "The table should contain 1 row");
+            var row = table.GetRow(0);
+            Assert.AreEqual(row, table.FindRow(42), "The row can be find by searching its PK");
+
+            Assert.ThrowsException<ConstraintException>(
+                () => table.AddRow(42),
+                "The table should not allow inserting duplicated PK");
+            Assert.AreEqual(1, table.Rows.Count(), "The table should still contain 1 row");
         }
     }
 }
