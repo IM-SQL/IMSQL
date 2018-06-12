@@ -79,7 +79,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MemSQL\MemSQL.csproj">
+    <ProjectReference Include="..\IMSQL\MemSQL.csproj">
       <Project>{2b950fab-2487-464d-87ac-cf788a01ea0f}</Project>
       <Name>MemSQL</Name>
     </ProjectReference>
