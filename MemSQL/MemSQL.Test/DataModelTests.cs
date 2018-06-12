@@ -59,7 +59,7 @@ namespace MemSQL.Test
             CollectionAssert.AreEqual(new[] { table.GetColumn("Id") }, table.PrimaryKey,
                 "The PrimaryKey property should be set");
         }
-        
+
         [TestMethod]
         public void Test004CreateTableWithCompositePK()
         {
@@ -68,11 +68,11 @@ namespace MemSQL.Test
             table.AddColumn(new Column("Id1", typeof(int)));
             table.AddColumn(new Column("Id2", typeof(string)));
             db.AddConstraint(new UniqueConstraint(
-                constraintName: "T1_PK", 
-                columns: new[] { table.GetColumn("Id1"), table.GetColumn("Id2") }, 
+                constraintName: "T1_PK",
+                columns: new[] { table.GetColumn("Id1"), table.GetColumn("Id2") },
                 isPrimaryKey: true));
             CollectionAssert.AreEqual(
-                expected: new[] { table.GetColumn("Id1"), table.GetColumn("Id2") }, 
+                expected: new[] { table.GetColumn("Id1"), table.GetColumn("Id2") },
                 actual: table.PrimaryKey,
                 message: "The PrimaryKey property should be set");
         }
@@ -107,7 +107,7 @@ namespace MemSQL.Test
             Assert.AreEqual(table, table.GetRow(0).Table, "The row table is set correctly");
 
             Assert.ThrowsException<ArgumentException>(
-                () => table.AddRow(1, 2, 3, "Richo"), 
+                () => table.AddRow(1, 2, 3, "Richo"),
                 "The table should not allow inserting more columns than specified");
             Assert.AreEqual(1, table.Rows.Count(), "The table should still contain 1 row");
 
@@ -167,6 +167,33 @@ namespace MemSQL.Test
                 () => table.AddRow(1, "Juan"),
                 "The table should not allow specifying the value of identity column");
             Assert.AreEqual(3, table.Rows.Count(), "The table should still contain 3 rows");
+        }
+
+        [TestMethod]
+        public void Test009InsertNullValueInNonNullableColumn()
+        {
+            var db = new Database();
+            var table = db.AddTable("T1");
+            table.AddColumn(new Column("C1", typeof(int)));
+            table.AddColumn(new Column("C2", typeof(string))
+            {
+                AllowDBNull = false
+            });
+
+            table.AddRow(null, "Richo");
+            Assert.AreEqual(1, table.Rows.Count(), "The table should contain 1 row");
+            Assert.AreEqual(null, table.GetRow(0)["C1"], "The first column should be set to null");
+            Assert.AreEqual("Richo", table.GetRow(0)["C2"], "The second column is set correctly");
+
+            Assert.ThrowsException<ArgumentException>(
+                () => table.AddRow(1, null),
+                "Inserting null in the second column should fail");
+            Assert.ThrowsException<ArgumentException>(
+                () => table.AddRow(null, null),
+                "Inserting null in both columns should fail");
+            Assert.ThrowsException<ArgumentException>(
+                () => table.AddRow(1),
+                "Specifying less than required columns should fail");
         }
     }
 }
