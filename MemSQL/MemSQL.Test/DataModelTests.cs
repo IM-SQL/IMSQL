@@ -134,5 +134,38 @@ namespace MemSQL.Test
                 "The table should not allow inserting duplicated PK");
             Assert.AreEqual(1, table.Rows.Count(), "The table should still contain 1 row");
         }
+
+        [TestMethod]
+        public void Test008InsertRowInTableWithIdentityPK()
+        {
+            var db = new Database();
+            var table = db.AddTable("T1");
+            var pk = new Column("Id", typeof(int))
+            {
+                AutoIncrement = true,
+                AutoIncrementSeed = 2,
+                AutoIncrementStep = 3
+            };
+            table.AddColumn(pk);
+            table.AddColumn(new Column("Name", typeof(string)));
+            db.AddConstraint(new UniqueConstraint("T1_PK", new[] { pk }, true));
+
+            table.AddRow("Richo");
+            Assert.AreEqual(1, table.Rows.Count(), "The table should contain 1 row");
+            Assert.AreEqual("Richo", table.FindRow(2)["Name"], "The first row is set correctly");
+
+            table.AddRow("Tera");
+            Assert.AreEqual(2, table.Rows.Count(), "The table should contain 2 rows");
+            Assert.AreEqual("Tera", table.FindRow(5)["Name"], "The second row is set correctly");
+
+            table.AddRow((string)null);
+            Assert.AreEqual(3, table.Rows.Count(), "The table should contain 3 rows");
+            Assert.AreEqual(null, table.FindRow(8)["Name"], "The third row is set correctly");
+
+            Assert.ThrowsException<ArgumentException>(
+                () => table.AddRow(1, "Juan"),
+                "The table should not allow specifying the value of identity column");
+            Assert.AreEqual(3, table.Rows.Count(), "The table should still contain 3 rows");
+        }
     }
 }
