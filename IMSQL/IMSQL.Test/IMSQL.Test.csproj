@@ -7,8 +7,8 @@
     <ProjectGuid>{C8CC24CF-69C5-4413-A868-460C3DB31727}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MemSQL.Test</RootNamespace>
-    <AssemblyName>MemSQL.Test</AssemblyName>
+    <RootNamespace>IMSQL.Test</RootNamespace>
+    <AssemblyName>IMSQL.Test</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -67,9 +67,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\IMSQL\MemSQL.csproj">
+    <ProjectReference Include="..\IMSQL\IMSQL.csproj">
       <Project>{2b950fab-2487-464d-87ac-cf788a01ea0f}</Project>
-      <Name>MemSQL</Name>
+      <Name>IMSQL</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
