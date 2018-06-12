@@ -7,8 +7,8 @@
     <ProjectGuid>{2B950FAB-2487-464D-87AC-CF788A01EA0F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MemSQL</RootNamespace>
-    <AssemblyName>MemSQL</AssemblyName>
+    <RootNamespace>IMSQL</RootNamespace>
+    <AssemblyName>IMSQL</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

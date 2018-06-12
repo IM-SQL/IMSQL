@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MemSQL", "IMSQL\MemSQL.csproj", "{2B950FAB-2487-464D-87AC-CF788A01EA0F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IMSQL", "IMSQL\IMSQL.csproj", "{2B950FAB-2487-464D-87AC-CF788A01EA0F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MemSQL.Test", "IMSQL.Test\MemSQL.Test.csproj", "{C8CC24CF-69C5-4413-A868-460C3DB31727}"
 EndProject
