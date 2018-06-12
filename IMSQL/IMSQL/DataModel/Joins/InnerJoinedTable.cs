@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MemSQL.DataModel.Results;
+using IMSQL.DataModel.Results;
 
-namespace MemSQL.DataModel.Joins
+namespace IMSQL.DataModel.Joins
 {
     public class InnerJoinedTable : RecordTable
     {

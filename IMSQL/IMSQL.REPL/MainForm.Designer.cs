@@ -1,4 +1,4 @@
-﻿namespace MemSQL.REPL
+﻿namespace IMSQL.REPL
 {
     partial class MainForm
     {

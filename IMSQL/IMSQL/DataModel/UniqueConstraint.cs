@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MemSQL
+namespace IMSQL
 {
     public class UniqueConstraint : Constraint
     {

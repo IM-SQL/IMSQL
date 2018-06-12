@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace MemSQL.REPL.Properties
+namespace IMSQL.REPL.Properties
 {
 
 

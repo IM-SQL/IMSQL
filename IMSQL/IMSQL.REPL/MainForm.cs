@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace MemSQL.REPL
+namespace IMSQL.REPL
 {
     public partial class MainForm : Form
     {

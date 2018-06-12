@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using MemSQL.DataModel.Results;
-using MemSQL.Result;
+using IMSQL.DataModel.Results;
+using IMSQL.Result;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
-namespace MemSQL
+namespace IMSQL
 {
     internal class SQLUpdateInterpreter : SQLBaseInterpreter
     {

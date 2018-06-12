@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MemSQL.Test
+namespace IMSQL.Test
 {
     [TestClass]
     public class DataModelTests

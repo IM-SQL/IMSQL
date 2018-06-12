@@ -4,11 +4,11 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MemSQL.DataModel.Results;
-using MemSQL.Result;
+using IMSQL.DataModel.Results;
+using IMSQL.Result;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
-namespace MemSQL
+namespace IMSQL
 {
     internal class SQLInsertInterpreter : SQLBaseInterpreter
     {

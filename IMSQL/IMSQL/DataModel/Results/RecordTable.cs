@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MemSQL.DataModel.Results
+namespace IMSQL.DataModel.Results
 {
     public class RecordTable : IResultTable
     {

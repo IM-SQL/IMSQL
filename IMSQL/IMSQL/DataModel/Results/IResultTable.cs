@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MemSQL.DataModel.Results
+namespace IMSQL.DataModel.Results
 {
     public interface IResultTable
     {

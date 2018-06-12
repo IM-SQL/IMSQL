@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MemSQL.DataModel;
-using MemSQL.DataModel.Fields;
-using MemSQL.DataModel.Results;
+using IMSQL.DataModel;
+using IMSQL.DataModel.Fields;
+using IMSQL.DataModel.Results;
 
-namespace MemSQL
+namespace IMSQL
 {
     public class Column : ResultColumn
     {

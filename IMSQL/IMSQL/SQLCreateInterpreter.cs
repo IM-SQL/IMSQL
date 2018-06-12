@@ -1,5 +1,5 @@
 ﻿
-using MemSQL.DataModel.Results;
+using IMSQL.DataModel.Results;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 using System;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MemSQL
+namespace IMSQL
 {
     /// <summary>
     /// This class implements the methods necesary to execute a create table statement

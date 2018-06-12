@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MemSQL.DataModel.Fields
+namespace IMSQL.DataModel.Fields
 {
     class Field
     {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MemSQL.Result
+namespace IMSQL.Result
 {
     public abstract class SQLResult
     {

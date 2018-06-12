@@ -1,6 +1,6 @@
 ﻿using System; 
 
-namespace MemSQL.DataModel.Fields
+namespace IMSQL.DataModel.Fields
 {
     internal class CalculatedField : Field
     {

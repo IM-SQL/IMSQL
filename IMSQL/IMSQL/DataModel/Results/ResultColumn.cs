@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MemSQL.DataModel.Results
+namespace IMSQL.DataModel.Results
 {
     public class ResultColumn
     {

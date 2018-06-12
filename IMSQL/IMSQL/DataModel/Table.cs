@@ -1,4 +1,4 @@
-﻿using MemSQL.DataModel.Results;
+﻿using IMSQL.DataModel.Results;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MemSQL
+namespace IMSQL
 {
     public class Table : IResultTable
     {

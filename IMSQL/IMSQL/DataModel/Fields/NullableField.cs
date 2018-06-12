@@ -1,7 +1,7 @@
 ﻿using System;
-using MemSQL.DataModel.Fields;
+using IMSQL.DataModel.Fields;
 
-namespace MemSQL.DataModel.Fields
+namespace IMSQL.DataModel.Fields
 {
     internal class NullableField : Field
     {

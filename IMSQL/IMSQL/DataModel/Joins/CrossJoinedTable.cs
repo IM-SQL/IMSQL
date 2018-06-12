@@ -1,11 +1,11 @@
-﻿using MemSQL.DataModel.Results;
+﻿using IMSQL.DataModel.Results;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MemSQL.DataModel.Joins
+namespace IMSQL.DataModel.Joins
 {
     public class CrossJoinedTable : RecordTable
     {

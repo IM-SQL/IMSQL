@@ -1,11 +1,11 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MemSQL;
+using IMSQL;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 
-namespace MemSQL.Test.Structural
+namespace IMSQL.Test.Structural
 {
     [TestClass]
     public class CreationTests
