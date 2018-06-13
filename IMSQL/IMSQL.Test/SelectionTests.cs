@@ -522,10 +522,10 @@ namespace IMSQL.Test
             Assert.AreEqual(1, items.ElementAt(1)["col3"], "The selected value was not present on the Table");
             Assert.AreEqual("A", items.ElementAt(1)["col4"], "The selected value was not present on the Table");
 
-            Assert.AreEqual(null, items.ElementAt(3)["col1"], "The selected value was not present on the Table");
-            Assert.AreEqual(null, items.ElementAt(3)["col2"], "The selected value was not present on the Table");
-            Assert.AreEqual(2, items.ElementAt(3)["col3"], "The selected value was not present on the Table");
-            Assert.AreEqual("B", items.ElementAt(3)["col4"], "The selected value was not present on the Table");
+            Assert.AreEqual(null, items.ElementAt(2)["col1"], "The selected value was not present on the Table");
+            Assert.AreEqual(null, items.ElementAt(2)["col2"], "The selected value was not present on the Table");
+            Assert.AreEqual(2, items.ElementAt(2)["col3"], "The selected value was not present on the Table");
+            Assert.AreEqual("B", items.ElementAt(2)["col4"], "The selected value was not present on the Table");
 
         }
 
