@@ -253,7 +253,7 @@ namespace IMSQL.Test
 
 
         [TestMethod]
-        public void JoinSelectTest()
+        public void InnerJoinSelect()
         {
             var db = new Database();
             Table table = db.AddTable("TBL");
