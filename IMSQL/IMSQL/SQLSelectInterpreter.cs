@@ -35,7 +35,7 @@ namespace IMSQL
             var env = Database.GlobalEnvironment.NewChild();
 
             //this returns multiple tables because of the joins and whatever
-            List<IResultTable> tables = new List<IResultTable>(Visit<IEnumerable<IResultTable>>(node.FromClause,new IResultTable[0]));
+            List<IResultTable> tables = new List<IResultTable>(Visit<IEnumerable<IResultTable>>(node.FromClause, new IResultTable[0]));
             if (tables.Count == 0)
             {
                 tables.Add(Table.Empty);
@@ -87,7 +87,11 @@ namespace IMSQL
             {
                 predicate = (row) => true;
             }
-            return new InnerJoinedTable(first, second, predicate);
+            if (node.QualifiedJoinType == QualifiedJoinType.Inner)
+            {
+                return new InnerJoinedTable(first, second, predicate);
+            }
+            else { return new OuterJoinedTable(node.QualifiedJoinType, first, second, predicate); }
         }
         protected override object InternalVisit(UnqualifiedJoin node)
         {
