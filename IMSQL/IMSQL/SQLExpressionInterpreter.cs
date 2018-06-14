@@ -220,5 +220,20 @@ namespace IMSQL
 
             return result;
         }
+        protected override object InternalVisit(FunctionCall node)
+        {
+           //TODO: node.CallTarget
+           //TODO: node.Collation
+           //TODO: node.OverClause
+           //TODO: node.Parameters
+           //TODO: node.UniqueRowFilter
+           //TODO: node.WithinGroupClause 
+
+            //I think that this should return a function that returns a function,
+            //binding the call execution to the creation context?
+            return new Func<Environment, object>((env) => {
+                return env.GetFunction(node.FunctionName.Value.ToUpper())(env);
+            });
+        }
     }
 }

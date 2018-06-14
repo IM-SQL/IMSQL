@@ -13,14 +13,16 @@ namespace IMSQL
         private Environment parent;
         private IResultRow _currentRow;
         private IResultTable _currentTable;
-
+        protected  Dictionary<string, Func<Environment, object>> functions;
         protected Environment()
         {
             parent = BaseEnvironment.Value;
+            functions = new Dictionary<string, Func<Environment, object>>();
         }
         protected Environment(Environment parent)
         {
             this.parent = parent ?? BaseEnvironment.Value;
+            functions = new Dictionary<string, Func<Environment, object>>();
         }
 
         public static Environment GlobalEnvironment { get { return BaseEnvironment.Value; } }
@@ -40,12 +42,29 @@ namespace IMSQL
             return new Environment(this);
         }
 
+
+        public Func<Environment, object> GetFunction(string name) {
+            if (functions.ContainsKey(name))
+            { return functions[name]; }
+
+            //TODO: nullcheck
+            return parent.GetFunction(name);
+        }
+
+
         private class BaseEnvironment : Environment
         {
             private BaseEnvironment()
             {
                 base.CurrentTable = Table.Empty;
                 base.CurrentRow = CurrentTable.Records.First();
+                functions = new Dictionary<string, Func<Environment, object>>();
+
+                functions.Add("COUNT",
+                    (env) =>
+                    {
+                        throw new NotImplementedException();
+                    });
             }
             private static BaseEnvironment instance;
             static BaseEnvironment()

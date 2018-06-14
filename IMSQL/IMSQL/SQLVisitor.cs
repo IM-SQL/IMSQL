@@ -74,7 +74,7 @@ namespace IMSQL
         protected virtual object InternalVisit(QueryDerivedTable node) { throw new NotImplementedException(); }
         protected virtual object InternalVisit(UnqualifiedJoin node) { throw new NotImplementedException(); }
         protected virtual object InternalVisit(SelectInsertSource node) { throw new NotImplementedException(); }
-
+        protected virtual object InternalVisit(FunctionCall node) { throw new NotImplementedException(); }
 
 
         class SQLInternalVisitor : TSqlFragmentVisitor
@@ -312,6 +312,10 @@ namespace IMSQL
                 Result = outer.InternalVisit(node);
             }
             public override void ExplicitVisit(SelectInsertSource node)
+            {
+                Result = outer.InternalVisit(node);
+            }
+            public override void ExplicitVisit(FunctionCall node)
             {
                 Result = outer.InternalVisit(node);
             }
@@ -1051,7 +1055,6 @@ namespace IMSQL
             public override void ExplicitVisit(CallTarget node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(TransactionStatement node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(WhileStatement node) { throw new NotImplementedException(); }
-            public override void ExplicitVisit(FunctionCall node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(AtTimeZoneCall node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(UpdateDeleteSpecificationBase node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(TryCastCall node) { throw new NotImplementedException(); }

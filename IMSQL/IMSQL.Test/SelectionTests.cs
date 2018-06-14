@@ -136,6 +136,50 @@ namespace IMSQL.Test
                 var result = interpreter.Execute(query)[0];
             });
         }
+
+        [TestMethod]
+        public void CountSelectTest()
+        {
+            var db = new Database();
+            Table table = db.AddTable("TBL");
+            table.AddColumn(new Column("ID", typeof(int)));
+
+            table.AddRow(table.NewRow(1));
+            table.AddRow(table.NewRow(2));
+            table.AddRow(table.NewRow(3));
+            table.AddRow(table.NewRow(3));
+            table.AddRow(table.NewRow(4));
+
+            string query = "Select count(*) from [TBL]";
+            SQLInterpreter interpreter = new SQLInterpreter(db);
+
+            var result = interpreter.Execute(query)[0];
+            int affected = result.RowsAffected;
+            Assert.AreEqual(1, affected, "There should be one row affected");
+            Assert.AreEqual(5, result.Values.Records.First().ItemArray[0], "The selected value was not present on the Table");
+        }
+        [TestMethod]
+        public void CountDistinctSelectTest()
+        {
+            var db = new Database();
+            Table table = db.AddTable("TBL");
+            table.AddColumn(new Column("ID", typeof(int)));
+
+            table.AddRow(table.NewRow(1));
+            table.AddRow(table.NewRow(1));
+            table.AddRow(table.NewRow(3));
+            table.AddRow(table.NewRow(3));
+            table.AddRow(table.NewRow(3));
+
+            string query = "Select count(distinct ID) from [TBL]";
+            SQLInterpreter interpreter = new SQLInterpreter(db);
+
+            var result = interpreter.Execute(query)[0];
+            int affected = result.RowsAffected;
+            Assert.AreEqual(1, affected, "There should be one row affected");
+            Assert.AreEqual(2, result.Values.Records.First().ItemArray[0], "The selected value was not present on the Table");
+        }
+
         [TestMethod]
         public void SelectWithExpression()
         {
