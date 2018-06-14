@@ -36,10 +36,7 @@ namespace IMSQL
 
             //this returns multiple tables because of the joins and whatever
             List<IResultTable> tables = new List<IResultTable>(Visit<IEnumerable<IResultTable>>(node.FromClause, new IResultTable[0]));
-            if (tables.Count == 0)
-            {
-                tables.Add(Table.Empty);
-            }
+      
             while (tables.Count > 1)
             {
                 var first = tables[0];
@@ -48,7 +45,10 @@ namespace IMSQL
                 tables.RemoveAt(0);
                 tables.Insert(0, new CrossJoinedTable(first, second));
             }
-            IResultTable table = tables.First();
+            if (tables.Count != 0)
+            {
+                env.CurrentTable = tables.First();
+            }
 
             var top = EvaluateExpression<TopResult>(node.TopRowFilter, env);
             var predicate = EvaluateExpression<Func<IResultRow, bool>>(node.WhereClause, env, row => true);
@@ -56,11 +56,11 @@ namespace IMSQL
 
             var selectedColumns = node.SelectElements.SelectMany(element =>
              {
-                 return EvaluateExpression<Func<IResultTable, (string, Func<IResultRow, object>)[]>>(element, env)(table);
+                 return EvaluateExpression<Func<IResultTable, (string, Func<IResultRow, object>)[]>>(element, env)(env.CurrentTable);
              }).ToArray();
 
             //i need to apply the selectors before the filter, this ensures me that i apply the alias in the columns
-            var result = new RecordTable(table.TableName, table.Columns, Filter.From(table.Records, predicate, top));
+            var result = new RecordTable(env.CurrentTable.TableName, env.CurrentTable.Columns, Filter.From(env.CurrentTable.Records, predicate, top));
             //TODO: ensure that a select with a where that is not present on the result works.
             result = new RecordTable(result.TableName, selectedColumns, result.Records);
             return new SQLExecutionResult(result.Records.Count(), result);
