@@ -28,7 +28,7 @@ namespace IMSQL
                 var subEnv = env.NewChild();
                 return new Func<IResultRow, bool>((row) =>
                 {
-                    subEnv.Add("currentRow", row);
+                    subEnv.CurrentRow = row;
                     return filter(subEnv);
                 });
             });
@@ -86,7 +86,7 @@ namespace IMSQL
         {
             return new Func<Environment, object>((env) =>
             {
-                return env.At<IResultRow>("currentRow")[Visit<string[]>(node.MultiPartIdentifier)];
+                return env.CurrentRow[Visit<string[]>(node.MultiPartIdentifier)];
             });
         }
 
@@ -215,7 +215,7 @@ namespace IMSQL
                     });
                     break;
                 default:
-                    throw new NotImplementedException(); 
+                    throw new NotImplementedException();
             }
 
             return result;

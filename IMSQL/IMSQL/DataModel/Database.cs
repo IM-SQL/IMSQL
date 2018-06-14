@@ -15,7 +15,7 @@ namespace IMSQL
 
         public Database()
         {
-            GlobalEnvironment = new Environment();
+            GlobalEnvironment = Environment.GlobalEnvironment;
         }
 
         public Environment GlobalEnvironment { get; }

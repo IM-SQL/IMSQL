@@ -255,7 +255,7 @@ namespace IMSQL
                     var innerEnv = env.NewChild();
                     var selector = new Func<IResultRow, object>((row) =>
                     {
-                        innerEnv.Add("currentRow", row);
+                        innerEnv.CurrentRow= row;
                         return expr(innerEnv);
                     });
                     //what about node.ColumnName.Identifier ??

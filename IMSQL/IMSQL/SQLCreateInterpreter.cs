@@ -48,7 +48,7 @@ namespace IMSQL
                 Database.RemoveTable(table);
                 throw;
             }
-            return  new RecordTable(table.TableName,table.Columns, table.Rows);
+            return new RecordTable(table.TableName, table.Columns, table.Rows);
         }
 
         protected override object InternalVisit(TableDefinition node)
@@ -83,7 +83,7 @@ namespace IMSQL
                     (row) =>
                     {
                         var env2 = Database.GlobalEnvironment.NewChild();
-                        env2.Add("currentRow", row);
+                        env2.CurrentRow = row;
                         return inner(env2);
                     };
                 return column1;
