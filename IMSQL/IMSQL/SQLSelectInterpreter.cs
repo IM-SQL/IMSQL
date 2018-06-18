@@ -36,7 +36,7 @@ namespace IMSQL
 
             //this returns multiple tables because of the joins and whatever
             List<IResultTable> tables = new List<IResultTable>(Visit<IEnumerable<IResultTable>>(node.FromClause, new IResultTable[0]));
-      
+
             while (tables.Count > 1)
             {
                 var first = tables[0];
@@ -56,7 +56,7 @@ namespace IMSQL
 
             var selectedColumns = node.SelectElements.SelectMany(element =>
              {
-                 return EvaluateExpression<Func<IResultTable, (string, Func<IResultRow, object>)[]>>(element, env)(env.CurrentTable);
+                 return EvaluateExpression<Func<IResultTable, Selector[]>>(element, env)(env.CurrentTable);
              }).ToArray();
 
             //i need to apply the selectors before the filter, this ensures me that i apply the alias in the columns

@@ -19,7 +19,7 @@ namespace IMSQL.DataModel.Results
             int index = 0;
             foreach (var col in set.Selectors)
             {
-                values[index++] = col.Item2(row);
+                values[index++] = col.GetValueFrom(row);
             }
         }
 

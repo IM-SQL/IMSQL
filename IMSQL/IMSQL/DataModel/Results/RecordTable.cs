@@ -18,14 +18,14 @@ namespace IMSQL.DataModel.Results
             : this(name, columns.Select(c => c.GetDefaultSelector), rows)
         { }
 
-        public RecordTable(string name, IEnumerable<(string, Func<IResultRow, object>)> selectors, IEnumerable<IResultRow> providedRows)
+        public RecordTable(string name, IEnumerable<Selector> selectors, IEnumerable<IResultRow> providedRows)
         {
             TableName = name;
             var rows = providedRows.ToArray();
             //TODO:validate that the columns actually are from the rows, and that the rows are from the same table?
             //TODO: i am evaluating the expressions to infere the type, this can cause unintended sideffects.
             Selectors = selectors;
-            Columns = Selectors.Select(c => new ResultColumn(c.Item1, InfereType(c.Item2, rows))).ToArray();
+            Columns = Selectors.Select(c => new ResultColumn(c.OutputName, InfereType(c.GetValueFrom, rows))).ToArray();
             Records = rows.Select(r => new Record(r, this)).ToArray();
         }
 
@@ -40,7 +40,7 @@ namespace IMSQL.DataModel.Results
 
         public IEnumerable<IResultRow> Records { get; protected set; }
         public IEnumerable<ResultColumn> Columns { get; protected set; }
-        internal IEnumerable<(string, Func<IResultRow, object>)> Selectors { get; private set; }
+        internal IEnumerable<Selector> Selectors { get; private set; }
 
         IEnumerable<IResultRow> IResultTable.Records => Records;
 

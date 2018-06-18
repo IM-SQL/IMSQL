@@ -154,7 +154,8 @@ namespace IMSQL
 
             //TODO: this is actually a kind of hack, if i am in presence of an
             var realTable = Database.GetTable(tableName);
-            if (node.Alias != null) {
+            if (node.Alias != null)
+            {
                 return new RecordTable(node.Alias.Value, realTable.Columns, realTable.Rows);
             }
             //TODO: make this a result?.
@@ -209,24 +210,24 @@ namespace IMSQL
         //TODO: maybe move this to a subclass
         protected virtual RecordTable ApplyOutputClause(RecordTable source, OutputClause clause)
         {
-            var selectors = Visit<Func<Environment, Func<IResultTable, (string, Func<IResultRow, object>)[]>>>(clause)?.Invoke(Database.GlobalEnvironment)(source);
+            var selectors = Visit<Func<Environment, Func<IResultTable, Selector[]>>>(clause)?.Invoke(Database.GlobalEnvironment)(source);
             if (selectors != null)
             {
-                return new RecordTable(source.TableName,selectors, Filter.From(source.Records, (row) => true, null));
+                return new RecordTable(source.TableName, selectors, Filter.From(source.Records, (row) => true, null));
             }
             return null;
         }
         protected override object InternalVisit(OutputClause node)
         {
-            return new Func<Environment, Func<IResultTable, (string, Func<IResultRow, object>)[]>>(
+            return new Func<Environment, Func<IResultTable, Selector[]>>(
                 (env) =>
                 {
-                    return new Func<IResultTable, (string, Func<IResultRow, object>)[]>((table) =>
+                    return new Func<IResultTable, Selector[]>((table) =>
                     {
                         return node.SelectColumns.SelectMany(
                             (element) =>
                             {
-                                return EvaluateExpression<Func<IResultTable, (string, Func<IResultRow, object>)[]>>(element, env)(table);
+                                return EvaluateExpression<Func<IResultTable, Selector[]>>(element, env)(table);
                             }).ToArray();
                     });
 
@@ -237,10 +238,10 @@ namespace IMSQL
         {
             return new Func<Environment, object>(env =>
             {
-                return new Func<IResultTable, (string, Func<IResultRow, object>)[]>(table =>
-                {
-                    return table.Columns.Select(col => col.GetDefaultSelector).ToArray();
-                });
+                return new Func<IResultTable, Selector[]>(table =>
+                 {
+                     return table.Columns.Select(col => col.GetDefaultSelector).ToArray();
+                 });
             });
         }
 
@@ -248,30 +249,30 @@ namespace IMSQL
         {
             return new Func<Environment, object>(env =>
             {
-                return new Func<IResultTable, (string, Func<IResultRow, object>)[]>(table =>
-                {
-                    SQLExpressionInterpreter expressionInterpreter = new SQLExpressionInterpreter(Database);
-                    var expr = expressionInterpreter.Visit<Func<Environment, object>>(node.Expression);
-                    var innerEnv = env.NewChild();
-                    var selector = new Func<IResultRow, object>((row) =>
-                    {
-                        innerEnv.CurrentRow= row;
-                        return expr(innerEnv);
-                    });
+                return new Func<IResultTable, Selector[]>(table =>
+                 {
+                     SQLExpressionInterpreter expressionInterpreter = new SQLExpressionInterpreter(Database);
+                     var expr = expressionInterpreter.Visit<Func<Environment, object>>(node.Expression);
+                     var innerEnv = env.NewChild();
+                     var selector = new Func<IResultRow, object>((row) =>
+                     {
+                         innerEnv.CurrentRow = row;
+                         return expr(innerEnv);
+                     });
                     //what about node.ColumnName.Identifier ??
                     string name = null;
-                    if (node.ColumnName != null)
-                    {
-                        name = node.ColumnName.Value;
-                    }
-                    else
-                    {
+                     if (node.ColumnName != null)
+                     {
+                         name = node.ColumnName.Value;
+                     }
+                     else
+                     {
                         //try to get the column name from the selected expression, if possible.
                         //TODO: if i do a select (3+4) sql server says something like "(no column name)", i am guessing a result column should have a nullable name
                         name = node.ScriptTokenStream[node.LastTokenIndex].Text;
-                    }
-                    return new(string, Func<IResultRow, object>)[] { (name, selector) };
-                });
+                     }
+                     return new Selector[] { new Selector(name, selector) };
+                 });
             });
         }
         protected override object InternalVisit(QuerySpecification node)

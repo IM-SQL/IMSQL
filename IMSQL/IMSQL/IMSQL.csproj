@@ -59,6 +59,7 @@
     <Compile Include="DataModel\Joins\OuterJoinedTable.cs" />
     <Compile Include="DataModel\Results\IResultRow.cs" />
     <Compile Include="DataModel\Results\IResultTable.cs" />
+    <Compile Include="Selector.cs" />
     <Compile Include="DataModel\Row.cs" />
     <Compile Include="DataModel\Table.cs" />
     <Compile Include="DataModel\Environment.cs" />

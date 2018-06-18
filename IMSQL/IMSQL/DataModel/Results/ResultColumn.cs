@@ -12,7 +12,15 @@ namespace IMSQL.DataModel.Results
 
         public string ColumnName { get; }
         public Type DataType { get; }
-        internal (string, Func<IResultRow, object>) GetDefaultSelector { get { return (ColumnName, new Func<IResultRow, object>(r => r[ColumnName])); } }
+        internal Selector GetDefaultSelector
+        {
+            get
+            {
+                return
+                    new Selector(ColumnName,
+                    new Func<IResultRow, object>(r => r[ColumnName]));
+            }
+        }
 
     }
 }
