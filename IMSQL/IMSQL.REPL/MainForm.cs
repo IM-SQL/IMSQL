@@ -14,7 +14,8 @@ namespace IMSQL.REPL
     {
         private int lastIndex;
         private SQLInterpreter interpreter = new SQLInterpreter();
-
+        private List<string> ExecutedCode = new List<string>();
+        int cursor = 0;
         public MainForm()
         {
             InitializeComponent();
@@ -54,8 +55,11 @@ namespace IMSQL.REPL
 
         private string Eval(string inputText)
         {
+            ExecutedCode.Add(inputText);
+            cursor = ExecutedCode.Count - 1;
+
             var result = interpreter.Execute(inputText);
-            return string.Join("\n", result.Select(e=>e.ToString()));
+            return string.Join("\n", result.Select(e => e.ToString()));
 
         }
 
@@ -66,25 +70,42 @@ namespace IMSQL.REPL
                 cmdTextBox.SelectionStart = lastIndex;
             }
 
-            if (e.Control && e.KeyCode == Keys.Enter)
+            if (e.Control)
             {
-                string inputText = cmdTextBox.Text.Substring(lastIndex);
-                string outputText;
-                Color color = Color.Blue;
-                try
+                if (e.KeyCode == Keys.Enter)
                 {
-                    outputText = Eval(inputText);
+                    string inputText = cmdTextBox.Text.Substring(lastIndex);
+                    string outputText;
+                    Color color = Color.Blue;
+                    try
+                    {
+                        outputText = Eval(inputText);
+                    }
+                    catch (Exception ex)
+                    {
+                        outputText = ex.ToString();
+                        color = Color.Red;
+                    }
+                    lastIndex = cmdTextBox.TextLength;
+                    WithTextColor(color, () => AppendText(outputText));
+                    AppendText("\r\n\r\n>>> ");
+                    lastIndex = cmdTextBox.TextLength;
+                    cmdTextBox.SelectionStart = lastIndex;
                 }
-                catch (Exception ex)
+                if (e.KeyCode == Keys.Up)
                 {
-                    outputText = ex.ToString();
-                    color = Color.Red;
+                    string current = ExecutedCode[cursor--];
+                    if (cursor < 0) cursor = 0;
+                    cmdTextBox.Text = cmdTextBox.Text.Remove(lastIndex, cmdTextBox.Text.Length - lastIndex);
+                    AppendText(current);
                 }
-                lastIndex = cmdTextBox.TextLength;
-                WithTextColor(color, () => AppendText(outputText));
-                AppendText("\r\n\r\n>>> ");
-                lastIndex = cmdTextBox.TextLength;
-                cmdTextBox.SelectionStart = lastIndex;
+                if (e.KeyCode == Keys.Down)
+                {
+                    string current = ExecutedCode[cursor++];
+                    if (cursor >= ExecutedCode.Count) cursor = ExecutedCode.Count - 1;
+                    cmdTextBox.Text = cmdTextBox.Text.Remove(lastIndex, cmdTextBox.Text.Length - lastIndex);
+                    AppendText(current);
+                }
             }
         }
 
