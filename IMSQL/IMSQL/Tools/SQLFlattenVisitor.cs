@@ -19,7 +19,7 @@ namespace IMSQL.Tools
         public override void Visit(TSqlFragment node)
         {
             Nodes.Add(node);
-        }        
+        }
     }
 
     public static class Extensions
