@@ -55,5 +55,19 @@ namespace IMSQL.Test
             visitor.Visit(ast);
             CollectionAssert.AreEqual(new[] { 3, 4 }, integers);
         }
+
+        [TestMethod]
+        public void TestDynamicVisitorWorksWithBaseTypes()
+        {
+            var ast = Parse("SELECT 3 + '4' - NULL");
+            var literals = new List<string>();
+            var visitor = SQLDynamicVisitor
+                .Default(node => { })
+                .ForType<Literal>(node => literals.Add(node.Value))
+                .ForType<IntegerLiteral>(node => literals.Add(int.Parse(node.Value).ToString()))
+                .ForType<NullLiteral>(node => literals.Add(null));
+            visitor.Visit(ast);
+            CollectionAssert.AreEqual(new string[] { "3", "4", null }, literals);
+        }
     }
 }

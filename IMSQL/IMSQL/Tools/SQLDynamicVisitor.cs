@@ -40,6 +40,23 @@ namespace IMSQL.Tools
             node.Accept(visitor);            
         }
 
+        private Action<TSqlFragment> Lookup(Type type)
+        {
+            Action<TSqlFragment> action;
+            if (!dispatchTable.TryGetValue(type, out action))
+            {
+                if (type.Equals(typeof(TSqlFragment)))
+                {
+                    return defaultAction;
+                }
+                else
+                {
+                    return Lookup(type.BaseType);
+                }
+            }
+            return action;
+        }
+
         class SQLInternalVisitor : TSqlFragmentVisitor
         {
             private SQLDynamicVisitor outer;
@@ -51,11 +68,7 @@ namespace IMSQL.Tools
 
             public override void Visit(TSqlFragment node)
             {
-                Action<TSqlFragment> action;
-                if (!outer.dispatchTable.TryGetValue(node.GetType(), out action))
-                {
-                    action = outer.defaultAction;
-                }
+                Action<TSqlFragment> action = outer.Lookup(node.GetType());
                 action(node);
             }
         }
