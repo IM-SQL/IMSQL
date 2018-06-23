@@ -83,6 +83,7 @@
     <Compile Include="SQLSelectInterpreter.cs" />
     <Compile Include="SQLUpdateInterpreter.cs" />
     <Compile Include="SQLVisitor.cs" />
+    <Compile Include="Tools\SQLDynamicVisitor.cs" />
     <Compile Include="Tools\SQLFlattenVisitor.cs" />
     <Compile Include="TopResult.cs" />
     <Compile Include="DataModel\UniqueConstraint.cs" />
