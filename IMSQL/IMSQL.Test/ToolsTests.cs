@@ -44,6 +44,7 @@ namespace IMSQL.Test
             }, nodeTypes);
         }
 
+        [TestMethod]
         public void TestDynamicVisitor()
         {
             var ast = Parse("SELECT 3 + 4");
