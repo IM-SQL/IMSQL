@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using IMSQL.DataModel;
 using IMSQL.DataModel.Results;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
@@ -222,17 +223,19 @@ namespace IMSQL
         }
         protected override object InternalVisit(FunctionCall node)
         {
-           //TODO: node.CallTarget
-           //TODO: node.Collation
-           //TODO: node.OverClause
-           //TODO: node.Parameters
-           //TODO: node.UniqueRowFilter
-           //TODO: node.WithinGroupClause 
+            //TODO: node.CallTarget
+            //TODO: node.Collation
+            //TODO: node.OverClause
+            //TODO: node.Parameters
+            //TODO: node.UniqueRowFilter
+            //TODO: node.WithinGroupClause 
 
             //I think that this should return a function that returns a function,
-            //binding the call execution to the creation context?
+            //binding the call execution to the creation context? 
+           var parameters= node.Parameters.Select(p => Visit<Func<Environment, object>>(p));
+            var specification = new CallSpecification(node,parameters);
             return new Func<Environment, object>((env) => {
-                return env.GetFunction(node.FunctionName.Value.ToUpper())(env);
+                return env.GetFunction(node.FunctionName.Value.ToUpper())(specification,env);
             });
         }
     }
