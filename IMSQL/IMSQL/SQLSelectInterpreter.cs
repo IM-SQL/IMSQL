@@ -5,6 +5,7 @@ using System.Linq;
 using IMSQL.DataModel.Joins;
 using IMSQL.DataModel.Results;
 using IMSQL.Result;
+using IMSQL.Tools;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace IMSQL
@@ -54,15 +55,24 @@ namespace IMSQL
             var predicate = EvaluateExpression<Func<IResultRow, bool>>(node.WhereClause, env, row => true);
 
 
+            env.CurrentTable = new RecordTable(env.CurrentTable.TableName, env.CurrentTable.Columns, Filter.From(env.CurrentTable.Records, predicate, top));
+            //check to see if the selectors are aggregate functions.
+
             var selectedColumns = node.SelectElements.SelectMany(element =>
              {
                  return EvaluateExpression<Func<IResultTable, Selector[]>>(element, env)(env.CurrentTable);
              }).ToArray();
-
-            //i need to apply the selectors before the filter, this ensures me that i apply the alias in the columns
-            var result = new RecordTable(env.CurrentTable.TableName, env.CurrentTable.Columns, Filter.From(env.CurrentTable.Records, predicate, top));
-            //TODO: ensure that a select with a where that is not present on the result works.
-            result = new RecordTable(result.TableName, selectedColumns, result.Records);
+            RecordTable result;
+            var aggregates = node.SelectElements.Select(e => e.ContainsAggregate()).ToArray();
+            if (aggregates.Any(e=>e))
+            {
+                //i have aggregates.
+                result = new RecordTable(env.CurrentTable.TableName, selectedColumns, Table.Empty.Records);
+            }
+            else
+            {
+                result = new RecordTable(env.CurrentTable.TableName, selectedColumns, env.CurrentTable.Records);
+            }
             return new SQLExecutionResult(result.Records.Count(), result);
         }
 

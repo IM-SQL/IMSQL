@@ -63,7 +63,7 @@ namespace IMSQL
                 functions.Add("COUNT",
                     (env) =>
                     {
-                        throw new NotImplementedException();
+                        return env.CurrentTable.Records.Count();
                     });
             }
             private static BaseEnvironment instance;
