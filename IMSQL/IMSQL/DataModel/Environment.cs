@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using IMSQL.DataModel;
 using IMSQL.DataModel.Results;
+using IMSQL.Tools;
 using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 namespace IMSQL
@@ -64,13 +65,26 @@ namespace IMSQL
                 functions = new Dictionary<string, Func<CallSpecification, Environment, object>>();
 
                 functions.Add("COUNT",
-                    (callNode, env) =>
+                    (callSpec, env) =>
                     {
-                        if (callNode.UniqueRowFilter != UniqueRowFilter.Distinct)
+                        if (callSpec.UniqueRowFilter != UniqueRowFilter.Distinct)
                         {
                             return env.CurrentTable.Records.Count();
-                        } 
-                        return 0;
+                        }
+                        var child = env.NewChild();
+                        child.CurrentTable = env.CurrentTable;
+                        IEnumerable<object[]> rowData = child.CurrentTable.Records.Select(row =>
+                         {
+                             child.CurrentRow = row;
+                             return callSpec.Parameters.Select(p => p(child)).ToArray();
+                         });
+                        var data = rowData
+                        .Distinct(new AnonymousComparer<object[]>(
+                            (x, y) => x.SequenceEqual(y),
+                            (x)=>x.GetSequenceHash() //distinct actually uses hash to compare.
+                            )).ToArray();
+                        return data.Count();
+
                     });
             }
             private static BaseEnvironment instance;

@@ -9,7 +9,6 @@ namespace IMSQL.DataModel
 {
     public class CallSpecification
     { 
-
         public CallSpecification(FunctionCall node, IEnumerable<Func<Environment, object>> parameters)
         {
             UniqueRowFilter = node.UniqueRowFilter;
