@@ -179,7 +179,52 @@ namespace IMSQL.Test
             Assert.AreEqual(1, affected, "There should be one row affected");
             Assert.AreEqual(2, result.Values.Records.First().ItemArray[0], "The selected value was not present on the Table");
         }
+        [TestMethod]
+        public void SelectDistinctSelectTest()
+        {
+            var db = new Database();
+            Table table = db.AddTable("TBL");
+            table.AddColumn(new Column("ID", typeof(int)));
 
+            table.AddRow(table.NewRow(1));
+            table.AddRow(table.NewRow(1));
+            table.AddRow(table.NewRow(3));
+            table.AddRow(table.NewRow(3));
+            table.AddRow(table.NewRow(3));
+
+            string query = "Select distinct ID from [TBL]";
+            SQLInterpreter interpreter = new SQLInterpreter(db);
+
+            var result = interpreter.Execute(query)[0];
+            int affected = result.RowsAffected;
+            Assert.AreEqual(2, affected, "There should be one row affected");
+            Assert.AreEqual(1, result.Values.Records.First().ItemArray[0], "The selected value was not present on the Table");
+            Assert.AreEqual(3, result.Values.Records.First().ItemArray[1], "The selected value was not present on the Table");
+        }
+
+        [TestMethod]
+        public void SubqueryCountSelectTest()
+        {
+            var db = new Database();
+            Table table = db.AddTable("TBL");
+            table.AddColumn(new Column("ID", typeof(int)));
+
+            table.AddRow(table.NewRow(1));
+            table.AddRow(table.NewRow(1));
+            table.AddRow(table.NewRow(3));
+            table.AddRow(table.NewRow(3));
+            table.AddRow(table.NewRow(3));
+
+
+            string query = "select T.A as B from (Select count(*) as A from [TBL]) as T";
+            SQLInterpreter interpreter = new SQLInterpreter(db);
+
+            var result = interpreter.Execute(query)[0];
+            int affected = result.RowsAffected;
+            Assert.AreEqual(1, affected, "There should be one row affected");
+            Assert.AreEqual("B", result.Values.Columns.First().ColumnName, "The selected value was not present on the Table");
+            Assert.AreEqual(5, result.Values.Records.First().ItemArray[0], "The selected value was not present on the Table");
+        }
         [TestMethod]
         public void SelectWithExpression()
         {
@@ -515,7 +560,7 @@ namespace IMSQL.Test
             Assert.AreEqual(4, items.ElementAt(2)["col2"], "The selected value was not present on the Table");
             Assert.AreEqual(null, items.ElementAt(2)["col3"], "The selected value was not present on the Table");
             Assert.AreEqual(null, items.ElementAt(2)["col4"], "The selected value was not present on the Table");
-             
+
         }
         [TestMethod]
         public void RightOuterJoinSelect()
