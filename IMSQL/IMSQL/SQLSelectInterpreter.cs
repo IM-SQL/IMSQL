@@ -54,8 +54,7 @@ namespace IMSQL
             var top = EvaluateExpression<TopResult>(node.TopRowFilter, env);
             var predicate = EvaluateExpression<Func<IResultRow, bool>>(node.WhereClause, env, row => true);
 
-            //TODO: i should separate this. The top should be the last thing i apply
-            env.CurrentTable = new RecordTable(env.CurrentTable.TableName, env.CurrentTable.Columns, Filter.From(env.CurrentTable.Records, predicate, top));
+            env.CurrentTable = new RecordTable(env.CurrentTable.TableName, env.CurrentTable.Columns, Filter.Where(env.CurrentTable.Records, predicate));
             //check to see if the selectors are aggregate functions.
 
             var selectedColumns = node.SelectElements.SelectMany(element =>
@@ -64,7 +63,7 @@ namespace IMSQL
              }).ToArray();
             RecordTable result;
             var aggregates = node.SelectElements.Select(e => e.ContainsAggregate()).ToArray();
-            if (aggregates.Any(e=>e))
+            if (aggregates.Any(e => e))
             {
                 //i have aggregates.
                 result = new RecordTable(env.CurrentTable.TableName, selectedColumns, Table.Empty.Records);
@@ -75,7 +74,11 @@ namespace IMSQL
             }
             if (node.UniqueRowFilter == UniqueRowFilter.Distinct)
             {
-                result = new RecordTable(result.TableName, result.Columns, Filter.Distinct(env.CurrentTable.Records));
+                result = new RecordTable(result.TableName, result.Columns, Filter.Distinct(result.Records));
+            }
+            if (top != null)
+            {
+                result = new RecordTable(result.TableName, result.Columns, Filter.Top(result.Records, top));
             }
             return new SQLExecutionResult(result.Records.Count(), result);
         }

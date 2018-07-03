@@ -182,6 +182,7 @@ namespace IMSQL.Test
         [TestMethod]
         public void DistinctSelectTest()
         {
+            //TODO: SQL Server seems to order the results! we need to check the specs
             var db = new Database();
             Table table = db.AddTable("TBL");
             table.AddColumn(new Column("ID", typeof(int)));
@@ -201,7 +202,31 @@ namespace IMSQL.Test
             Assert.AreEqual(1, result.Values.Records.First().ItemArray[0], "The selected value was not present on the Table");
             Assert.AreEqual(3, result.Values.Records.ElementAt(1).ItemArray[0], "The selected value was not present on the Table");
         }
+        [TestMethod]
+        public void TopDistinctOrderSelectTest()
+        {
+            //The top clause should be applied AFTER the distinct
+            var db = new Database();
+            Table table = db.AddTable("TBL");
+            table.AddColumn(new Column("ID", typeof(int)));
 
+            table.AddRow(table.NewRow(1));
+            table.AddRow(table.NewRow(1));
+            table.AddRow(table.NewRow(2));
+            table.AddRow(table.NewRow(2));
+            table.AddRow(table.NewRow(3));
+            table.AddRow(table.NewRow(3));
+            table.AddRow(table.NewRow(3));
+
+            string query = "Select distinct top 2 ID from [TBL]";
+            SQLInterpreter interpreter = new SQLInterpreter(db);
+
+            var result = interpreter.Execute(query)[0];
+            int affected = result.RowsAffected;
+            Assert.AreEqual(2, affected, "There should be one row affected");
+            Assert.AreEqual(1, result.Values.Records.First().ItemArray[0], "The selected value was not present on the Table");
+            Assert.AreEqual(2, result.Values.Records.ElementAt(1).ItemArray[0], "The selected value was not present on the Table");
+        }
         [TestMethod]
         public void SubqueryCountSelectTest()
         {
