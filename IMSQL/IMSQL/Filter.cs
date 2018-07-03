@@ -10,48 +10,50 @@ namespace IMSQL
 {
     static class Filter
     {
-        public static IEnumerable<T> From<T>(IEnumerable<T> source, Func<T, bool> predicate, TopResult topResult = null)
+        public static IEnumerable<T> Top<T>(IEnumerable<T> source, TopResult topResult)
         {
-            if (topResult == null)
+            double top = topResult.Amount;
+            if (topResult.Percent)
             {
-                foreach (var item in source)
-                {
-                    if (predicate(item))
-                    {
-                        yield return item;
-                    }
-                }
+                //TODO: if source is infinite, this will freeze
+                int size = source.Count();
+                top = top * size / 100;
+                top = Math.Round(top);
             }
-            else
+            int returned = 0;
+            foreach (var item in source)
             {
-                double top  = topResult.Amount;
-                if (topResult.Percent)
+                if (returned >= top) break;
+                returned++;
+                yield return item;
+            }
+        }
+        public static IEnumerable<T> Where<T>(IEnumerable<T> source, Func<T, bool> predicate)
+        {
+            foreach (var item in source)
+            {
+                if (predicate(item))
                 {
-                    int size = source.Count();
-                    top = top * size / 100;
-                    top = Math.Round(top);
-                } 
-                int returned = 0;
-                foreach (var item in source)
-                {
-                    if (returned >= top) break;
-
-                    if (predicate(item))
-                    {
-                        returned++;
-                        yield return item;
-                    }
+                    yield return item;
                 }
             }
         }
 
-        internal static IEnumerable<IResultRow> Distinct (IEnumerable<IResultRow> records)
+        internal static IEnumerable<T> From<T>(IEnumerable<T> rows, Func<T, bool> predicate, TopResult top)
+        {
+            var result = Where(rows, predicate);
+            if (top != null) {
+                result = Top(result, top);
+            }
+            return result;
+        }
+
+        public static IEnumerable<IResultRow> Distinct(IEnumerable<IResultRow> records)
         {
             return records.Distinct(new AnonymousComparer<IResultRow>(
                             (x, y) => x.ItemArray.SequenceEqual(y.ItemArray),
                             (x) => x.ItemArray.GetSequenceHash() //distinct actually uses hash to compare.
                             ));
-            
         }
     }
 }
