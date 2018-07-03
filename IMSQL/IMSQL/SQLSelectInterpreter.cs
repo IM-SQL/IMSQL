@@ -54,14 +54,17 @@ namespace IMSQL
             var top = EvaluateExpression<TopResult>(node.TopRowFilter, env);
             var predicate = EvaluateExpression<Func<IResultRow, bool>>(node.WhereClause, env, row => true);
 
-            env.CurrentTable = new RecordTable(env.CurrentTable.TableName, env.CurrentTable.Columns, Filter.Where(env.CurrentTable.Records, predicate));
+            env.CurrentTable =
+
+                env.CurrentTable.Filter((r) => Filter.Where(r, predicate));
+               
             //check to see if the selectors are aggregate functions.
 
             var selectedColumns = node.SelectElements.SelectMany(element =>
              {
                  return EvaluateExpression<Func<IResultTable, Selector[]>>(element, env)(env.CurrentTable);
              }).ToArray();
-            RecordTable result;
+            IResultTable result;
             var aggregates = node.SelectElements.Select(e => e.ContainsAggregate()).ToArray();
             if (aggregates.Any(e => e))
             {
@@ -74,11 +77,11 @@ namespace IMSQL
             }
             if (node.UniqueRowFilter == UniqueRowFilter.Distinct)
             {
-                result = new RecordTable(result.TableName, result.Columns, Filter.Distinct(result.Records));
+                result = result.Filter(Filter.Distinct);
             }
             if (top != null)
             {
-                result = new RecordTable(result.TableName, result.Columns, Filter.Top(result.Records, top));
+                result = result.Filter((r) => Filter.Top(r, top));
             }
             return new SQLExecutionResult(result.Records.Count(), result);
         }

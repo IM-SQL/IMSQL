@@ -68,5 +68,10 @@ namespace IMSQL.DataModel.Results
             }
             return -1;
         }
+
+        public IResultTable Filter(Func<IEnumerable<IResultRow>, IEnumerable<IResultRow>> filter)
+        {
+            return new RecordTable(this.TableName, this.Columns, filter(this.Records));
+        }
     }
 }

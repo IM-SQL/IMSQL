@@ -11,14 +11,14 @@ namespace IMSQL.Result
 {
     public class SQLExecutionResult : SQLResult
     {
-        public SQLExecutionResult(int rowsAffected, RecordTable values)
+        public SQLExecutionResult(int rowsAffected, IResultTable values)
         {
             RowsAffected = rowsAffected;
             Values = values;
         }
 
         public int RowsAffected { get; }
-        public RecordTable Values { get; }
+        public IResultTable Values { get; }
 
         public override string Message => string.Format("({0} row(s) affected)", RowsAffected);
 

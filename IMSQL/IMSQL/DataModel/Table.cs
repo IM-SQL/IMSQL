@@ -203,5 +203,11 @@ namespace IMSQL
         {
             return string.Format("{0} ({1})", base.ToString(), TableName);
         }
+
+
+        public IResultTable Filter(Func<IEnumerable<IResultRow>, IEnumerable<IResultRow>> filter)
+        {
+            return new RecordTable(this.TableName, this.Columns, filter(this.Records));
+        }
     }
 }

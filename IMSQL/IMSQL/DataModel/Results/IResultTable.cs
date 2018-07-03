@@ -12,5 +12,6 @@ namespace IMSQL.DataModel.Results
         IEnumerable<ResultColumn> Columns { get; }
         string TableName { get; }
         int IndexOfColumn(string[] columnName);
+        IResultTable Filter(Func<IEnumerable<IResultRow>, IEnumerable<IResultRow>> filter);
     }
 }
