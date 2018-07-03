@@ -54,7 +54,7 @@ namespace IMSQL
             var top = EvaluateExpression<TopResult>(node.TopRowFilter, env);
             var predicate = EvaluateExpression<Func<IResultRow, bool>>(node.WhereClause, env, row => true);
 
-
+            //TODO: i should separate this. The top should be the last thing i apply
             env.CurrentTable = new RecordTable(env.CurrentTable.TableName, env.CurrentTable.Columns, Filter.From(env.CurrentTable.Records, predicate, top));
             //check to see if the selectors are aggregate functions.
 
@@ -72,6 +72,10 @@ namespace IMSQL
             else
             {
                 result = new RecordTable(env.CurrentTable.TableName, selectedColumns, env.CurrentTable.Records);
+            }
+            if (node.UniqueRowFilter == UniqueRowFilter.Distinct)
+            {
+                result = new RecordTable(result.TableName, result.Columns, Filter.Distinct(env.CurrentTable.Records));
             }
             return new SQLExecutionResult(result.Records.Count(), result);
         }

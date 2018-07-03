@@ -180,7 +180,7 @@ namespace IMSQL.Test
             Assert.AreEqual(2, result.Values.Records.First().ItemArray[0], "The selected value was not present on the Table");
         }
         [TestMethod]
-        public void SelectDistinctSelectTest()
+        public void DistinctSelectTest()
         {
             var db = new Database();
             Table table = db.AddTable("TBL");
@@ -199,7 +199,7 @@ namespace IMSQL.Test
             int affected = result.RowsAffected;
             Assert.AreEqual(2, affected, "There should be one row affected");
             Assert.AreEqual(1, result.Values.Records.First().ItemArray[0], "The selected value was not present on the Table");
-            Assert.AreEqual(3, result.Values.Records.First().ItemArray[1], "The selected value was not present on the Table");
+            Assert.AreEqual(3, result.Values.Records.ElementAt(1).ItemArray[0], "The selected value was not present on the Table");
         }
 
         [TestMethod]

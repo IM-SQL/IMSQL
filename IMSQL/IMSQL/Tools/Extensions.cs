@@ -37,8 +37,9 @@ namespace IMSQL.Tools
             const int modifier = 31;
             unchecked
             {
+                //TODO: i added a nullguard that may break this functionality. Tests are needed
                 return sequence.Aggregate(seed, (current, item) =>
-                    (current * modifier) + item.GetHashCode());
+                    (current * modifier) + (item as object ?? 0).GetHashCode());
             }
         }
     }

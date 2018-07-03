@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using IMSQL.DataModel.Results;
+using IMSQL.Tools;
 
 namespace IMSQL
 {
@@ -41,6 +43,15 @@ namespace IMSQL
                     }
                 }
             }
+        }
+
+        internal static IEnumerable<IResultRow> Distinct (IEnumerable<IResultRow> records)
+        {
+            return records.Distinct(new AnonymousComparer<IResultRow>(
+                            (x, y) => x.ItemArray.SequenceEqual(y.ItemArray),
+                            (x) => x.ItemArray.GetSequenceHash() //distinct actually uses hash to compare.
+                            ));
+            
         }
     }
 }
