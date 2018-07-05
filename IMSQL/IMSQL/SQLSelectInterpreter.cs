@@ -27,11 +27,9 @@ namespace IMSQL
         protected override object InternalVisit(QuerySpecification node)
         {
             //TODO:node.ForClause 
-            //TODO:node.GroupByClause
             //TODO:node.HavingClause
             //TODO:node.OffsetClause
             //TODO:node.OrderByClause
-            //TODO:node.UniqueRowFilter 
 
             var env = Database.GlobalEnvironment.NewChild();
 
@@ -55,21 +53,27 @@ namespace IMSQL
             var predicate = EvaluateExpression<Func<IResultRow, bool>>(node.WhereClause, env, row => true);
 
             env.CurrentTable =
-
                 env.CurrentTable.Filter((r) => Filter.Where(r, predicate));
-               
+
+
+
             //check to see if the selectors are aggregate functions.
+            var grouppedData = EvaluateExpression<IResultTable>(node.GroupByClause, env, Table.Empty);
+            
 
             var selectedColumns = node.SelectElements.SelectMany(element =>
              {
                  return EvaluateExpression<Func<IResultTable, Selector[]>>(element, env)(env.CurrentTable);
              }).ToArray();
+
             IResultTable result;
             var aggregates = node.SelectElements.Select(e => e.ContainsAggregate()).ToArray();
-            if (aggregates.Any(e => e))
+
+            if (aggregates.Any(e => e) || node.GroupByClause != null)
             {
                 //i have aggregates.
-                result = new RecordTable(env.CurrentTable.TableName, selectedColumns, Table.Empty.Records);
+                
+                result = new RecordTable(env.CurrentTable.TableName, selectedColumns, grouppedData.Records);
             }
             else
             {
@@ -136,6 +140,30 @@ namespace IMSQL
                 return new RecordTable(node.Alias.Value, realTable.Columns, realTable.Records);
             }
             return realTable;
+        }
+
+        protected override object InternalVisit(GroupByClause node)
+        {
+            //node.GroupByOption
+            return new Func<Environment, IResultTable>((env) =>
+            {
+                var selectedColumns = node.GroupingSpecifications.SelectMany(element =>
+                {
+                    return EvaluateExpression<Func<IResultTable, Selector[]>>(element, env)(env.CurrentTable);
+                }).ToArray();
+
+                return new RecordTable(env.CurrentTable.TableName, selectedColumns, env.CurrentTable.Records)
+                .Filter(Filter.Distinct);
+                
+            });
+
+        }
+        protected override object InternalVisit(ExpressionGroupingSpecification node)
+        {
+            return
+                VisitExpression<Func<IResultTable, Selector[]>>(
+                new SelectScalarExpression() { Expression = node.Expression });
+
         }
     }
 }

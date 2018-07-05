@@ -75,7 +75,8 @@ namespace IMSQL
         protected virtual object InternalVisit(UnqualifiedJoin node) { throw new NotImplementedException(); }
         protected virtual object InternalVisit(SelectInsertSource node) { throw new NotImplementedException(); }
         protected virtual object InternalVisit(FunctionCall node) { throw new NotImplementedException(); }
-
+        protected virtual object InternalVisit(GroupByClause node) { throw new NotImplementedException(); }
+        protected virtual object InternalVisit(ExpressionGroupingSpecification node) { throw new NotImplementedException(); }
 
         class SQLInternalVisitor : TSqlFragmentVisitor
         {
@@ -316,6 +317,14 @@ namespace IMSQL
                 Result = outer.InternalVisit(node);
             }
             public override void ExplicitVisit(FunctionCall node)
+            {
+                Result = outer.InternalVisit(node);
+            }
+            public override void ExplicitVisit(GroupByClause node)
+            {
+                Result = outer.InternalVisit(node);
+            }
+            public override void ExplicitVisit(ExpressionGroupingSpecification node)
             {
                 Result = outer.InternalVisit(node);
             }
@@ -802,11 +811,9 @@ namespace IMSQL
             public override void ExplicitVisit(IdentityFunctionCall node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(CompositeGroupingSpecification node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(GroupingSpecification node) { throw new NotImplementedException(); }
-            public override void ExplicitVisit(GroupByClause node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(ExpressionWithSortOrder node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(GraphMatchExpression node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(GraphMatchPredicate node) { throw new NotImplementedException(); }
-            public override void ExplicitVisit(ExpressionGroupingSpecification node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(BooleanIsNullExpression node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(JoinParenthesisTableReference node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(JoinTableReference node) { throw new NotImplementedException(); }
@@ -1243,7 +1250,6 @@ namespace IMSQL
             public override void ExplicitVisit(ExecuteOption node) { throw new NotImplementedException(); }
             public override void ExplicitVisit(AlterTableStatement node) { throw new NotImplementedException(); }
         }
-
 
     }
 }
